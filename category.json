@@ -1,0 +1,33 @@
+{
+    "categories": {
+      "type": [
+        {
+          "Heading":"CategoryOne",
+          "Attributes": [
+            "OBJECTID",
+            "ID",
+            "SPARE",
+            "AREA"
+          ]
+        },
+        {
+          "Heading":"CategoryTwo",
+          "Attributes": [
+            "Status",
+            "New_Prop_Address",
+            "Street_Name",
+            "Supervisor"
+          ]
+        },
+        {
+          "Heading":"CategoryThree",
+          "Attributes": [
+            "Remarks",
+            "GlobalID",
+            "Shape__Area",
+            "Shape__Length"
+          ]
+        }
+      ]
+    }
+  }

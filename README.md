@@ -1,7 +1,6 @@
 # JMAP
 ## Setting index.html as new Login Page 
-## Recommended: Should be added last after finalizing the Map Application 
-## (If application is still using webappbuilder to configure, refer to "Path Fix Step")
+## Recommended: Should be added last after finalizing the Map Application (If application is still using webappbuilder to configure, refer to "Path Fix Step")
 
 
 #### Replace index.html file of application
@@ -18,3 +17,10 @@ If application is still using webappbuilder to configure widgets, themes and so 
 1. Open to WebAppBuilderForArcGIS\client\builder\main.js
 2. Ctrl/Cmd F "_updateAppId:"
 3. Within the function under "b = window.appInfo.appPath + "index.html";", change index to home and save
+
+## Using JSON file to loop through categories in Identify Widget
+
+#### Replace List.js file
+1. Replace the List.js file with the List.js file in this repo
+2. Copy paste category.json from the repo into the same directory as List.js
+
