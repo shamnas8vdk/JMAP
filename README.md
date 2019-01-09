@@ -1,5 +1,5 @@
 # JMAP
-## Setting index.html as new Login Page
+## Setting index.html as new Login Page (Should be added last after finalizing the Map Application)
 
 #### Replace index.html file of application
 1. Create new file named "home.html" in same directory as index.html
