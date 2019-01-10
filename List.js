@@ -130,81 +130,18 @@ define(['dojo/_base/declare',
           for (CategoryNo = 0; CategoryNo < 3; CategoryNo++) {
 
             //Create a button for each category with the corresponding style
-            var category = domConstruct.create('button');
-            domStyle.set(category,  {
-              background: '#008CBA',
-              color: 'white',
-              border: 'none',
-              marginBottom: '10px',
-              textDecoration: 'none',
-              display: 'inline-block',
-              padding: '15px 15px',
-            });
+            var category = setCategoryButton();
 
             //Create a container for each category to encapsulate related data
-            var container = domConstruct.create('container');
-            category.textContent = data.categories.type[CategoryNo].Heading;
-            domAttr.set(container, 'id', "container"+CategoryNo);
-
-            //Set onclick event callback for category button
-            on(category, 'click', function(evt){
-              if(container.style.display == "none") {
-                domStyle.set(container, "display", "block");
-              }
-              else
-                domStyle.set(container, "display", "none");
-            });
-            domConstruct.place(category, div);
-            domConstruct.place(container, div);
-            domConstruct.place("<br/>", div);
+            var container = setContainer(CategoryNo, category, data);
 
             //Create a for loop for all attributes gotten from the object
             for (var AttributeIndex = 0; AttributeIndex < arrayLength; AttributeIndex++) {
 
               //Split the attributes and assign their corresponding font and styles
               attValArr = attArr[AttributeIndex].split(': ');
-              attTitle = domConstruct.create('font');
-              domAttr.set(attTitle, 'id', ID.toLowerCase()+itemID);
-              if(attValArr[0].toLowerCase().indexOf('<em>') > -1){
-                domStyle.set(attTitle, 'font-style', 'italic');
-              }
-              if(attValArr[0].toLowerCase().indexOf('<strong>') > -1){
-                domStyle.set(attTitle, 'font-weight', 'bold');
-              }
-              if(attValArr[0].toLowerCase().indexOf('<u>') > -1){
-                domStyle.set(attTitle, 'text-decoration', 'underline');
-              }
-              tHasColor = (attValArr[0].toLowerCase().indexOf("<font color='") > -1)?true:false;
-              if(tHasColor){
-                bIndex = attValArr[0].toLowerCase().indexOf("<font color='") + 13;
-                eIndex = attValArr[0].toLowerCase().indexOf("'>", bIndex);
-                tColor = attValArr[0].substr(bIndex, eIndex - bIndex);
-                domStyle.set(attTitle, 'color', tColor);
-              }
-    
-              attTitle.textContent = attTitle.innerText = attValArr[0].replace(/<[\/]{0,1}(em|EM|strong|STRONG|font|FONT|u|U)[^><]*>/g, "");
-              label = domConstruct.create('p');
-              breakline = domConstruct.create('br');
-              domAttr.set(label, 'id', ID.toLowerCase()+itemID);
-              domClass.add(label, 'label');
-              attVal = domConstruct.create('font');
-    
-              if(attValArr[1].toLowerCase().indexOf('<em>') > -1){
-                domStyle.set(attVal, 'font-style', 'italic');
-              }
-              if(attValArr[1].toLowerCase().indexOf('<strong>') > -1){
-                domStyle.set(attVal, 'font-weight', 'bold');
-              }
-              if(attValArr[1].toLowerCase().indexOf('<u>') > -1){
-                domStyle.set(attVal, 'text-decoration', 'underline');
-              }
-              vHasColor = (attValArr[1].toLowerCase().indexOf("<font color='") > -1)?true:false;
-              if(vHasColor){
-                bIndex = attValArr[1].toLowerCase().indexOf("<font color='") + 13;
-                eIndex = attValArr[1].toLowerCase().indexOf("'>", bIndex);
-                vColor = attValArr[1].substr(bIndex, eIndex - bIndex);
-                domStyle.set(attVal, 'color', vColor);
-              }
+              attTitle = setAttributeTitle(ID, itemID);
+              formatAttributeTitle(attTitle, ID, itemID)
     
               if (attValArr[1] === 'null') {
                 attVal.textContent = attVal.innerText = ": ";
@@ -222,6 +159,91 @@ define(['dojo/_base/declare',
           }
           domConstruct.place("<br/>", div);
         });
+
+        //Create a button for each category with the corresponding style
+        function setCategoryButton(){
+          var category = domConstruct.create('button');
+          domStyle.set(category,  {
+            background: '#008CBA',
+            color: 'white',
+            border: 'none',
+            marginBottom: '10px',
+            textDecoration: 'none',
+            display: 'inline-block',
+            padding: '15px 15px',
+          });
+          return category
+        }
+
+        //Create a container for each category to encapsulate related data
+        function setContainer(CategoryNo, category, data){
+          var container = domConstruct.create('container');
+          category.textContent = data.categories.type[CategoryNo].Heading;
+          domAttr.set(container, 'id', "container"+CategoryNo);
+
+          //Set onclick event callback for category button
+          on(category, 'click', function(evt){
+            if(container.style.display == "none") {
+              domStyle.set(container, "display", "block");
+            }
+            else
+              domStyle.set(container, "display", "none");
+          });
+          domConstruct.place(category, div);
+          domConstruct.place(container, div);
+          domConstruct.place("<br/>", div);
+          return container;
+        }
+
+        //Set attribute titles and styles for selected area
+        function setAttributeTitle(ID, itemID){
+          attTitle = domConstruct.create('font');
+          domAttr.set(attTitle, 'id', ID.toLowerCase()+itemID);
+          if(attValArr[0].toLowerCase().indexOf('<em>') > -1){
+            domStyle.set(attTitle, 'font-style', 'italic');
+          }
+          if(attValArr[0].toLowerCase().indexOf('<strong>') > -1){
+            domStyle.set(attTitle, 'font-weight', 'bold');
+          }
+          if(attValArr[0].toLowerCase().indexOf('<u>') > -1){
+            domStyle.set(attTitle, 'text-decoration', 'underline');
+          }
+          tHasColor = (attValArr[0].toLowerCase().indexOf("<font color='") > -1)?true:false;
+          if(tHasColor){
+            bIndex = attValArr[0].toLowerCase().indexOf("<font color='") + 13;
+            eIndex = attValArr[0].toLowerCase().indexOf("'>", bIndex);
+            tColor = attValArr[0].substr(bIndex, eIndex - bIndex);
+            domStyle.set(attTitle, 'color', tColor);
+          }
+          return attTitle;
+        }
+
+        //Format Attribute text content and styles
+        function formatAttributeTitle(attTitle, ID, itemID){
+          attTitle.textContent = attTitle.innerText = attValArr[0].replace(/<[\/]{0,1}(em|EM|strong|STRONG|font|FONT|u|U)[^><]*>/g, "");
+          label = domConstruct.create('p');
+          breakline = domConstruct.create('br');
+          domAttr.set(label, 'id', ID.toLowerCase()+itemID);
+          domClass.add(label, 'label');
+          attVal = domConstruct.create('font');
+
+          if(attValArr[1].toLowerCase().indexOf('<em>') > -1){
+            domStyle.set(attVal, 'font-style', 'italic');
+          }
+          if(attValArr[1].toLowerCase().indexOf('<strong>') > -1){
+            domStyle.set(attVal, 'font-weight', 'bold');
+          }
+          if(attValArr[1].toLowerCase().indexOf('<u>') > -1){
+            domStyle.set(attVal, 'text-decoration', 'underline');
+          }
+          vHasColor = (attValArr[1].toLowerCase().indexOf("<font color='") > -1)?true:false;
+          if(vHasColor){
+            bIndex = attValArr[1].toLowerCase().indexOf("<font color='") + 13;
+            eIndex = attValArr[1].toLowerCase().indexOf("'>", bIndex);
+            vColor = attValArr[1].substr(bIndex, eIndex - bIndex);
+            domStyle.set(attVal, 'color', vColor);
+          }
+        }
         // ----------- End of Junwei's section ------ //
 
         // ----------- Ashley authored the below section ------ //
