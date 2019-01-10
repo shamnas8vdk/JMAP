@@ -127,7 +127,7 @@ define(['dojo/_base/declare',
         $.getJSON( window.location.href.replace("home.html","widgets/Identify/category.json"), function( data ){
           
           //Create for loop to loop through each category
-          for (CategoryNo = 0; CategoryNo < 3; CategoryNo++) {
+          for (CategoryNo = 0; CategoryNo < data.categories.type.length; CategoryNo++) {
 
             //Create a button for each category with the corresponding style
             var category = setCategoryButton();
@@ -150,7 +150,7 @@ define(['dojo/_base/declare',
               }
 
               // Check which Category this information belongs to, and adds them to the correct containers.
-              if(data.categories.type[CategoryNo].Attributes.indexOf(attTitle.textContent) > -1) {
+              if(categoryAttributesCheck(data, CategoryNo, attTitle.textContent)) {
                 domConstruct.place(attTitle, label);
                 domConstruct.place(attVal, label);
                 domConstruct.place(label, container);
@@ -243,6 +243,23 @@ define(['dojo/_base/declare',
             vColor = attValArr[1].substr(bIndex, eIndex - bIndex);
             domStyle.set(attVal, 'color', vColor);
           }
+        }
+
+        //Check if attributes are in and unique to the category
+        function categoryAttributesCheck(data, CategoryNo, attribute){
+          var check =  true;
+
+          if(data.categories.type[CategoryNo].Attributes.indexOf(attribute) == -1){
+            check = false;
+          }
+
+          for (i = CategoryNo-1; i > -1; i--){
+            if(data.categories.type[i].Attributes.indexOf(attribute) > -1){
+              check = false
+            }
+          } 
+          console.log(attribute +" "+ CategoryNo+ " "+check);
+          return check;
         }
         // ----------- End of Junwei's section ------ //
 

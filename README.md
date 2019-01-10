@@ -21,6 +21,6 @@ If application is still using webappbuilder to configure widgets, themes and so 
 ## Using JSON file to loop through categories in Identify Widget
 
 #### Replace List.js file
-1. Replace the List.js file with the List.js file in this repo
+1. Replace the List.js file with the List.js file in this repo under widgets/Identify
 2. Copy paste category.json from the repo into the same directory as List.js
 
