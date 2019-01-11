@@ -124,7 +124,7 @@ define(['dojo/_base/declare',
         var itemID = item.id;
 
         // AJAX request for JSON of category information
-        $.getJSON( window.location.href.replace("home.html","widgets/Identify/category.json"), function( data ){
+        $.getJSON( getJSONPath(), function( data ){
           
           //Create for loop to loop through each category
           for (CategoryNo = 0; CategoryNo < data.categories.type.length; CategoryNo++) {
@@ -159,6 +159,19 @@ define(['dojo/_base/declare',
           }
           domConstruct.place("<br/>", div);
         });
+
+        //Get Path of JSON dynamically
+        function getJSONPath(){
+          var array = window.location.href.split("/");
+          var JSONpath;
+          if(array[array.length - 1] == "" || array[array.length - 1] == null){
+            JSONpath = window.location.href + "widgets/Identify/category.json";
+          }
+          else{
+            JSONpath = window.location.href.replace(array[array.length - 1],"widgets/Identify/category.json");
+          }
+          return JSONpath;
+        }
 
         //Create a button for each category with the corresponding style
         function setCategoryButton(){

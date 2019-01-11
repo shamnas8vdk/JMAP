@@ -1,0 +1,521 @@
+{
+  "layers": [
+    {
+      "URL": "https://services1.arcgis.com/6txKVziKkZ2VHz7Z/ArcGIS/rest/services/processed_Farm_land/FeatureServer/0",
+      "Name": "Processed_Farm_Land",
+      "ID": "processed_Farm_land_7151",
+      "Attributes": [
+        {
+          "Name": "FID",
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "Pineapple",
+              "color": [255, 0, 0, 0.5]
+            },
+            {
+              "Name": "Maize",
+              "color": [0, 255, 0, 0.5]
+            },
+            {
+              "Name": "Tea",
+              "color": [0, 0, 255, 0.5]
+            },
+            {
+              "Name": "Irrigated",
+              "color": [255, 0, 255, 0.5]
+            },
+            {
+              "Name": "Rainfed",
+              "color": [255, 255, 255, 0.75]
+            }
+          ]
+        },
+        {
+          "Name": "Crops",
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "Pineapple",
+              "color": [255, 0, 0, 0.5]
+            },
+            {
+              "Name": "Maize",
+              "color": [0, 255, 0, 0.5]
+            },
+            {
+              "Name": "Tea",
+              "color": [0, 0, 255, 0.5]
+            },
+            {
+              "Name": "Irrigated",
+              "color": [255, 0, 255, 0.5]
+            },
+            {
+              "Name": "Rainfed",
+              "color": [255, 255, 255, 0.75]
+            }
+          ]
+        },
+        {
+          "Name": "Main_Crop",
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "Pineapple",
+              "color": [255, 0, 0, 0.5]
+            },
+            {
+              "Name": "Maize",
+              "color": [0, 255, 0, 0.5]
+            },
+            {
+              "Name": "Tea",
+              "color": [0, 0, 255, 0.5]
+            },
+            {
+              "Name": "Irrigated",
+              "color": [255, 0, 255, 0.5]
+            },
+            {
+              "Name": "Rainfed",
+              "color": [255, 255, 255, 0.75]
+            }
+          ]
+        },
+        {
+          "Name": "Other_Crop",
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "Pineapple",
+              "color": [255, 0, 0, 0.5]
+            },
+            {
+              "Name": "Maize",
+              "color": [0, 255, 0, 0.5]
+            },
+            {
+              "Name": "Tea",
+              "color": [0, 0, 255, 0.5]
+            },
+            {
+              "Name": "Irrigated",
+              "color": [255, 0, 255, 0.5]
+            },
+            {
+              "Name": "Rainfed",
+              "color": [255, 255, 255, 0.75]
+            }
+          ]
+        },
+        {
+          "Name": "County_Nam",
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "Pineapple",
+              "color": [255, 0, 0, 0.5]
+            },
+            {
+              "Name": "Maize",
+              "color": [0, 255, 0, 0.5]
+            },
+            {
+              "Name": "Tea",
+              "color": [0, 0, 255, 0.5]
+            },
+            {
+              "Name": "Irrigated",
+              "color": [255, 0, 255, 0.5]
+            },
+            {
+              "Name": "Rainfed",
+              "color": [255, 255, 255, 0.75]
+            }
+          ]
+        },
+        {
+          "Name": "Watering",
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "Pineapple",
+              "color": [255, 0, 0, 0.5]
+            },
+            {
+              "Name": "Maize",
+              "color": [0, 255, 0, 0.5]
+            },
+            {
+              "Name": "Tea",
+              "color": [0, 0, 255, 0.5]
+            },
+            {
+              "Name": "Irrigated",
+              "color": [255, 0, 255, 0.5]
+            },
+            {
+              "Name": "Rainfed",
+              "color": [255, 255, 255, 0.75]
+            }
+          ]
+        },
+        {
+          "Name": "Area_Km2",
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "Pineapple",
+              "color": [255, 0, 0, 0.5]
+            },
+            {
+              "Name": "Maize",
+              "color": [0, 255, 0, 0.5]
+            },
+            {
+              "Name": "Tea",
+              "color": [0, 0, 255, 0.5]
+            },
+            {
+              "Name": "Irrigated",
+              "color": [255, 0, 255, 0.5]
+            },
+            {
+              "Name": "Rainfed",
+              "color": [255, 255, 255, 0.75]
+            }
+          ]
+        },
+        {
+          "Name": "Farm_Owner",
+         "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "Pineapple",
+              "color": [255, 0, 0, 0.5]
+            },
+            {
+              "Name": "Maize",
+              "color": [0, 255, 0, 0.5]
+            },
+            {
+              "Name": "Tea",
+              "color": [0, 0, 255, 0.5]
+            },
+            {
+              "Name": "Irrigated",
+              "color": [255, 0, 255, 0.5]
+            },
+            {
+              "Name": "Rainfed",
+              "color": [255, 255, 255, 0.75]
+            }
+          ]
+        },
+        {
+          "Name": "Farm_mgr",
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "Pineapple",
+              "color": [255, 0, 0, 0.5]
+            },
+            {
+              "Name": "Maize",
+              "color": [0, 255, 0, 0.5]
+            },
+            {
+              "Name": "Tea",
+              "color": [0, 0, 255, 0.5]
+            },
+            {
+              "Name": "Irrigated",
+              "color": [255, 0, 255, 0.5]
+            },
+            {
+              "Name": "Rainfed",
+              "color": [255, 255, 255, 0.75]
+            }
+          ]
+        },
+        {
+          "Name": "Farm_Id",
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "Pineapple",
+              "color": [255, 0, 0, 0.5]
+            },
+            {
+              "Name": "Maize",
+              "color": [0, 255, 0, 0.5]
+            },
+            {
+              "Name": "Tea",
+              "color": [0, 0, 255, 0.5]
+            },
+            {
+              "Name": "Irrigated",
+              "color": [255, 0, 255, 0.5]
+            },
+            {
+              "Name": "Rainfed",
+              "color": [255, 255, 255, 0.75]
+            }
+          ]
+        },
+        {
+          "Name": "Soil_type",
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "Pineapple",
+              "color": [255, 0, 0, 0.5]
+            },
+            {
+              "Name": "Maize",
+              "color": [0, 255, 0, 0.5]
+            },
+            {
+              "Name": "Tea",
+              "color": [0, 0, 255, 0.5]
+            },
+            {
+              "Name": "Irrigated",
+              "color": [255, 0, 255, 0.5]
+            },
+            {
+              "Name": "Rainfed",
+              "color": [255, 255, 255, 0.75]
+            }
+          ]
+        }
+      ],
+      "Dropdown_style": {
+           "width": "290px",
+           "fontSize": "12pt",
+           "color": "#444"
+      }
+    },
+    {
+      "URL": "https://services1.arcgis.com/6txKVziKkZ2VHz7Z/ArcGIS/rest/services/processed_Farm_land/FeatureServer/0",
+      "Name": "Processed_Urban_Land",
+      "ID": "processed_Farm_land_7151",
+      "Attributes": [
+        {
+          "Name": "FID",
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "Pineapple",
+              "color": [255, 0, 0, 0.5]
+            },
+            {
+              "Name": "Maize",
+              "color": [0, 255, 0, 0.5]
+            },
+            {
+              "Name": "Tea",
+              "color": [0, 0, 255, 0.5]
+            },
+            {
+              "Name": "Irrigated",
+              "color": [255, 0, 255, 0.5]
+            },
+            {
+              "Name": "Rainfed",
+              "color": [255, 255, 255, 0.75]
+            }
+          ]
+        },
+        {
+          "Name": "Crops",
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "Pineapple",
+              "color": [255, 0, 0, 0.5]
+            },
+            {
+              "Name": "Maize",
+              "color": [0, 255, 0, 0.5]
+            },
+            {
+              "Name": "Tea",
+              "color": [0, 0, 255, 0.5]
+            },
+            {
+              "Name": "Irrigated",
+              "color": [255, 0, 255, 0.5]
+            },
+            {
+              "Name": "Rainfed",
+              "color": [255, 255, 255, 0.75]
+            }
+          ]
+        },
+        {
+          "Name": "Main_Crop",
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "Pineapple",
+              "color": [255, 0, 0, 0.5]
+            },
+            {
+              "Name": "Maize",
+              "color": [0, 255, 0, 0.5]
+            },
+            {
+              "Name": "Tea",
+              "color": [0, 0, 255, 0.5]
+            },
+            {
+              "Name": "Irrigated",
+              "color": [255, 0, 255, 0.5]
+            },
+            {
+              "Name": "Rainfed",
+              "color": [255, 255, 255, 0.75]
+            }
+          ]
+        },
+        {
+          "Name": "Other_Crop",
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "Pineapple",
+              "color": [255, 0, 0, 0.5]
+            },
+            {
+              "Name": "Maize",
+              "color": [0, 255, 0, 0.5]
+            },
+            {
+              "Name": "Tea",
+              "color": [0, 0, 255, 0.5]
+            },
+            {
+              "Name": "Irrigated",
+              "color": [255, 0, 255, 0.5]
+            },
+            {
+              "Name": "Rainfed",
+              "color": [255, 255, 255, 0.75]
+            }
+          ]
+        },
+        {
+          "Name": "County_Nam",
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "Pineapple",
+              "color": [255, 0, 0, 0.5]
+            },
+            {
+              "Name": "Maize",
+              "color": [0, 255, 0, 0.5]
+            },
+            {
+              "Name": "Tea",
+              "color": [0, 0, 255, 0.5]
+            },
+            {
+              "Name": "Irrigated",
+              "color": [255, 0, 255, 0.5]
+            },
+            {
+              "Name": "Rainfed",
+              "color": [255, 255, 255, 0.75]
+            }
+          ]
+        },
+        {
+          "Name": "Watering",
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "Pineapple",
+              "color": [255, 0, 0, 0.5]
+            },
+            {
+              "Name": "Maize",
+              "color": [0, 255, 0, 0.5]
+            },
+            {
+              "Name": "Tea",
+              "color": [0, 0, 255, 0.5]
+            },
+            {
+              "Name": "Irrigated",
+              "color": [255, 0, 255, 0.5]
+            },
+            {
+              "Name": "Rainfed",
+              "color": [255, 255, 255, 0.75]
+            }
+          ]
+        }
+      ],
+      "Dropdown_style": {
+           "width": "290px",
+           "fontSize": "12pt",
+           "color": "#444"
+      }
+    }
+  ]
+}
