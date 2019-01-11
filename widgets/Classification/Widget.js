@@ -75,14 +75,14 @@ function(declare,
       var layerNames, layerStore;
       layerNames = { identifier: "value", label: "name", items: [] };
       arrayUtils.forEach(data.layers, function(f) { 
+        // Store List of attributes for each layer into array
         var attributes = [];
-        var attributeColorName = [];
         arrayUtils.forEach(f.Attributes, function(g) {
           attributes.push(g.Name);
-          // attributeColorName.push(g.color);
         })
+        // Push information into array for storage in Filtering Select Object
         layerNames.items.push({ "name": f.Name, "value": f.Name, "width": f.Dropdown_style.width, 
-        "fontSize": f.Dropdown_style.fontSize, "color": f.Dropdown_style.color,"attributes": attributes, "URL": f.URL}); //"attributes": f.Attributes
+        "fontSize": f.Dropdown_style.fontSize, "color": f.Dropdown_style.color,"attributes": attributes, "URL": f.URL});
       });
       layerStore = new ItemFileReadStore({ data: layerNames });
       
@@ -100,6 +100,7 @@ function(declare,
           "color": layerNames.items[0].color
       },
       onChange: function(){
+        // Get selected index and toggle to show attributes of selected layer
         var index = this.item._0;
         domConstruct.empty("fieldWrapper");
         toggleAttributeFields(layerNames.items[index].attributes, layerNames.items[index].URL, 
@@ -108,6 +109,7 @@ function(declare,
       },domConstruct.create("div", null, dom.byId("layerWrapper")));
     });
 
+    // Get JSON file of widget dynamically
     function getJSONPath(){
       var array = window.location.href.split("/");
       var JSONpath;
@@ -119,10 +121,13 @@ function(declare,
       }
       return JSONpath;
     }
-    // ----------- End of Junwei's section ------ //
 
+    // Display dropdown of all attributes and set render styles
     function toggleAttributeFields(attributes, URL, width, font, color){
+      // Create new "div" element for innerHTML label
       domConstruct.create("div", { innerHTML: "Currently selected attribute" }, dom.byId("fieldWrapper"));
+
+      // Request for the layer using URL from selected Layer earlier
       var countyFields = esriRequest({
         url: URL[0],
         content: {
@@ -130,16 +135,19 @@ function(declare,
         },
         callbackParamName: "callback"
       });
-      countyFields.then(function(resp) {
-        var fieldNames, fieldStore;
 
+      // Set the dropdown fields for attributes
+      countyFields.then(function(resp) {
+
+        // Store information of each attribute in arrays
+        var fieldNames, fieldStore;
         fieldNames = { identifier: "value", label: "name", items: [] };
-        // console.log("Attributes \n"+resp.fields);
         for(attrIndex = 0; attrIndex < attributes.length; attrIndex++){
           fieldNames.items.push({ "name": attributes[attrIndex], "value": attributes[attrIndex] });
         }
-
         fieldStore = new ItemFileReadStore({ data: fieldNames });
+
+        // Declare new FilteringSelect object for dropdown and initialize fields
         fieldSelect = new FilteringSelect({
           displayedValue: fieldNames.items[0].name,
           value: fieldNames.items[0].value,
@@ -153,7 +161,7 @@ function(declare,
              "color": color
           },
           onChange: function(){
-            // console.log(this.item.name[0]);
+            // Render CSS Styles of map on change with getData
             fieldSelect.on("change", getData(this.item.name[0],URL[0]));
           } 
        }, domConstruct.create("div", null, dom.byId("fieldWrapper")));
@@ -162,12 +170,12 @@ function(declare,
       });
 
       function getData(field,URL) {
+        // Apply Render
         applyRenderer(field,URL)
       }
 
       function applyRenderer(field,URL) {
-        // dynamic layer stuff
-        // var defaultSymbol = new SimpleFillSymbol().setColor(new Color([renderColor[0]]));.
+        // Get Layer and attribute render information according to URL
         $.getJSON( getJSONPath(), function( data ){
           var renderStyle;
           arrayUtils.forEach(data.layers, function(layer) {
@@ -179,47 +187,28 @@ function(declare,
               })
             }
           })
-          console.log(renderStyle[0].color)
+
+          // Render default style of map
           var defaultSymbol = new SimpleFillSymbol().setColor(new Color(renderStyle[0].color));
           var renderer = new UniqueValueRenderer(defaultSymbol, field);
 
+          // Loop through styles of attribute and add to renderer
           for(index = 1; index < renderStyle.length; index++){
             console.log(renderStyle[index].Name + " " +renderStyle[index].color)
             renderer.addValue(renderStyle[index].Name, new SimpleFillSymbol().setColor(new Color(renderStyle[index].color)));
           }
 
+          // Apply to map
           self.map.getLayer("processed_Farm_land_7151").setRenderer(renderer);
           self.map.getLayer("processed_Farm_land_7151").redraw();
-        })
-
-        // var defaultSymbol = new SimpleFillSymbol().setColor(new Color([127, 127, 127, 0.5]));
-        
-        // var renderer = new UniqueValueRenderer(defaultSymbol, field);
-        // renderer.addValue("Pineapple", new SimpleFillSymbol().setColor(new Color([255, 0, 0, 0.5])));
-        // renderer.addValue("Maize", new SimpleFillSymbol().setColor(new Color([0, 255, 0, 0.5])));
-        // renderer.addValue("Tea", new SimpleFillSymbol().setColor(new Color([0, 0, 255, 0.5])));
-        // renderer.addValue("Irrigated", new SimpleFillSymbol().setColor(new Color([255, 0, 255, 0.5])));
-        // renderer.addValue("Rainfed", new SimpleFillSymbol().setColor(new Color([255, 255, 255, 0.75])));
-       
-        // self.map.getLayer("processed_Farm_land_7151").setRenderer(renderer);
-        // self.map.getLayer("processed_Farm_land_7151").redraw();
-
-        // var defaultSymbol = new SimpleFillSymbol().setColor(new Color(]));
-        // var renderer = new UniqueValueRenderer(defaultSymbol, field);
-
-        // for(index = 1; index < renderColor.length; index++){
-        //   renderer.addValue(render[index], new SimpleFillSymbol().setColor(new Color([renderColor[index]])));
-        // }
-       
-        // self.map.getLayer("processed_Farm_land_7151").setRenderer(renderer);
-        // self.map.getLayer("processed_Farm_land_7151").redraw();
-        // create the legend if it doesn't exist        
+        })    
       }
       function errorHandler(err) {
         // console.log("Something broke, error: ", err);
         console.log("error: ", JSON.stringify(err));
       }
     }
+    // ----------- End of Junwei's section ------ //
       // var countyFields = esriRequest({
       //   url: 'https://services1.arcgis.com/6txKVziKkZ2VHz7Z/ArcGIS/rest/services/processed_Farm_land/FeatureServer/0',
       //   content: {

@@ -24,3 +24,7 @@ If application is still using webappbuilder to configure widgets, themes and so 
 1. Replace the List.js file with the List.js file in this repo under widgets/Identify
 2. Copy paste category.json from the repo into the same directory as List.js
 
+## Using JSON file to loop through categories in Classification Widget
+1. Replace the widget.js file with the widget.js file in this repo under widgets/Classification
+1. Replace the widget.html file with the widget.html file in this repo under widgets/Classification
+2. Copy paste layer.json from the repo into the same directory as List.js
