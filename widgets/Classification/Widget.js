@@ -176,10 +176,13 @@ function(declare,
              "color": color
           },
           onChange: function(){
-            // Render CSS Styles of map on change with getData
+            var index = this.item._0;
             domConstruct.empty("legendWrapper");
-            fieldSelect.on("change", getData(this.item.name[0],URL[0], ID, layer_name));
-            // domConstruct.create("p", { class:"attr_description", innerHTML: "Description: <br /> This is an attribute"}, dom.byId("fieldWrapper"));
+
+            // Render CSS Styles of map on change with getData
+            if(index != 0){
+              fieldSelect.on("change", getData(this.item.name[0],URL[0], ID, layer_name));
+            }
           } 
        }, domConstruct.create("div", { class:"selectBox" }, dom.byId("fieldWrapper")));
       }, function(err) {
