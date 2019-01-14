@@ -326,7 +326,7 @@
         }
       ],
       "Dropdown_style": {
-           "width": "290px",
+           "width": "90%",
            "fontSize": "12pt",
            "color": "#444"
       }
@@ -512,7 +512,7 @@
         }
       ],
       "Dropdown_style": {
-           "width": "290px",
+           "width": "90%",
            "fontSize": "12pt",
            "color": "#444"
       }

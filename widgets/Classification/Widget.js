@@ -17,7 +17,9 @@ define(['dojo/_base/declare',
          'esri/layers/FeatureLayer',
          'esri/layers/LayerDrawingOptions' ,
          'esri/symbols/SimpleLineSymbol',
-         'esri/renderers/UniqueValueRenderer'   
+         'esri/renderers/UniqueValueRenderer',
+         'esri/dijit/Legend',
+         'jimu/LayerInfos/LayerInfos'
         ],
 function(declare, 
          BaseWidget,
@@ -37,7 +39,9 @@ function(declare,
          FeatureLayer,
          LayerDrawingOptions,
          SimpleLineSymbol,
-         UniqueValueRenderer) {
+         UniqueValueRenderer,
+         Legend,
+         LayerInfos) {
   //To create a widget, you need to derive from BaseWidget.
   return declare([BaseWidget], {
     // DemoWidget code goes here
@@ -70,10 +74,14 @@ function(declare,
     // ----------- Junwei authored the below section ------ //
     //Get JSON data of layers with AJAX
     $.getJSON( getJSONPath(), function( data ){
+      // Create new "div" element for innerHTML label
+      domConstruct.create("div", { innerHTML: "Currently selected attribute:", class:"selectLabel" }, dom.byId("layerWrapper"));
 
       // Declare object to store layer names in layerNames and store them in layerStore
       var layerNames, layerStore;
       layerNames = { identifier: "value", label: "name", items: [] };
+      layerNames.items.push({ "name": "Select a Layer", "value": "Select a Layer"});
+
       arrayUtils.forEach(data.layers, function(f) { 
         // Store List of attributes for each layer into array
         var attributes = [];
@@ -82,7 +90,8 @@ function(declare,
         })
         // Push information into array for storage in Filtering Select Object
         layerNames.items.push({ "name": f.Name, "value": f.Name, "width": f.Dropdown_style.width, 
-        "fontSize": f.Dropdown_style.fontSize, "color": f.Dropdown_style.color,"attributes": attributes, "URL": f.URL});
+        "fontSize": f.Dropdown_style.fontSize, "color": f.Dropdown_style.color,"attributes": attributes, 
+        "URL": f.URL, "ID": f.ID});
       });
       layerStore = new ItemFileReadStore({ data: layerNames });
       
@@ -95,18 +104,22 @@ function(declare,
       store: layerStore,
       searchAttr: "name",
       style: {
-          "width": layerNames.items[0].width,
-          "fontSize": layerNames.items[0].fontSize,
-          "color": layerNames.items[0].color
+          "width": layerNames.items[1].width,
+          "fontSize": layerNames.items[1].fontSize,
+          "color": layerNames.items[1].color
       },
       onChange: function(){
         // Get selected index and toggle to show attributes of selected layer
         var index = this.item._0;
         domConstruct.empty("fieldWrapper");
-        toggleAttributeFields(layerNames.items[index].attributes, layerNames.items[index].URL, 
-          layerNames.items[index].width, layerNames.items[index].fontSize, layerNames.items[index].color);
+        domConstruct.empty("legendWrapper");
+        if(index != 0){
+          toggleAttributeFields(layerNames.items[index].attributes, layerNames.items[index].URL, 
+            layerNames.items[index].ID, layerNames.items[index].width, layerNames.items[index].fontSize, 
+            layerNames.items[index].color, layerNames.items[index].name);
+        }
       } 
-      },domConstruct.create("div", null, dom.byId("layerWrapper")));
+      },domConstruct.create("div", { class:"selectBox" }, dom.byId("layerWrapper")));
     });
 
     // Get JSON file of widget dynamically
@@ -123,9 +136,9 @@ function(declare,
     }
 
     // Display dropdown of all attributes and set render styles
-    function toggleAttributeFields(attributes, URL, width, font, color){
+    function toggleAttributeFields(attributes, URL, ID, width, font, color, layer_name){
       // Create new "div" element for innerHTML label
-      domConstruct.create("div", { innerHTML: "Currently selected attribute" }, dom.byId("fieldWrapper"));
+      domConstruct.create("div", { innerHTML: "Currently selected attribute:", class:"selectLabel" }, dom.byId("fieldWrapper"));
 
       // Request for the layer using URL from selected Layer earlier
       var countyFields = esriRequest({
@@ -142,6 +155,8 @@ function(declare,
         // Store information of each attribute in arrays
         var fieldNames, fieldStore;
         fieldNames = { identifier: "value", label: "name", items: [] };
+        fieldNames.items.push({ "name": "Select an Attribute", "value": "Select an Attribute"});
+
         for(attrIndex = 0; attrIndex < attributes.length; attrIndex++){
           fieldNames.items.push({ "name": attributes[attrIndex], "value": attributes[attrIndex] });
         }
@@ -162,19 +177,21 @@ function(declare,
           },
           onChange: function(){
             // Render CSS Styles of map on change with getData
-            fieldSelect.on("change", getData(this.item.name[0],URL[0]));
+            domConstruct.empty("legendWrapper");
+            fieldSelect.on("change", getData(this.item.name[0],URL[0], ID, layer_name));
+            // domConstruct.create("p", { class:"attr_description", innerHTML: "Description: <br /> This is an attribute"}, dom.byId("fieldWrapper"));
           } 
-       }, domConstruct.create("div", null, dom.byId("fieldWrapper")));
+       }, domConstruct.create("div", { class:"selectBox" }, dom.byId("fieldWrapper")));
       }, function(err) {
         console.log("failed to get field names: ", err);
       });
 
-      function getData(field,URL) {
+      function getData(field,URL,ID, layer_name) {
         // Apply Render
-        applyRenderer(field,URL)
+        applyRenderer(field,URL,ID, layer_name)
       }
 
-      function applyRenderer(field,URL) {
+      function applyRenderer(field,URL, ID, layer_name) {
         // Get Layer and attribute render information according to URL
         $.getJSON( getJSONPath(), function( data ){
           var renderStyle;
@@ -194,15 +211,28 @@ function(declare,
 
           // Loop through styles of attribute and add to renderer
           for(index = 1; index < renderStyle.length; index++){
-            console.log(renderStyle[index].Name + " " +renderStyle[index].color)
             renderer.addValue(renderStyle[index].Name, new SimpleFillSymbol().setColor(new Color(renderStyle[index].color)));
           }
 
           // Apply to map
-          self.map.getLayer("processed_Farm_land_7151").setRenderer(renderer);
-          self.map.getLayer("processed_Farm_land_7151").redraw();
+          self.map.getLayer(ID).setRenderer(renderer);
+          self.map.getLayer(ID).redraw();
+          applyLegend(ID,layer_name);
         })    
       }
+
+      //Apply the legend after rendering the attributes
+      function applyLegend(ID, layer_name){
+        var legend = new Legend({
+          map : self.map,
+          layerInfos : [{
+              layer : self.map.getLayer(ID[0]),
+              title : layer_name[0]
+          }]
+        }, domConstruct.create("div", { class:"attr_legend" }, dom.byId("legendWrapper")));
+        legend.startup();
+      }
+
       function errorHandler(err) {
         // console.log("Something broke, error: ", err);
         console.log("error: ", JSON.stringify(err));
