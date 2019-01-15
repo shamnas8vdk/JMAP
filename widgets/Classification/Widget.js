@@ -15,6 +15,8 @@ define(['dojo/_base/declare',
          'dijit/form/FilteringSelect',
          'dojo/dom-construct',
          'esri/layers/FeatureLayer',
+         'esri/layers/ArcGISTiledMapServiceLayer',
+         'esri/layers/ArcGISDynamicMapServiceLayer',
          'esri/layers/LayerDrawingOptions' ,
          'esri/symbols/SimpleLineSymbol',
          'esri/renderers/UniqueValueRenderer',
@@ -37,6 +39,8 @@ function(declare,
          FilteringSelect,
          domConstruct,
          FeatureLayer,
+         ArcGISTiledMapServiceLayer,
+         ArcGISDynamicMapServiceLayer,
          LayerDrawingOptions,
          SimpleLineSymbol,
          UniqueValueRenderer,
@@ -65,7 +69,7 @@ function(declare,
       //this.mapIdNode.innerHTML = 'map id:' + this.map.id;
       console.log(this.map);
       // get field info
-      debugger;
+      // debugger;
     //   var layer = new FeatureLayer("https://services1.arcgis.com/6txKVziKkZ2VHz7Z/ArcGIS/rest/services/processed_Farm_land/FeatureServer/0", {
     //     "id": "Washington",
     //  });
@@ -113,7 +117,12 @@ function(declare,
         var index = this.item._0;
         domConstruct.empty("fieldWrapper");
         domConstruct.empty("legendWrapper");
+
         if(index != 0){
+          // Add the layer so it will appear in layerlist widget
+          addLayer(layerNames.items[index].URL[0],layerNames.items[index].ID[0])
+
+          // Toggle list of attributes dropdown
           toggleAttributeFields(layerNames.items[index].attributes, layerNames.items[index].URL, 
             layerNames.items[index].ID, layerNames.items[index].width, layerNames.items[index].fontSize, 
             layerNames.items[index].color, layerNames.items[index].name);
@@ -135,6 +144,15 @@ function(declare,
       return JSONpath;
     }
 
+    // Add Layer
+    function addLayer(URL,ID){
+      var selectedLayer = new FeatureLayer(URL, {
+        id: ID,
+        visible: true
+      });
+      self.map.addLayer(selectedLayer);
+    }
+
     // Display dropdown of all attributes and set render styles
     function toggleAttributeFields(attributes, URL, ID, width, font, color, layer_name){
       // Create new "div" element for innerHTML label
@@ -151,15 +169,18 @@ function(declare,
 
       // Set the dropdown fields for attributes
       countyFields.then(function(resp) {
-
+        // console.log(resp.drawingInfo.renderer.uniqueValueInfos);
         // Store information of each attribute in arrays
         var fieldNames, fieldStore;
         fieldNames = { identifier: "value", label: "name", items: [] };
         fieldNames.items.push({ "name": "Select an Attribute", "value": "Select an Attribute"});
 
-        for(attrIndex = 0; attrIndex < attributes.length; attrIndex++){
-          fieldNames.items.push({ "name": attributes[attrIndex], "value": attributes[attrIndex] });
-        }
+        arrayUtils.forEach(resp.fields, function(attribute) {
+          if(attributes.indexOf(attribute.name) > -1){
+            fieldNames.items.push({ "name": attribute.name, "value": attribute.name });
+          }
+        })
+
         fieldStore = new ItemFileReadStore({ data: fieldNames });
 
         // Declare new FilteringSelect object for dropdown and initialize fields
@@ -181,7 +202,7 @@ function(declare,
 
             // Render CSS Styles of map on change with getData
             if(index != 0){
-              fieldSelect.on("change", getData(this.item.name[0],URL[0], ID, layer_name));
+              fieldSelect.on("change", getData(this.item.name[0],URL[0], ID, layer_name,resp.drawingInfo.renderer.uniqueValueInfos));
             }
           } 
        }, domConstruct.create("div", { class:"selectBox" }, dom.byId("fieldWrapper")));
@@ -189,15 +210,18 @@ function(declare,
         console.log("failed to get field names: ", err);
       });
 
-      function getData(field,URL,ID, layer_name) {
+      function getData(field,URL,ID, layer_name,style) {
         // Apply Render
-        applyRenderer(field,URL,ID, layer_name)
+        applyRenderer(field,URL,ID, layer_name,style)
       }
 
-      function applyRenderer(field,URL, ID, layer_name) {
+      function applyRenderer(field, URL, ID, layer_name,styles) {
+
         // Get Layer and attribute render information according to URL
         $.getJSON( getJSONPath(), function( data ){
           var renderStyle;
+
+          // Get render styles of the selected attribute
           arrayUtils.forEach(data.layers, function(layer) {
             if(layer.URL == URL){
               arrayUtils.forEach(layer.Attributes, function(attribute) {
@@ -212,12 +236,17 @@ function(declare,
           var defaultSymbol = new SimpleFillSymbol().setColor(new Color(renderStyle[0].color));
           var renderer = new UniqueValueRenderer(defaultSymbol, field);
 
-          // Loop through styles of attribute and add to renderer
-          for(index = 1; index < renderStyle.length; index++){
-            renderer.addValue(renderStyle[index].Name, new SimpleFillSymbol().setColor(new Color(renderStyle[index].color)));
-          }
+          // Loop through styles of attribute, make sure they exists in the styles of the chosen attribute
+          arrayUtils.forEach(styles, function(style) {
+            for(index = 1; index < renderStyle.length; index++){
+              if(style.label == renderStyle[index].Name){
+                renderer.addValue(renderStyle[index].Name, new SimpleFillSymbol().setColor(new Color(renderStyle[index].color)));
+                break;
+              }
+            }
+          })
 
-          // Apply to map
+          // Apply to map and startup legend
           self.map.getLayer(ID).setRenderer(renderer);
           self.map.getLayer(ID).redraw();
           applyLegend(ID,layer_name);
