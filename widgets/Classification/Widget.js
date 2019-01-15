@@ -16,7 +16,7 @@ define(['dojo/_base/declare',
          'dojo/dom-construct',
          'esri/layers/FeatureLayer',
          'esri/layers/ArcGISTiledMapServiceLayer',
-         'esri/layers/ArcGISDynamicMapServiceLayer',
+         'esri/layers/MapImageLayer',
          'esri/layers/LayerDrawingOptions' ,
          'esri/symbols/SimpleLineSymbol',
          'esri/renderers/UniqueValueRenderer',
@@ -38,7 +38,7 @@ function(declare,
          arrayUtils,
          FilteringSelect,
          domConstruct,
-         FeatureLayer,
+         MapImageLayer,
          ArcGISTiledMapServiceLayer,
          ArcGISDynamicMapServiceLayer,
          LayerDrawingOptions,
@@ -46,6 +46,7 @@ function(declare,
          UniqueValueRenderer,
          Legend,
          LayerInfos) {
+        var currentLayer = null;
   //To create a widget, you need to derive from BaseWidget.
   return declare([BaseWidget], {
     // DemoWidget code goes here
@@ -54,6 +55,7 @@ function(declare,
     //templateString: template,
     
     baseClass: 'jimu-widget-demo',
+    currentLayer: null,
 
     postCreate: function() {
       this.inherited(arguments);
@@ -67,7 +69,7 @@ function(declare,
       app.defaultFrom = "#ffffcc";
       app.defaultTo = "#006837";
       //this.mapIdNode.innerHTML = 'map id:' + this.map.id;
-      console.log(this.map);
+      // var currentLayer = null;
       // get field info
       // debugger;
     //   var layer = new FeatureLayer("https://services1.arcgis.com/6txKVziKkZ2VHz7Z/ArcGIS/rest/services/processed_Farm_land/FeatureServer/0", {
@@ -113,6 +115,7 @@ function(declare,
           "color": layerNames.items[1].color
       },
       onChange: function(){
+        removeLayer();
         // Get selected index and toggle to show attributes of selected layer
         var index = this.item._0;
         domConstruct.empty("fieldWrapper");
@@ -120,7 +123,7 @@ function(declare,
 
         if(index != 0){
           // Add the layer so it will appear in layerlist widget
-          addLayer(layerNames.items[index].URL[0],layerNames.items[index].ID[0])
+          addLayer(layerNames.items[index].URL[0],layerNames.items[index].ID[0],layerNames.items[index].name)
 
           // Toggle list of attributes dropdown
           toggleAttributeFields(layerNames.items[index].attributes, layerNames.items[index].URL, 
@@ -145,12 +148,20 @@ function(declare,
     }
 
     // Add Layer
-    function addLayer(URL,ID){
-      var selectedLayer = new FeatureLayer(URL, {
-        id: ID,
-        visible: true
+    function addLayer(URL,ID, Name){
+      var selectedLayer = new MapImageLayer(URL,{
+        id: ID
       });
       self.map.addLayer(selectedLayer);
+      console.log(selectedLayer);
+      currentLayer = selectedLayer;
+    }
+
+    // Add Layer
+    function removeLayer(){
+      if(currentLayer != null){
+        self.map.removeLayer(currentLayer);
+      }
     }
 
     // Display dropdown of all attributes and set render styles
@@ -169,6 +180,7 @@ function(declare,
 
       // Set the dropdown fields for attributes
       countyFields.then(function(resp) {
+        console.log(resp.fields);
         // console.log(resp.drawingInfo.renderer.uniqueValueInfos);
         // Store information of each attribute in arrays
         var fieldNames, fieldStore;
@@ -177,7 +189,12 @@ function(declare,
 
         arrayUtils.forEach(resp.fields, function(attribute) {
           if(attributes.indexOf(attribute.name) > -1){
-            fieldNames.items.push({ "name": attribute.name, "value": attribute.name });
+            if(attribute.alias == "" || attribute.alias == null){
+              fieldNames.items.push({ "name": attribute.name, "value": attribute.name });
+            }
+            else{
+              fieldNames.items.push({ "name": attribute.alias, "value": attribute.alias });
+            }
           }
         })
 
@@ -202,7 +219,7 @@ function(declare,
 
             // Render CSS Styles of map on change with getData
             if(index != 0){
-              fieldSelect.on("change", getData(this.item.name[0],URL[0], ID, layer_name,resp.drawingInfo.renderer.uniqueValueInfos));
+              fieldSelect.on("change", getData(this.item.name[0],URL[0], ID, layer_name));
             }
           } 
        }, domConstruct.create("div", { class:"selectBox" }, dom.byId("fieldWrapper")));
@@ -210,12 +227,12 @@ function(declare,
         console.log("failed to get field names: ", err);
       });
 
-      function getData(field,URL,ID, layer_name,style) {
+      function getData(field,URL,ID, layer_name) {
         // Apply Render
-        applyRenderer(field,URL,ID, layer_name,style)
+        applyRenderer(field,URL,ID, layer_name)
       }
 
-      function applyRenderer(field, URL, ID, layer_name,styles) {
+      function applyRenderer(field, URL, ID, layer_name) {
 
         // Get Layer and attribute render information according to URL
         $.getJSON( getJSONPath(), function( data ){
@@ -225,7 +242,7 @@ function(declare,
           arrayUtils.forEach(data.layers, function(layer) {
             if(layer.URL == URL){
               arrayUtils.forEach(layer.Attributes, function(attribute) {
-                if(attribute.Name == field){
+                if(attribute.Name == field || attribute.Alias == field){
                   renderStyle = attribute.Render_style;
                 }
               })
@@ -237,14 +254,9 @@ function(declare,
           var renderer = new UniqueValueRenderer(defaultSymbol, field);
 
           // Loop through styles of attribute, make sure they exists in the styles of the chosen attribute
-          arrayUtils.forEach(styles, function(style) {
-            for(index = 1; index < renderStyle.length; index++){
-              if(style.label == renderStyle[index].Name){
-                renderer.addValue(renderStyle[index].Name, new SimpleFillSymbol().setColor(new Color(renderStyle[index].color)));
-                break;
-              }
-            }
-          })
+          for(index = 1; index < renderStyle.length; index++){
+            renderer.addValue(renderStyle[index].Name, new SimpleFillSymbol().setColor(new Color(renderStyle[index].color)));
+          }
 
           // Apply to map and startup legend
           self.map.getLayer(ID).setRenderer(renderer);
@@ -358,6 +370,10 @@ function(declare,
     },
 
     onClose: function(){
+      if(currentLayer != null){
+        self.map.removeLayer(currentLayer);
+        currentLayer = null;
+      }
       console.log('onClose');
     },
 

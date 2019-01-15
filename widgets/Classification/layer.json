@@ -1,326 +1,183 @@
 {
   "layers": [
     {
-      "URL": "https://services1.arcgis.com/6txKVziKkZ2VHz7Z/ArcGIS/rest/services/processed_Farm_land/FeatureServer/0",
-      "Name": "Processed_Farm_Land",
-      "ID": "processed_Farm_land_7151",
+      "URL": "https://services2.arcgis.com/4WiMNWDUQZIvdL5U/ArcGIS/rest/services/SadiqueDemoMap/FeatureServer/1",
+      "Name": "SadiqueDemoMap",
+      "ID": "Map_Server_1",
       "Attributes": [
         {
-          "Name": "FID",
+          "Name": "OBJECTID",
+          "Alias": "FID",
           "Render_style": [
             {
               "Name": "Default",
               "color": [127, 127, 127, 0.5]
             },
             {
-              "Name": "Pineapple",
-              "color": [255, 0, 0, 0.5]
-            },
-            {
-              "Name": "Maize",
-              "color": [0, 255, 0, 0.5]
-            },
-            {
-              "Name": "Tea",
-              "color": [0, 0, 255, 0.5]
-            },
-            {
-              "Name": "Irrigated",
-              "color": [255, 0, 255, 0.5]
-            },
-            {
-              "Name": "Rainfed",
-              "color": [255, 255, 255, 0.75]
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
             }
           ]
         },
         {
-          "Name": "Crops",
+          "Name": "ID",
+          "Alias": "ID",
           "Render_style": [
             {
               "Name": "Default",
               "color": [127, 127, 127, 0.5]
             },
             {
-              "Name": "Pineapple",
-              "color": [255, 0, 0, 0.5]
-            },
-            {
-              "Name": "Maize",
-              "color": [0, 255, 0, 0.5]
-            },
-            {
-              "Name": "Tea",
-              "color": [0, 0, 255, 0.5]
-            },
-            {
-              "Name": "Irrigated",
-              "color": [255, 0, 255, 0.5]
-            },
-            {
-              "Name": "Rainfed",
-              "color": [255, 255, 255, 0.75]
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
             }
           ]
         },
         {
-          "Name": "Main_Crop",
+          "Name": "SPARE",
+          "Alias": "SPARE",
           "Render_style": [
             {
               "Name": "Default",
               "color": [127, 127, 127, 0.5]
             },
             {
-              "Name": "Pineapple",
-              "color": [255, 0, 0, 0.5]
-            },
-            {
-              "Name": "Maize",
-              "color": [0, 255, 0, 0.5]
-            },
-            {
-              "Name": "Tea",
-              "color": [0, 0, 255, 0.5]
-            },
-            {
-              "Name": "Irrigated",
-              "color": [255, 0, 255, 0.5]
-            },
-            {
-              "Name": "Rainfed",
-              "color": [255, 255, 255, 0.75]
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
             }
           ]
         },
         {
-          "Name": "Other_Crop",
+          "Name": "AREA",
+          "Alias": "AREA",
           "Render_style": [
             {
               "Name": "Default",
               "color": [127, 127, 127, 0.5]
             },
             {
-              "Name": "Pineapple",
-              "color": [255, 0, 0, 0.5]
-            },
-            {
-              "Name": "Maize",
-              "color": [0, 255, 0, 0.5]
-            },
-            {
-              "Name": "Tea",
-              "color": [0, 0, 255, 0.5]
-            },
-            {
-              "Name": "Irrigated",
-              "color": [255, 0, 255, 0.5]
-            },
-            {
-              "Name": "Rainfed",
-              "color": [255, 255, 255, 0.75]
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
             }
           ]
         },
         {
-          "Name": "County_Nam",
+          "Name": "Status",
+          "Alias": "Status",
           "Render_style": [
             {
               "Name": "Default",
               "color": [127, 127, 127, 0.5]
             },
             {
-              "Name": "Pineapple",
+              "Name": "Stenciled",
               "color": [255, 0, 0, 0.5]
             },
             {
-              "Name": "Maize",
+              "Name": "Not Stenciled",
               "color": [0, 255, 0, 0.5]
-            },
-            {
-              "Name": "Tea",
-              "color": [0, 0, 255, 0.5]
-            },
-            {
-              "Name": "Irrigated",
-              "color": [255, 0, 255, 0.5]
-            },
-            {
-              "Name": "Rainfed",
-              "color": [255, 255, 255, 0.75]
             }
           ]
         },
         {
-          "Name": "Watering",
+          "Name": "New_Prop_Address",
+          "Alias": "Prop_Address",
           "Render_style": [
             {
               "Name": "Default",
               "color": [127, 127, 127, 0.5]
             },
             {
-              "Name": "Pineapple",
-              "color": [255, 0, 0, 0.5]
-            },
-            {
-              "Name": "Maize",
-              "color": [0, 255, 0, 0.5]
-            },
-            {
-              "Name": "Tea",
-              "color": [0, 0, 255, 0.5]
-            },
-            {
-              "Name": "Irrigated",
-              "color": [255, 0, 255, 0.5]
-            },
-            {
-              "Name": "Rainfed",
-              "color": [255, 255, 255, 0.75]
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
             }
           ]
         },
         {
-          "Name": "Area_Km2",
+          "Name": "Street_Name",
+          "Alias": "Street_Name",
           "Render_style": [
             {
               "Name": "Default",
               "color": [127, 127, 127, 0.5]
             },
             {
-              "Name": "Pineapple",
-              "color": [255, 0, 0, 0.5]
-            },
-            {
-              "Name": "Maize",
-              "color": [0, 255, 0, 0.5]
-            },
-            {
-              "Name": "Tea",
-              "color": [0, 0, 255, 0.5]
-            },
-            {
-              "Name": "Irrigated",
-              "color": [255, 0, 255, 0.5]
-            },
-            {
-              "Name": "Rainfed",
-              "color": [255, 255, 255, 0.75]
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
             }
           ]
         },
         {
-          "Name": "Farm_Owner",
-         "Render_style": [
-            {
-              "Name": "Default",
-              "color": [127, 127, 127, 0.5]
-            },
-            {
-              "Name": "Pineapple",
-              "color": [255, 0, 0, 0.5]
-            },
-            {
-              "Name": "Maize",
-              "color": [0, 255, 0, 0.5]
-            },
-            {
-              "Name": "Tea",
-              "color": [0, 0, 255, 0.5]
-            },
-            {
-              "Name": "Irrigated",
-              "color": [255, 0, 255, 0.5]
-            },
-            {
-              "Name": "Rainfed",
-              "color": [255, 255, 255, 0.75]
-            }
-          ]
-        },
-        {
-          "Name": "Farm_mgr",
+          "Name": "Supervisor",
+          "Alias": "Supervisor",
           "Render_style": [
             {
               "Name": "Default",
               "color": [127, 127, 127, 0.5]
             },
             {
-              "Name": "Pineapple",
+              "Name": "Caesar",
               "color": [255, 0, 0, 0.5]
             },
             {
-              "Name": "Maize",
+              "Name": "Mohammed",
               "color": [0, 255, 0, 0.5]
-            },
-            {
-              "Name": "Tea",
-              "color": [0, 0, 255, 0.5]
-            },
-            {
-              "Name": "Irrigated",
-              "color": [255, 0, 255, 0.5]
-            },
-            {
-              "Name": "Rainfed",
-              "color": [255, 255, 255, 0.75]
             }
           ]
         },
         {
-          "Name": "Farm_Id",
+          "Name": "Remarks",
+          "Alias": "Remarks",
           "Render_style": [
             {
               "Name": "Default",
               "color": [127, 127, 127, 0.5]
             },
             {
-              "Name": "Pineapple",
-              "color": [255, 0, 0, 0.5]
-            },
-            {
-              "Name": "Maize",
-              "color": [0, 255, 0, 0.5]
-            },
-            {
-              "Name": "Tea",
-              "color": [0, 0, 255, 0.5]
-            },
-            {
-              "Name": "Irrigated",
-              "color": [255, 0, 255, 0.5]
-            },
-            {
-              "Name": "Rainfed",
-              "color": [255, 255, 255, 0.75]
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
             }
           ]
         },
         {
-          "Name": "Soil_type",
+          "Name": "GlobalID",
+          "Alias": "GlobalID",
           "Render_style": [
             {
               "Name": "Default",
               "color": [127, 127, 127, 0.5]
             },
             {
-              "Name": "Pineapple",
-              "color": [255, 0, 0, 0.5]
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
+            }
+          ]
+        },
+        {
+          "Name": "Shape__Area",
+          "Alias": "Shape__Area",
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
             },
             {
-              "Name": "Maize",
-              "color": [0, 255, 0, 0.5]
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
+            }
+          ]
+        },
+        {
+          "Name": "Shape__Length",
+          "Alias": "Shape__Length",
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
             },
             {
-              "Name": "Tea",
-              "color": [0, 0, 255, 0.5]
-            },
-            {
-              "Name": "Irrigated",
-              "color": [255, 0, 255, 0.5]
-            },
-            {
-              "Name": "Rainfed",
-              "color": [255, 255, 255, 0.75]
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
             }
           ]
         }
@@ -332,181 +189,183 @@
       }
     },
     {
-      "URL": "https://services1.arcgis.com/6txKVziKkZ2VHz7Z/ArcGIS/rest/services/processed_Farm_land/FeatureServer/0",
-      "Name": "Processed_Urban_Land",
-      "ID": "processed_Farm_land_7151",
+      "URL": "https://services2.arcgis.com/4WiMNWDUQZIvdL5U/ArcGIS/rest/services/SadiqueDemoMap/FeatureServer/1",
+      "Name": "SadiqueDemoMap2",
+      "ID": "Map_Server_2",
       "Attributes": [
         {
-          "Name": "FID",
+          "Name": "OBJECTID",
+          "Alias": "FID",
           "Render_style": [
             {
               "Name": "Default",
               "color": [127, 127, 127, 0.5]
             },
             {
-              "Name": "Pineapple",
-              "color": [255, 0, 0, 0.5]
-            },
-            {
-              "Name": "Maize",
-              "color": [0, 255, 0, 0.5]
-            },
-            {
-              "Name": "Tea",
-              "color": [0, 0, 255, 0.5]
-            },
-            {
-              "Name": "Irrigated",
-              "color": [255, 0, 255, 0.5]
-            },
-            {
-              "Name": "Rainfed",
-              "color": [255, 255, 255, 0.75]
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
             }
           ]
         },
         {
-          "Name": "Crops",
+          "Name": "ID",
+          "Alias": "ID",
           "Render_style": [
             {
               "Name": "Default",
               "color": [127, 127, 127, 0.5]
             },
             {
-              "Name": "Pineapple",
-              "color": [255, 0, 0, 0.5]
-            },
-            {
-              "Name": "Maize",
-              "color": [0, 255, 0, 0.5]
-            },
-            {
-              "Name": "Tea",
-              "color": [0, 0, 255, 0.5]
-            },
-            {
-              "Name": "Irrigated",
-              "color": [255, 0, 255, 0.5]
-            },
-            {
-              "Name": "Rainfed",
-              "color": [255, 255, 255, 0.75]
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
             }
           ]
         },
         {
-          "Name": "Main_Crop",
+          "Name": "SPARE",
+          "Alias": "SPARE",
           "Render_style": [
             {
               "Name": "Default",
               "color": [127, 127, 127, 0.5]
             },
             {
-              "Name": "Pineapple",
-              "color": [255, 0, 0, 0.5]
-            },
-            {
-              "Name": "Maize",
-              "color": [0, 255, 0, 0.5]
-            },
-            {
-              "Name": "Tea",
-              "color": [0, 0, 255, 0.5]
-            },
-            {
-              "Name": "Irrigated",
-              "color": [255, 0, 255, 0.5]
-            },
-            {
-              "Name": "Rainfed",
-              "color": [255, 255, 255, 0.75]
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
             }
           ]
         },
         {
-          "Name": "Other_Crop",
+          "Name": "AREA",
+          "Alias": "AREA",
           "Render_style": [
             {
               "Name": "Default",
               "color": [127, 127, 127, 0.5]
             },
             {
-              "Name": "Pineapple",
-              "color": [255, 0, 0, 0.5]
-            },
-            {
-              "Name": "Maize",
-              "color": [0, 255, 0, 0.5]
-            },
-            {
-              "Name": "Tea",
-              "color": [0, 0, 255, 0.5]
-            },
-            {
-              "Name": "Irrigated",
-              "color": [255, 0, 255, 0.5]
-            },
-            {
-              "Name": "Rainfed",
-              "color": [255, 255, 255, 0.75]
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
             }
           ]
         },
         {
-          "Name": "County_Nam",
+          "Name": "Status",
+          "Alias": "Status",
           "Render_style": [
             {
               "Name": "Default",
               "color": [127, 127, 127, 0.5]
             },
             {
-              "Name": "Pineapple",
+              "Name": "Stenciled",
               "color": [255, 0, 0, 0.5]
             },
             {
-              "Name": "Maize",
+              "Name": "Not Stenciled",
               "color": [0, 255, 0, 0.5]
-            },
-            {
-              "Name": "Tea",
-              "color": [0, 0, 255, 0.5]
-            },
-            {
-              "Name": "Irrigated",
-              "color": [255, 0, 255, 0.5]
-            },
-            {
-              "Name": "Rainfed",
-              "color": [255, 255, 255, 0.75]
             }
           ]
         },
         {
-          "Name": "Watering",
+          "Name": "New_Prop_Address",
+          "Alias": "Prop_Address",
           "Render_style": [
             {
               "Name": "Default",
               "color": [127, 127, 127, 0.5]
             },
             {
-              "Name": "Pineapple",
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
+            }
+          ]
+        },
+        {
+          "Name": "Street_Name",
+          "Alias": "Street_Name",
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
+            }
+          ]
+        },
+        {
+          "Name": "Supervisor",
+          "Alias": "Supervisor",
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "Caesar",
               "color": [255, 0, 0, 0.5]
             },
             {
-              "Name": "Maize",
+              "Name": "Mohammed",
               "color": [0, 255, 0, 0.5]
+            }
+          ]
+        },
+        {
+          "Name": "Remarks",
+          "Alias": "Remarks",
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
             },
             {
-              "Name": "Tea",
-              "color": [0, 0, 255, 0.5]
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
+            }
+          ]
+        },
+        {
+          "Name": "GlobalID",
+          "Alias": "GlobalID",
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
             },
             {
-              "Name": "Irrigated",
-              "color": [255, 0, 255, 0.5]
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
+            }
+          ]
+        },
+        {
+          "Name": "Shape__Area",
+          "Alias": "Shape__Area",
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
             },
             {
-              "Name": "Rainfed",
-              "color": [255, 255, 255, 0.75]
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
+            }
+          ]
+        },
+        {
+          "Name": "Shape__Length",
+          "Alias": "Shape__Length",
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
             }
           ]
         }
