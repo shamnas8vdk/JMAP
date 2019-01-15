@@ -26,5 +26,7 @@ If application is still using webappbuilder to configure widgets, themes and so 
 
 ## Using JSON file to loop through categories in Classification Widget
 1. Replace the widget.js file with the widget.js file in this repo under widgets/Classification
-1. Replace the widget.html file with the widget.html file in this repo under widgets/Classification
-2. Copy paste layer.json from the repo into the same directory as List.js
+2. Replace the widget.html file with the widget.html file in this repo under widgets/Classification
+3. Copy paste layer.json from the repo into the same directory as List.js
+4. Change the JSON id of layers to view add layers function
+
