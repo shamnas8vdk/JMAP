@@ -19,6 +19,7 @@ define(['dojo/_base/declare',
          'esri/layers/MapImageLayer',
          'esri/layers/LayerDrawingOptions' ,
          'esri/symbols/SimpleLineSymbol',
+         'esri/renderers/ClassBreaksRenderer',
          'esri/renderers/UniqueValueRenderer',
          'esri/dijit/Legend',
          'jimu/LayerInfos/LayerInfos'
@@ -43,6 +44,7 @@ function(declare,
          ArcGISDynamicMapServiceLayer,
          LayerDrawingOptions,
          SimpleLineSymbol,
+         ClassBreaksRenderer,
          UniqueValueRenderer,
          Legend,
          LayerInfos) {
@@ -115,7 +117,7 @@ function(declare,
           "color": layerNames.items[1].color
       },
       onChange: function(){
-        removeLayer();
+        // removeLayer();
         // Get selected index and toggle to show attributes of selected layer
         var index = this.item._0;
         domConstruct.empty("fieldWrapper");
@@ -123,7 +125,7 @@ function(declare,
 
         if(index != 0){
           // Add the layer so it will appear in layerlist widget
-          addLayer(layerNames.items[index].URL[0],layerNames.items[index].ID[0],layerNames.items[index].name)
+          // addLayer(layerNames.items[index].URL[0],layerNames.items[index].ID[0],layerNames.items[index].name)
 
           // Toggle list of attributes dropdown
           toggleAttributeFields(layerNames.items[index].attributes, layerNames.items[index].URL, 
@@ -237,6 +239,10 @@ function(declare,
         // Get Layer and attribute render information according to URL
         $.getJSON( getJSONPath(), function( data ){
           var renderStyle;
+          var renderer;
+          var isBreak;
+          var defaultSymbol
+          var attr_name;
 
           // Get render styles of the selected attribute
           arrayUtils.forEach(data.layers, function(layer) {
@@ -244,19 +250,51 @@ function(declare,
               arrayUtils.forEach(layer.Attributes, function(attribute) {
                 if(attribute.Name == field || attribute.Alias == field){
                   renderStyle = attribute.Render_style;
+                  isBreak = attribute.isBreak;
+                  attr_name = attribute.Name;
                 }
               })
             }
           })
 
-          // Render default style of map
-          var defaultSymbol = new SimpleFillSymbol().setColor(new Color(renderStyle[0].color));
-          var renderer = new UniqueValueRenderer(defaultSymbol, field);
+          if(isBreak){
+            var symbol = new SimpleFillSymbol();
+            symbol.setColor(new Color([150, 150, 150, 0.5]));
+            // symbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([255,0,0]), 0));
+            // defaultSymbol = new SimpleFillSymbol().setColor(new Color([127, 127, 127, 0.5]));
+            renderer = new ClassBreaksRenderer(symbol, attr_name);
 
-          // Loop through styles of attribute, make sure they exists in the styles of the chosen attribute
-          for(index = 1; index < renderStyle.length; index++){
-            renderer.addValue(renderStyle[index].Name, new SimpleFillSymbol().setColor(new Color(renderStyle[index].color)));
+            // Loop through styles of attribute, make sure they exists in the styles of the chosen attribute
+            for(index = 0; index < renderStyle.length; index++){
+              var field_symbol= new SimpleFillSymbol();
+              field_symbol.setColor(new Color(renderStyle[index].color));
+              // Uncomment to remove border
+              // field_symbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color(renderStyle[index].color), 2));
+              renderer.addBreak(renderStyle[index].From, renderStyle[index].To, field_symbol);
+            }
           }
+          else{
+            var defaultSymbol = new SimpleFillSymbol().setColor(new Color([127, 127, 127, 0.5]));
+            renderer = new UniqueValueRenderer(defaultSymbol, field);
+
+            // Loop through styles of attribute, make sure they exists in the styles of the chosen attribute
+            for(index = 1; index < renderStyle.length; index++){
+              renderer.addValue(renderStyle[index].Name, new SimpleFillSymbol().setColor(new Color(renderStyle[index].color)));
+            }
+          }
+
+        // Add five breaks to the renderer.
+        // If you have ESRI's ArcMap available, this can be a good way to determine break values.
+        // You can also copy the RGB values from the color schemes ArcMap applies, or use colors
+        // from a site like www.colorbrewer.org
+        //
+        // alternatively, ArcGIS Server's generate renderer task could be used
+        // var renderer = new ClassBreaksRenderer(symbol, "POP07_SQMI");
+        // renderer.addBreak(0, 25, new SimpleFillSymbol().setColor(new Color([56, 168, 0, 0.5])));
+        // renderer.addBreak(25, 75, new SimpleFillSymbol().setColor(new Color([139, 209, 0, 0.5])));
+        // renderer.addBreak(75, 175, new SimpleFillSymbol().setColor(new Color([255, 255, 0, 0.5])));
+        // renderer.addBreak(175, 400, new SimpleFillSymbol().setColor(new Color([255, 128, 0, 0.5])));
+        // renderer.addBreak(400, Infinity, new SimpleFillSymbol().setColor(new Color([255, 0, 0, 0.5])));
 
           // Apply to map and startup legend
           self.map.getLayer(ID).setRenderer(renderer);
@@ -370,10 +408,10 @@ function(declare,
     },
 
     onClose: function(){
-      if(currentLayer != null){
-        self.map.removeLayer(currentLayer);
-        currentLayer = null;
-      }
+      // if(currentLayer != null){
+      //   self.map.removeLayer(currentLayer);
+      //   currentLayer = null;
+      // }
       console.log('onClose');
     },
 
