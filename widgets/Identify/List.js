@@ -23,10 +23,13 @@ define(['dojo/_base/declare',
     'dojo/dom-attr',
     'dojo/_base/array',
     'dojo/query',
+    'dojo/NodeList-traverse',
+    'dojo/dom',
     'dojo/dom-class',
     'dojo/dom-style',
     'dojo/Evented',
     'esri/symbols/jsonUtils',
+    'esri/config',
     './customConfig'
   ],
   function(declare,
@@ -38,10 +41,13 @@ define(['dojo/_base/declare',
     domAttr,
     array,
     query,
+    traverse,
+    dom,
     domClass,
     domStyle,
     Evented,
     jsonUtils,
+    esriconfig,
     customConfig) {
     return declare([_WidgetBase, Evented], {
 
@@ -57,6 +63,7 @@ define(['dojo/_base/declare',
         this.selectedIndex = -1;
         this._selectedNode = null;
         this._listContainer = domConstruct.create('div');
+        console.log(this.category);
         domClass.add(this._listContainer, 'identify-list-container');
         this.own(on(this._listContainer, 'click', lang.hitch(this, this._onClick)));
         this.own(on(this._listContainer, 'mouseover', lang.hitch(this, this._onMouseOver)));
@@ -77,6 +84,7 @@ define(['dojo/_base/declare',
         if (arguments.length === 0) {
           return;
         }
+        console.log(item);
         this.items.push(item);
         var div = domConstruct.create('div');
         domAttr.set(div, 'id', this.id.toLowerCase()+item.id);
@@ -99,9 +107,8 @@ define(['dojo/_base/declare',
         domAttr.set(removeDivImg, 'title', item.removeResultMsg);
         this.own(on(removeDivImg, 'click', lang.hitch(this, this._onRemove)));
 
-        var rTitle = domConstruct.create('p');
+        var rTitle = domConstruct.create('p', { class:"title" });
         domAttr.set(rTitle, 'id', this.id.toLowerCase()+item.id);
-        domClass.add(rTitle, 'title');
         rTitle.textContent = rTitle.innerText = item.title;
         domConstruct.place(rTitle, div);
         if(item.alt){
@@ -175,36 +182,40 @@ define(['dojo/_base/declare',
 
         //Create a button for each category with the corresponding style
         function setCategoryButton(){
-          var category = domConstruct.create('button');
+          var category = domConstruct.create('div', { class:"toggle" });
           domStyle.set(category,  {
-            background: '#008CBA',
+            background: '#585858',
             color: 'white',
             border: 'none',
-            marginBottom: '10px',
+            // marginBottom: '10px',
             textDecoration: 'none',
             display: 'inline-block',
-            padding: '15px 15px',
+            padding: '8px 8px',
           });
-          return category
+          return category;
         }
 
         //Create a container for each category to encapsulate related data
         function setContainer(CategoryNo, category, data){
           var container = domConstruct.create('container');
+          var categoryContainer = domConstruct.create('div', { class:"category" });
+          var attributeContainer = domConstruct.create('div', { class:"attribute" });
           category.textContent = data.categories.type[CategoryNo].Heading;
-          domAttr.set(container, 'id', "container"+CategoryNo);
-
+          // domAttr.set(container, 'id', "container"+CategoryNo);
           //Set onclick event callback for category button
           on(category, 'click', function(evt){
-            if(container.style.display == "none") {
-              domStyle.set(container, "display", "block");
+            category.classList.toggle("active");
+            if(attributeContainer.style.display == "none") {
+              domStyle.set(attributeContainer, "display", "block");
             }
             else
-              domStyle.set(container, "display", "none");
+              domStyle.set(attributeContainer, "display", "none");
           });
-          domConstruct.place(category, div);
-          domConstruct.place(container, div);
-          domConstruct.place("<br/>", div);
+
+          domConstruct.place(category, categoryContainer);
+          domConstruct.place(container, attributeContainer);
+          domConstruct.place(attributeContainer, categoryContainer);
+          domConstruct.place(categoryContainer, div);
           return container;
         }
 
@@ -237,6 +248,7 @@ define(['dojo/_base/declare',
           label = domConstruct.create('p');
           breakline = domConstruct.create('br');
           domAttr.set(label, 'id', ID.toLowerCase()+itemID);
+          domStyle.set(attTitle, 'padding-left', '3%');
           domClass.add(label, 'label');
           attVal = domConstruct.create('font');
 
@@ -271,7 +283,6 @@ define(['dojo/_base/declare',
               check = false
             }
           } 
-          console.log(attribute +" "+ CategoryNo+ " "+check);
           return check;
         }
         // ----------- End of Junwei's section ------ //
