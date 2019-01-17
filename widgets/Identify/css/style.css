@@ -815,13 +815,15 @@
 }
 
 .toggle:after {
-  content: '\2212'; 
-  font-size: 20px;
+  content: '▲'; 
+  font-size: 10px;
   color: white;
   float: right;
   margin-left: 5px;
+  /* content: '\2212▼';  */
 }
 
 .active:after {
-  content: "\002B";
+  content: "▼";
+  /* "\002B" */
 }

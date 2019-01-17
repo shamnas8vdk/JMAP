@@ -123,7 +123,7 @@ body .article h1 {
   position: absolute;
   left: 0;
   top: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: white;
 }
 .form:before {
   content: "";
@@ -159,7 +159,7 @@ body .article h1 {
   right: 20px;
   height: 43px;
   opacity: 0.2;
-  background-color: white;
+  background-color: gray;
   border-top-left-radius: 0px;
   border-bottom-left-radius: 0px;
   border-top-right-radius: 6px;
@@ -180,16 +180,13 @@ body .article h1 {
   border-bottom-right-radius: 6px;
   font-size: 1rem;
   background: transparent;
-  border-top: 1px solid rgba(255, 255, 255, 0.4);
-  border-left: 1px solid rgba(255, 255, 255, 0.4);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-  border-right: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid gray;
   margin-bottom: 25px;
-  color: rgba(255, 255, 255, 0.4);
+  color: gray;
   padding: 10px 20px;
 }
 .form .topbar .input::-webkit-input-placeholder {
-  color: white;
+  color: black;
   font-size: 1.2rem;
   font-family: Raleway;
   line-height: 1.3rem;
@@ -197,26 +194,26 @@ body .article h1 {
 }
 .form .topbar .input:focus {
   outline: none;
-  color: white;
-  border: 1px solid white;
+  color: black;
+  border: 1px solid gray;
 }
 .form .topbar .input.disabled:hover {
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid gray;
 }
 .form .topbar .input:hover {
-  border: 1px solid white;
+  border: 1px solid black;
 }
 .form .submit {
   padding: 10px 20px;
   width: 100%;
   font-size: 1.2rem;
   font-family: Raleway;
-  font-weight: 200;
+  font-weight: bold;
   display: block;
   color: white;
   position: relative;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  background: rgba(20, 78, 236, 0.6);
+  border: 1px solid gray;
+  background:#1E90FF;
   -moz-border-radius: 6px;
   -webkit-border-radius: 6px;
   border-radius: 6px;
@@ -231,15 +228,15 @@ body .article h1 {
 }
 .form .submit.recover {
   background: #FF2B4B;
-  color: white !important;
-  border: 1px solid white !important;
+  color: gray !important;
+  border: 1px solid gray !important;
   transition: all 400ms linear;
 }
 
 .topbar.error .spanColor {
   width: calc(100% - 39px);
   border-top-left-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid gray;
   border-bottom-left-radius: 6px;
   background-color: #FF2B4B;
 }
@@ -247,11 +244,11 @@ body .article h1 {
   color: white;
 }
 .topbar.error .input {
-  color: rgba(255, 255, 255, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: gray;
+  border: 1px solid gray;
 }
 .topbar.error .input::-webkit-input-placeholder {
-  color: white;
+  color: gray;
 }
 
 .topbar.success .spanColor {
@@ -266,9 +263,9 @@ body .article h1 {
   border: 1px solid white;
 }
 .topbar.success .input {
-  color: white;
+  color: gray;
   border: 1px solid #26C97D;
 }
 .topbar.success .input::-webkit-input-placeholder {
-  color: white;
+  color: gray;
 }
