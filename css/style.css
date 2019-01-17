@@ -116,6 +116,7 @@ body .article h1 {
   -moz-border-radius: 12px;
   -webkit-border-radius: 12px;
   border-radius: 12px;
+  border: 1px solid black;
 }
 .form .forceColor {
   width: 100%;
@@ -123,7 +124,12 @@ body .article h1 {
   position: absolute;
   left: 0;
   top: 0;
-  background-color: white;
+  background-color: rgb(255,255,255,0.8);
+  /* border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+  border: 1px solid rgb(66, 66, 66); */
 }
 .form:before {
   content: "";
@@ -180,7 +186,7 @@ body .article h1 {
   border-bottom-right-radius: 6px;
   font-size: 1rem;
   background: transparent;
-  border: 1px solid gray;
+  border: 1px solid rgb(66, 66, 66);
   margin-bottom: 25px;
   color: gray;
   padding: 10px 20px;
