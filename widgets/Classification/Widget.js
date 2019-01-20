@@ -68,6 +68,8 @@ function(declare,
       this.inherited(arguments);
       var app = {};
       var layerConfig = null;
+      var selectedLayer = null;
+      var selectedAttribute = null;
       self = this;
       app.defaultFrom = "#ffffcc";
       app.defaultTo = "#006837";
@@ -138,11 +140,11 @@ function(declare,
          if(index != 0){
            // Add the layer so it will appear in layerlist widget
            // addLayer(layerNames.items[index].URL[0],layerNames.items[index].ID[0],layerNames.items[index].name)
- 
+           selectedLayer = layerConfig.layers[index-1];
            // Toggle list of attributes dropdown
            toggleAttributeFields(layerNames.items[index].attributes, layerNames.items[index].URL, 
              layerNames.items[index].ID, layerNames.items[index].width, layerNames.items[index].fontSize, 
-             layerNames.items[index].color, layerNames.items[index].name);
+             layerNames.items[index].color, layerNames.items[index].name, index-1);
          }
        } 
        },domConstruct.create("div", { class:"selectBox" }, dom.byId("layerWrapper")));
@@ -179,7 +181,7 @@ function(declare,
     }
 
     // Display dropdown of all attributes and set render styles
-    function toggleAttributeFields(attributes, URL, ID, width, font, color, layer_name){
+    function toggleAttributeFields(attributes, URL, ID, width, font, color, layer_name, index){
       // Create new "div" element for innerHTML label
       domConstruct.create("div", { innerHTML: "Currently selected attribute:", class:"selectLabel" }, dom.byId("fieldWrapper"));
 
@@ -194,21 +196,18 @@ function(declare,
 
       // Set the dropdown fields for attributes
       countyFields.then(function(resp) {
-        console.log(resp.fields);
-        // console.log(resp.drawingInfo.renderer.uniqueValueInfos);
+        // console.log(resp.fields);
+        // console.log(layerConfig.layers[index].Attributes);
         // Store information of each attribute in arrays
         var fieldNames, fieldStore;
+        var attributeIndex = 0;
         fieldNames = { identifier: "value", label: "name", items: [] };
         fieldNames.items.push({ "name": "Select an Attribute", "value": "Select an Attribute"});
 
         arrayUtils.forEach(resp.fields, function(attribute) {
           if(attributes.indexOf(attribute.name) > -1){
-            if(attribute.alias == "" || attribute.alias == null){
-              fieldNames.items.push({ "name": attribute.name, "value": attribute.name });
-            }
-            else{
-              fieldNames.items.push({ "name": attribute.alias, "value": attribute.alias });
-            }
+            fieldNames.items.push({ "name": selectedLayer.Attributes[attributeIndex].Display_Name, "value": attribute.name });
+            attributeIndex++;
           }
         })
 
@@ -233,7 +232,8 @@ function(declare,
 
             // Render CSS Styles of map on change with getData
             if(index != 0){
-              fieldSelect.on("change", getData(this.item.name[0],URL[0], ID, layer_name));
+              selectedAttribute = selectedLayer.Attributes[index-1];
+              fieldSelect.on("change", getData(this.item.value[0],URL[0], ID, layer_name));
             }
           } 
        }, domConstruct.create("div", { class:"selectBox" }, dom.byId("fieldWrapper")));
@@ -256,17 +256,21 @@ function(declare,
         var attr_name;
 
         // Get render styles of the selected attribute
-        arrayUtils.forEach(layerConfig.layers, function(layer) {
-          if(layer.URL == URL){
-            arrayUtils.forEach(layer.Attributes, function(attribute) {
-              if(attribute.Name == field || attribute.Alias == field){
-                renderStyle = attribute.Render_style;
-                isBreak = attribute.isBreak;
-                attr_name = attribute.Name;
-              }
-            })
-          }
-        })
+        // arrayUtils.forEach(layerConfig.layers, function(layer) {
+        //   if(layer.URL == URL){
+        //     arrayUtils.forEach(layer.Attributes, function(attribute) {
+        //       if(attribute.Name == field){
+        //         renderStyle = attribute.Render_style;
+        //         isBreak = attribute.isBreak;
+        //         attr_name = attribute.Name;
+        //       }
+        //     })
+        //   }
+        // })
+
+        renderStyle = selectedAttribute.Render_style;
+        isBreak = selectedAttribute.isBreak;
+        attr_name = selectedAttribute.Name;
 
         if(isBreak){
           var symbol = new SimpleFillSymbol();

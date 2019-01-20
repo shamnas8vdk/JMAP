@@ -7,7 +7,7 @@
       "Attributes": [
         {
           "Name": "OBJECTID",
-          "Alias": "FID",
+          "Display_Name": "FID",
           "isBreak": false,
           "Render_style": [
             {
@@ -22,7 +22,7 @@
         },
         {
           "Name": "ID",
-          "Alias": "ID",
+          "Display_Name": "ID",
           "isBreak": false,
           "Render_style": [
             {
@@ -37,7 +37,7 @@
         },
         {
           "Name": "SPARE",
-          "Alias": "SPARE",
+          "Display_Name": "SPARE",
           "isBreak": false,
           "Render_style": [
             {
@@ -52,7 +52,7 @@
         },
         {
           "Name": "AREA",
-          "Alias": "AREA",
+          "Display_Name": "AREA",
           "isBreak": true,
           "Render_style": [
             {
@@ -89,7 +89,7 @@
         },
         {
           "Name": "Status",
-          "Alias": "Status",
+          "Display_Name": "Status",
           "isBreak": false,
           "Render_style": [
             {
@@ -108,7 +108,7 @@
         },
         {
           "Name": "New_Prop_Address",
-          "Alias": "Prop_Address",
+          "Display_Name": "Prop_Address",
           "isBreak": false,
           "Render_style": [
             {
@@ -123,7 +123,7 @@
         },
         {
           "Name": "Street_Name",
-          "Alias": "Street_Name",
+          "Display_Name": "Street_Name",
           "isBreak": false,
           "Render_style": [
             {
@@ -138,7 +138,7 @@
         },
         {
           "Name": "Supervisor",
-          "Alias": "Supervisor",
+          "Display_Name": "Supervisor",
           "isBreak": false,
           "Render_style": [
             {
@@ -157,7 +157,7 @@
         },
         {
           "Name": "Remarks",
-          "Alias": "Remarks",
+          "Display_Name": "Remarks",
           "isBreak": false,
           "Render_style": [
             {
@@ -172,7 +172,7 @@
         },
         {
           "Name": "GlobalID",
-          "Alias": "GlobalID",
+          "Display_Name": "GlobalID",
           "isBreak": false,
           "Render_style": [
             {
@@ -187,7 +187,7 @@
         },
         {
           "Name": "Shape__Area",
-          "Alias": "Shape__Area",
+          "Display_Name": "Shape__Area",
           "isBreak": true,
           "Render_style": [
             {
@@ -224,7 +224,7 @@
         },
         {
           "Name": "Shape__Length",
-          "Alias": "Shape__Length",
+          "Display_Name": "Shape__Length",
           "isBreak": true,
           "Render_style": [
             {
