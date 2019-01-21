@@ -794,13 +794,17 @@
   margin-right: 4%;
   margin-left: 2%;
   margin-bottom: 5%; 
+  width: 90%;
 }
 
-.category .attribute{
+.attrCategory {
   padding-top: 3%;
   padding-left: 3%;
   padding-right: 3%;
   padding-bottom: 3%;
+  /* display: inline-block; */
+  width: 100%;
+  word-wrap: break-word;
 }
 
 .title {

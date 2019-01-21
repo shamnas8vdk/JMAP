@@ -158,9 +158,10 @@ define(['dojo/_base/declare',
 
               // Check which Category this information belongs to, and adds them to the correct containers.
               if(categoryAttributesCheck(data, CategoryNo, attTitle.textContent)) {
-                domConstruct.place(attTitle, label);
-                domConstruct.place(attVal, label);
-                domConstruct.place(label, container);
+                container.innerHTML += attTitle.innerText + attVal.innerText+ "<br />";
+                // domConstruct.place(attTitle, label);
+                // domConstruct.place(attVal, label);
+                // domConstruct.place(label, container);
               }
             }
           }
@@ -196,24 +197,22 @@ define(['dojo/_base/declare',
 
         //Create a container for each category to encapsulate related data
         function setContainer(CategoryNo, category, data){
-          var container = domConstruct.create('container');
+          var container = domConstruct.create('div',{ class:"attrCategory" });
           var categoryContainer = domConstruct.create('div', { class:"category" });
-          var attributeContainer = domConstruct.create('div', { class:"attribute" });
           category.textContent = data.categories.type[CategoryNo].Heading;
-          // domAttr.set(container, 'id', "container"+CategoryNo);
+
           //Set onclick event callback for category button
           on(category, 'click', function(evt){
             category.classList.toggle("active");
-            if(attributeContainer.style.display == "none") {
-              domStyle.set(attributeContainer, "display", "block");
+            if(container.style.display == "none") {
+              domStyle.set(container, "display", "block");
             }
             else
-              domStyle.set(attributeContainer, "display", "none");
+              domStyle.set(container, "display", "none");
           });
 
           domConstruct.place(category, categoryContainer);
-          domConstruct.place(container, attributeContainer);
-          domConstruct.place(attributeContainer, categoryContainer);
+          domConstruct.place(container, categoryContainer);
           domConstruct.place(categoryContainer, div);
           return container;
         }
@@ -247,9 +246,9 @@ define(['dojo/_base/declare',
           label = domConstruct.create('p');
           breakline = domConstruct.create('br');
           domAttr.set(label, 'id', ID.toLowerCase()+itemID);
-          domStyle.set(attTitle, 'padding-left', '3%');
           domClass.add(label, 'label');
-          attVal = domConstruct.create('font');
+
+          attVal = domConstruct.create('a');
 
           if(attValArr[1].toLowerCase().indexOf('<em>') > -1){
             domStyle.set(attVal, 'font-style', 'italic');
