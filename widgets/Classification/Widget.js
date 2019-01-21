@@ -61,7 +61,7 @@ function(declare,
 
     postCreate: function() {
       this.inherited(arguments);
-      console.log('postCreate');
+      // console.log('postCreate');
     },
 
     startup: function() {
@@ -169,7 +169,6 @@ function(declare,
         id: ID
       });
       self.map.addLayer(selectedLayer);
-      console.log(selectedLayer);
       currentLayer = selectedLayer;
     }
 
@@ -196,8 +195,6 @@ function(declare,
 
       // Set the dropdown fields for attributes
       countyFields.then(function(resp) {
-        // console.log(resp.fields);
-        // console.log(layerConfig.layers[index].Attributes);
         // Store information of each attribute in arrays
         var fieldNames, fieldStore;
         var attributeIndex = 0;
@@ -238,7 +235,7 @@ function(declare,
           } 
        }, domConstruct.create("div", { class:"selectBox" }, dom.byId("fieldWrapper")));
       }, function(err) {
-        console.log("failed to get field names: ", err);
+        // console.log("failed to get field names: ", err);
       });
 
       function getData(field,URL,ID, layer_name) {
@@ -330,8 +327,7 @@ function(declare,
       }
 
       function errorHandler(err) {
-        // console.log("Something broke, error: ", err);
-        console.log("error: ", JSON.stringify(err));
+        // console.log("error: ", JSON.stringify(err));
       }
     }
     // ----------- End of Junwei's section ------ //
@@ -418,7 +414,7 @@ function(declare,
    
 
     onOpen: function(){
-      console.log('onOpen');
+      // console.log('onOpen');
     },
 
     onClose: function(){
@@ -426,24 +422,24 @@ function(declare,
       //   self.map.removeLayer(currentLayer);
       //   currentLayer = null;
       // }
-      console.log('onClose');
+      // console.log('onClose');
     },
 
     onMinimize: function(){
-      console.log('onMinimize');
+      // console.log('onMinimize');
     },
 
     onMaximize: function(){
-      console.log('onMaximize');
+      // console.log('onMaximize');
     },
 
     onSignIn: function(credential){
       /* jshint unused:false*/
-      console.log('onSignIn');
+      // console.log('onSignIn');
     },
 
     onSignOut: function(){
-      console.log('onSignOut');
+      // console.log('onSignOut');
     },
 
     showVertexCount: function(count){

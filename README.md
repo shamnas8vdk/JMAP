@@ -29,4 +29,7 @@ If application is still using webappbuilder to configure widgets, themes and so 
 2. Replace the widget.html file with the widget.html file in this repo under widgets/Classification
 3. Copy paste layer.json from the repo into the same directory as List.js
 4. Change the JSON id of layers to view add layers function
+5. Attribute name of layer.json must be an exact match to attribute name from the real layer attribute from the request/response
+
+## Icons folder contains all stock icons
 

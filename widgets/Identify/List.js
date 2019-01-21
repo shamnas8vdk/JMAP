@@ -63,7 +63,6 @@ define(['dojo/_base/declare',
         this.selectedIndex = -1;
         this._selectedNode = null;
         this._listContainer = domConstruct.create('div');
-        console.log(this.category);
         domClass.add(this._listContainer, 'identify-list-container');
         this.own(on(this._listContainer, 'click', lang.hitch(this, this._onClick)));
         this.own(on(this._listContainer, 'mouseover', lang.hitch(this, this._onMouseOver)));
@@ -84,7 +83,6 @@ define(['dojo/_base/declare',
         if (arguments.length === 0) {
           return;
         }
-        console.log(item);
         this.items.push(item);
         var div = domConstruct.create('div');
         domAttr.set(div, 'id', this.id.toLowerCase()+item.id);
@@ -185,7 +183,7 @@ define(['dojo/_base/declare',
         function setCategoryButton(){
           var category = domConstruct.create('div', { class:"toggle" });
           domStyle.set(category,  {
-            background: '#585858',
+            background: '#1E90FF',
             color: 'white',
             border: 'none',
             textDecoration: 'none',
@@ -472,7 +470,7 @@ define(['dojo/_base/declare',
           domConstruct.place(linksDiv, div);
           domClass.add(linksDiv, 'linksdiv');
         }
-        //console.info(item.links);
+        
         array.forEach(item.links, function(link){
           if(link.popuptype === "text"){
             var linkText = domConstruct.toDom("<p><a href='" + link.link + "' target='_blank' title='" + link.alias + "'>" + link.alias + "</a></p>");
