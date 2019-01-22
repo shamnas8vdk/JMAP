@@ -1,0 +1,33 @@
+.level {
+    position: absolute;
+    top: 7%;
+    right: 1%;
+    width: 10%;
+    height: 40%;
+    overflow-y: auto;
+    /* border: 3px solid #A0A0A0; */
+    background-color: #1D8BD1;
+    /* rgba(169, 169, 169, 0.7) (29,139,209); C0C0C0*/
+}
+
+.primaryText {
+    color: #D8D8D8;
+}
+
+.secondaryText {
+    color: #D8D8D8;
+}
+
+.button-title {
+    width: 100%;
+    height: 7%;
+    /* color: #9c9c9c; */
+}
+
+/* .button-title:after {
+    content: '▲'; 
+    font-size: 10px;
+    color: darkgray;
+    float: right;
+    margin-left: 5px;
+} */

@@ -1,0 +1,78 @@
+<div class="esriSignInDialog dijitDialog dijitDialogError dijitError dijitDialogFocused dijitDialogErrorFocused dijitErrorFocused dijitFocused"
+    role="dialog" aria-labelledby="dijit_Dialog_0_title" id="dijit_Dialog_0" widgetid="dijit_Dialog_0" style="width: 18em; position: absolute; opacity: 1; left: 609px; top: 54px; z-index: 950;">
+    <div data-dojo-attach-point="titleBar" class="dijitDialogTitleBar"><span data-dojo-attach-point="titleNode" class="dijitDialogTitle"
+            id="dijit_Dialog_0_title" role="heading" level="1">Sign In</span><span data-dojo-attach-point="closeButtonNode"
+            class="dijitDialogCloseIcon" data-dojo-attach-event="ondijitclick: onCancel" title="Cancel" role="button"
+            tabindex="-1"><span data-dojo-attach-point="closeText" class="closeText" title="Cancel">x</span></span></div>
+    <div data-dojo-attach-point="containerNode" class="dijitDialogPaneContent dijitDialogSingleChild">
+        <form data-dojo-attach-point="containerNode" data-dojo-attach-event="onreset:_onReset,onsubmit:_onSubmit" id="dijit_form_Form_0"
+            class="esriIdForm" widgetid="dijit_form_Form_0">
+            <div class="dijitDialogPaneContentArea">
+                <div style="padding-bottom: 5px; word-wrap: break-word;">Please sign in to access the item on <span
+                        class="serverLink" style="word-wrap: break-word;" title="https://mehushammy.maps.arcgis.com">ArcGIS
+                        Online </span><span class="resLink" style="word-wrap: break-word;" title="https://mehushammy.maps.arcgis.com/sharing/rest/content/items/42cf40d0c72f43aaacc5e5facde606b2">(42cf40d0c72f43aaacc5e5facde606b2)</span></div>
+                <div style="margin: 0px; padding: 0px; height: 10px;"></div>
+                <div class="esriErrorMsg" style="display: none; color: white; background-color: #D46464; text-align: center; padding-top: 3px; padding-bottom: 3px;">The
+                    username or password you entered is incorrect.</div>
+                <div style="margin: 0px; padding: 0px; height: 10px;"></div>
+                <table style="width: 100%;">
+                    <tbody>
+                        <tr>
+                            <td><label>Username:<br>
+                                    <div class="dijit dijitReset dijitInline dijitLeft esriIdUser dijitTextBox dijitValidationTextBox dijitTextBoxError dijitValidationTextBoxError dijitError dijitTextBoxFocused dijitValidationTextBoxFocused dijitTextBoxErrorFocused dijitValidationTextBoxErrorFocused dijitErrorFocused dijitFocused"
+                                        id="widget_dijit_form_ValidationTextBox_0" role="presentation" widgetid="dijit_form_ValidationTextBox_0"
+                                        style="width: 100%;">
+                                        <div class="dijitReset dijitValidationContainer"><input class="dijitReset dijitInputField dijitValidationIcon dijitValidationInner"
+                                                value="Χ " type="text" tabindex="-1" readonly="readonly" role="presentation"></div>
+                                        <div class="dijitReset dijitInputField dijitInputContainer">
+                                            <input class="dijitReset dijitInputInner"
+                                                data-dojo-attach-point="textbox,focusNode" autocomplete="off" type="text"
+                                                tabindex="0" id="dijit_form_ValidationTextBox_0" aria-required="true"
+                                                autocapitalize="none" spellcheck="false" value="" aria-invalid="true">
+                                        </div>
+                                    </div>
+                                </label></td>
+                        </tr>
+                        <tr>
+                            <td><label>Password:<br>
+                                    <div class="dijit dijitReset dijitInline dijitLeft esriIdPwd dijitTextBox dijitValidationTextBox dijitTextBoxIncomplete dijitValidationTextBoxIncomplete dijitIncomplete"
+                                        id="widget_dijit_form_ValidationTextBox_1" role="presentation" widgetid="dijit_form_ValidationTextBox_1"
+                                        style="width: 100%;">
+                                        <div class="dijitReset dijitValidationContainer"><input class="dijitReset dijitInputField dijitValidationIcon dijitValidationInner"
+                                                value="Χ " type="text" tabindex="-1" readonly="readonly" role="presentation"></div>
+                                        <div class="dijitReset dijitInputField dijitInputContainer">
+                                            <input class="dijitReset dijitInputInner"
+                                                data-dojo-attach-point="textbox,focusNode" autocomplete="off" type="password"
+                                                tabindex="0" id="dijit_form_ValidationTextBox_1" aria-required="true"
+                                                value="" aria-invalid="false">
+                                        </div>
+                                    </div>
+                                </label></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="dijitDialogPaneActionBar"><span class="dijit dijitReset dijitInline esriIdSubmit dijitButton"
+                    role="presentation" widgetid="dijit_form_Button_0"><span class="dijitReset dijitInline dijitButtonNode"
+                        data-dojo-attach-event="ondijitclick:__onClick" role="presentation"><span class="dijitReset dijitStretch dijitButtonContents"
+                            data-dojo-attach-point="titleNode,focusNode" role="button" aria-labelledby="dijit_form_Button_0_label"
+                            tabindex="0" id="dijit_form_Button_0" style="user-select: none;"><span class="dijitReset dijitInline dijitIcon dijitNoIcon"
+                                data-dojo-attach-point="iconNode"></span><span class="dijitReset dijitToggleButtonIconChar">●</span>
+                                <span
+                                class="dijitReset dijitInline dijitButtonText" id="dijit_form_Button_0_label"
+                                data-dojo-attach-point="containerNode">OK</span></span></span>
+                                <input type="button"value="" class="dijitOffScreen" data-dojo-attach-event="onclick:_onClick" tabindex="-1"
+                        aria-hidden="true" data-dojo-attach-point="valueNode">
+                        </span><span class="dijit dijitReset dijitInline dijitButton esriIdCancel"
+                    role="presentation" widgetid="dijit_form_Button_1"><span class="dijitReset dijitInline dijitButtonNode"
+                        data-dojo-attach-event="ondijitclick:__onClick" role="presentation"><span class="dijitReset dijitStretch dijitButtonContents"
+                            data-dojo-attach-point="titleNode,focusNode" role="button" aria-labelledby="dijit_form_Button_1_label"
+                            tabindex="0" id="dijit_form_Button_1" style="user-select: none;"><span class="dijitReset dijitInline dijitIcon dijitNoIcon"
+                                data-dojo-attach-point="iconNode"></span><span class="dijitReset dijitToggleButtonIconChar">●</span><span
+                                class="dijitReset dijitInline dijitButtonText" id="dijit_form_Button_1_label"
+                                data-dojo-attach-point="containerNode">Cancel</span></span></span><input type="button"
+                        value="" class="dijitOffScreen" data-dojo-attach-event="onclick:_onClick" tabindex="-1"
+                        aria-hidden="true" data-dojo-attach-point="valueNode"></span></div>
+        </form>
+    </div>
+</div>

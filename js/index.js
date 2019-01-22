@@ -34,5 +34,6 @@ input_pass.keypress(function () {
 });
 
 function authenticateCredentials(username, password){
+  //Authenticate username and password here
   return true;
 }
