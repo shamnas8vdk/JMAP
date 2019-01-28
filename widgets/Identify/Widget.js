@@ -200,6 +200,7 @@ define(['dojo/_base/declare',
       },
 
       _initIdentifySymbols: function() {
+        console.log("Selected 1");
         if (this.config.symbols && this.config.symbols.simplemarkersymbol) {
           this.identMarkerSymbol = new SimpleMarkerSymbol(this.config.symbols.simplemarkersymbol);
         } else {
@@ -355,10 +356,11 @@ define(['dojo/_base/declare',
       },
 
       startup: function () {
+        // For mouseover symbol
         this.inherited(arguments);
         this.selSym = new SimpleFillSymbol(SimpleFillSymbol.STYLE_NULL,
                                            new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
-                                           new Color([68,140,203]), 3), new Color([255,255,255,0]));
+                                           new Color([255, 165, 0]), 3), new Color([255,255,255,0]));
         this.fetchData();
       },
 
@@ -510,7 +512,8 @@ define(['dojo/_base/declare',
       },
 
       mouseOutGraphic: function (event) {
-        this.timedClose();
+        // this.timedClose();
+        // this._hideInfoWindow();
       },
 
       timedClose: function(){

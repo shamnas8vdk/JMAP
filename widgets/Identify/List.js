@@ -127,6 +127,8 @@ define(['dojo/_base/declare',
         // Store the current object ID and Item id for reference in the loops later
         var ID = this.id;
         var itemID = item.id;
+        // var btnContainer = domConstruct.create('div', { class:"btnContainer" });
+        // domConstruct.place(btnContainer, div);
 
         // AJAX request for JSON of category information
         $.getJSON( getJSONPath(), function( data ){
@@ -139,6 +141,9 @@ define(['dojo/_base/declare',
 
             //Create a container for each category to encapsulate related data
             var container = setContainer(CategoryNo, category, data);
+
+            //Add button into btnContainer
+            // domConstruct.place(category, btnContainer);
 
             //Create a for loop for all attributes gotten from the object
             for (var AttributeIndex = 0; AttributeIndex < arrayLength; AttributeIndex++) {
@@ -156,6 +161,9 @@ define(['dojo/_base/declare',
 
               // Check which Category this information belongs to, and adds them to the correct containers.
               if(categoryAttributesCheck(data, CategoryNo, attTitle.textContent)) {
+                if(attTitle.innerText.trim() == data.categories.display_key){
+                  setSelectedTitle(data.categories.layer_name+": "+attVal.innerText);
+                }
                 container.innerHTML += attTitle.innerText + attVal.innerText+ "<br />";
                 // domConstruct.place(attTitle, label);
                 // domConstruct.place(attVal, label);
@@ -179,11 +187,16 @@ define(['dojo/_base/declare',
           return JSONpath;
         }
 
+        //Set title of the area
+        function setSelectedTitle(title){
+          rTitle.textContent = title;
+        }
+
         //Create a button for each category with the corresponding style
         function setCategoryButton(){
           var category = domConstruct.create('div', { class:"toggle" });
           domStyle.set(category,  {
-            background: '#1E90FF',
+            background: '#1D8BD1',
             color: 'white',
             border: 'none',
             textDecoration: 'none',
@@ -212,6 +225,7 @@ define(['dojo/_base/declare',
           domConstruct.place(category, categoryContainer);
           domConstruct.place(container, categoryContainer);
           domConstruct.place(categoryContainer, div);
+          // domStyle.set(categoryContainer, "display", "none");
           return container;
         }
 
@@ -482,7 +496,7 @@ define(['dojo/_base/declare',
             domClass.add(linkImg, 'linkIcon');
           }
         });
-        domConstruct.place(div, this._listContainer);
+        domConstruct.place(div, this._listContainer,"first");
       },
 
       remove: function(index) {

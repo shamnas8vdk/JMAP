@@ -1,33 +1,35 @@
 {
-    "categories": {
-      "type": [
-        {
-          "Heading":"CategoryOne",
-          "Attributes": [
-            "OBJECTID",
-            "ID",
-            "SPARE",
-            "AREA"
-          ]
-        },
-        {
-          "Heading":"CategoryTwo",
-          "Attributes": [
-            "Status",
-            "New_Prop_Address",
-            "Street_Name",
-            "Supervisor"
-          ]
-        },
-        {
-          "Heading":"CategoryThree",
-          "Attributes": [
-            "Remarks",
-            "GlobalID",
-            "Shape__Area",
-            "Shape__Length"
-          ]
-        }
-      ]
-    }
+  "categories": {
+    "layer_name": "Layer Name",
+    "display_key": "OBJECTID",
+    "type": [
+      {
+        "Heading":"Category1",
+        "Attributes": [
+          "OBJECTID",
+          "ID",
+          "SPARE",
+          "AREA"
+        ]
+      },
+      {
+        "Heading":"Category2",
+        "Attributes": [
+          "Status",
+          "New_Prop_Address",
+          "Street_Name",
+          "Supervisor"
+        ]
+      },
+      {
+        "Heading":"Category3",
+        "Attributes": [
+          "Remarks",
+          "GlobalID",
+          "Shape__Area",
+          "Shape__Length"
+        ]
+      }
+    ]
   }
+}
