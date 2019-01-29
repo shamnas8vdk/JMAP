@@ -11,9 +11,15 @@ define(['dojo/_base/declare',
          'esri/tasks/GenerateRendererTask',
          'dijit/registry',
          'dojo/dom',
+         'dojo/dom-style',
          'dojo/_base/array',
          'dijit/form/FilteringSelect',
+         "dijit/form/CheckBox",
+         "dijit/form/HorizontalSlider",
+         "dijit/form/HorizontalRule",
+         "dijit/form/HorizontalRuleLabels",
          'dojo/dom-construct',
+         'dojo/on',
          'esri/layers/FeatureLayer',
          'esri/layers/ArcGISTiledMapServiceLayer',
          'esri/layers/MapImageLayer',
@@ -36,9 +42,15 @@ function(declare,
          GenerateRendererTask,
          registry,
          dom,
+         domStyle,
          arrayUtils,
          FilteringSelect,
+         CheckBox,
+         HorizontalSlider,
+         HorizontalRule,
+         HorizontalRuleLabels,
          domConstruct,
+         on,
          MapImageLayer,
          ArcGISTiledMapServiceLayer,
          ArcGISDynamicMapServiceLayer,
@@ -228,16 +240,17 @@ function(declare,
           onChange: function(){
             var index = this.item._0;
             var selectedItem = this;
-            domConstruct.empty("legendWrapper");
+            domConstruct.empty("valueWrapper");
+            // domConstruct.empty("legendWrapper");
 
             // Render CSS Styles of map on change with getData
             if(index != 0){
               selectedLayer.Attributes.forEach(function(item,itemIdex,itemArray){
-              if(selectedItem.item.value[0] == item.Name){
-                 selectedAttribute = selectedLayer.Attributes[itemIdex];
-                 fieldSelect.on("change", getData(selectedItem.item.value[0],URL[0], ID, layer_name));
-               }
-             });              
+                if(selectedItem.item.value[0] == item.Name){
+                   selectedAttribute = selectedLayer.Attributes[itemIdex];
+                   getData(selectedItem.item.value[0], ID, layer_name);
+                 }
+              });
             }
           } 
        }, domConstruct.create("div", { class:"selectBox" }, dom.byId("fieldWrapper")));
@@ -245,12 +258,12 @@ function(declare,
         // console.log("failed to get field names: ", err);
       });
 
-      function getData(field,URL,ID, layer_name) {
+      function getData(field,ID, layer_name) {
         // Apply Render
-        applyRenderer(field,URL,ID, layer_name)
+        applyRenderer(field,ID, layer_name)
       }
 
-      function applyRenderer(field, URL, ID, layer_name) {
+      function applyRenderer(field, ID, layer_name) {
 
         // Get Layer and attribute render information according to URL
         var renderStyle;
@@ -258,19 +271,6 @@ function(declare,
         var isBreak;
         var defaultSymbol
         var attr_name;
-
-        // Get render styles of the selected attribute
-        // arrayUtils.forEach(layerConfig.layers, function(layer) {
-        //   if(layer.URL == URL){
-        //     arrayUtils.forEach(layer.Attributes, function(attribute) {
-        //       if(attribute.Name == field){
-        //         renderStyle = attribute.Render_style;
-        //         isBreak = attribute.isBreak;
-        //         attr_name = attribute.Name;
-        //       }
-        //     })
-        //   }
-        // })
 
         renderStyle = selectedAttribute.Render_style;
         isBreak = selectedAttribute.isBreak;
@@ -297,28 +297,13 @@ function(declare,
           renderer = new UniqueValueRenderer(defaultSymbol, field);
 
           // Loop through styles of attribute, make sure they exists in the styles of the chosen attribute
-          for(index = 1; index < renderStyle.length; index++){
+          for(index = 0; index < renderStyle.length; index++){
             renderer.addValue(renderStyle[index].Name, new SimpleFillSymbol().setColor(new Color(renderStyle[index].color)));
           }
         }
 
-      // Add five breaks to the renderer.
-      // If you have ESRI's ArcMap available, this can be a good way to determine break values.
-      // You can also copy the RGB values from the color schemes ArcMap applies, or use colors
-      // from a site like www.colorbrewer.org
-      //
-      // alternatively, ArcGIS Server's generate renderer task could be used
-      // var renderer = new ClassBreaksRenderer(symbol, "POP07_SQMI");
-      // renderer.addBreak(0, 25, new SimpleFillSymbol().setColor(new Color([56, 168, 0, 0.5])));
-      // renderer.addBreak(25, 75, new SimpleFillSymbol().setColor(new Color([139, 209, 0, 0.5])));
-      // renderer.addBreak(75, 175, new SimpleFillSymbol().setColor(new Color([255, 255, 0, 0.5])));
-      // renderer.addBreak(175, 400, new SimpleFillSymbol().setColor(new Color([255, 128, 0, 0.5])));
-      // renderer.addBreak(400, Infinity, new SimpleFillSymbol().setColor(new Color([255, 0, 0, 0.5])));
-
-        // Apply to map and startup legend
-        self.map.getLayer(ID).setRenderer(renderer);
-        self.map.getLayer(ID).redraw();
-        applyLegend(ID,layer_name);
+        reapplyRenderLegend(renderer, ID, layer_name);
+        toggleAttributeValues(renderer, ID, layer_name);
       }
 
       //Apply the legend after rendering the attributes
@@ -335,6 +320,134 @@ function(declare,
 
       function errorHandler(err) {
         // console.log("error: ", JSON.stringify(err));
+      }
+
+      function toggleAttributeValues(renderer, ID, layerName){
+        var attr_value;
+        var CheckedMultiSelect;
+
+        // Create Container to hold all check boxes
+        var valueContainer = domConstruct.create("div", { id: "valueContainer", class:"valueContainer" }, dom.byId("valueWrapper"));
+
+        // Check if attribute values are numerical 
+        if(selectedAttribute.isBreak == false){
+
+          //Create button to toggle filter
+          var checkBtn = domConstruct.create("div", { innerHTML:"Filter Value", id: "checkBoxContainerButton", class:"checkBoxContainerButton" }, valueContainer);
+          var checkContainer = domConstruct.create("div", { id: "checkBoxContainer", class:"checkBoxContainer" }, valueContainer);
+          domStyle.set(checkContainer, "display", "none");
+
+          //Set onclick event callback for category button
+          on(checkBtn, 'click', function(evt){
+            checkBtn.classList.toggle("active");
+            if(checkContainer.style.display == "none") {
+              domStyle.set(checkContainer, "display", "block");
+            }
+            else
+              domStyle.set(checkContainer, "display", "none");
+          });
+
+          // Loop through attribute values
+          for(index = 0; index < selectedAttribute.Render_style.length; index ++){
+
+            //Get the name of the value
+            attr_value = selectedAttribute.Render_style[index].Name;
+            attr_color = selectedAttribute.Render_style[index].color;
+
+            //Create div to hold label and check box and another div to hold checkbox itself for styling
+            domConstruct.create("div", {  id: "checkBoxInput"+index, class:"checkBoxInput" }, checkContainer);
+            domConstruct.create("div", {  id: "checkBox"+index, class:"checkBox" }, dom.byId("checkBoxInput"+index));
+
+            //Create checkbox with default checked
+            var checkBox = new CheckBox({
+              name: attr_value,
+              value: attr_color,
+              checked: true,
+              onChange: function(){ 
+                if(!this.checked){
+                  renderer.removeValue(this.name);
+                  reapplyRenderLegend(renderer, ID, layerName);
+                }
+                else{
+                  renderer.addValue(this.name, new SimpleFillSymbol().setColor(new Color(this.value)));
+                  reapplyRenderLegend(renderer, ID, layerName);
+                }
+              }
+            },domConstruct.create("div", null, dom.byId("checkBox"+index)));
+            domConstruct.create("label", {  innerHTML: attr_value, class:"checkBoxLabel" }, dom.byId("checkBoxInput"+index));
+            domConstruct.create("br", null, dom.byId("checkBoxContainer"));
+          }
+        }
+        else{
+          // Get max numerical value and amount of discrete levels
+          var max = selectedAttribute.Render_style[selectedAttribute.Render_style.length-1].To;
+          var discreteVal = selectedAttribute.Render_style.length
+          var labelArr = [];
+
+          // Form Label value array
+          for(value = 0; value < discreteVal; value++){
+            var displayAmt = value * (max/(discreteVal-1));
+            var displayStr = displayAmt;
+            if(displayAmt >= 1000){
+              displayStr = (displayAmt/1000) + "K";
+            }
+            if(displayAmt >= 1000000){
+              displayStr = (displayAmt/1000000) + "M";
+            }
+            labelArr.push(displayStr);
+          }
+
+          // Create div to hold slider for styling
+          var sliderContainer = domConstruct.create("div", {  id: "sliderInput", class:"sliderInput" }, valueContainer);
+
+          var slider = new HorizontalSlider({
+            name: "slider",
+            value: max,
+            minimum: 0,
+            maximum: max,
+            discreteValues: 10,
+            intermediateChanges: true,
+            style: "width: 100%;",
+            onChange: function(){
+              renderer.clearBreaks();
+              for(index = 0; index < selectedAttribute.Render_style.length; index ++){
+                var attr = selectedAttribute.Render_style[index];
+                var field_symbol= new SimpleFillSymbol();
+                field_symbol.setColor(new Color(attr.color));
+                if(this.value > attr.From){
+                  renderer.addBreak(attr.From, attr.To, field_symbol);
+                }
+              }
+              reapplyRenderLegend(renderer, ID, layerName);
+            }
+          }, domConstruct.create("div", null, sliderContainer));
+
+          //Create div to hold label markers for styling
+          var labelContainer = domConstruct.create("div", {  id: "sliderLabelInput", class:"sliderLabelInput" }, valueContainer);
+
+          var sliderRules = new HorizontalRule({
+            container: "bottomDecoration",
+            count: 10,
+            style: "height: 5px; margin: 0 12px;"
+          }, domConstruct.create("div", null, labelContainer));  
+
+          //Create div to hold numeric labels for styling
+          var labelContainer2 = domConstruct.create("ol", {  id: "sliderLabelInput2", class:"sliderLabelInput2" }, valueContainer);
+
+          var sliderLabels = new HorizontalRuleLabels({
+            container: "bottomDecoration",
+            labels: labelArr,
+            labelStyle: "font-size: 0.75em",
+            style: "height: 1em; font-weight: bold;"
+          }, domConstruct.create("div", null, labelContainer2));
+        }
+      }
+
+      function reapplyRenderLegend(renderer, ID, layerName){
+        domConstruct.empty("legendWrapper");
+        self.map.getLayer(ID).setRenderer(renderer);
+        self.map.getLayer(ID).redraw();
+        applyLegend(ID,layerName);
       }
     }
     // ----------- End of Junwei's section ------ //

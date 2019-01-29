@@ -32,3 +32,91 @@
   border-bottom: 1px solid rgb(5, 5, 5);
   border-right: 1px solid rgb(5, 5, 5);
 }
+
+.checkBoxLabel {
+  /* margin-top: 10%;
+  margin-bottom: 10%; */
+  margin-right: 5%;
+  margin-left: 5%;
+}
+
+.checkBox {
+  display:inline;
+  margin-bottom: 5%;
+  left: 45%;
+}
+
+.checkBoxInput {
+  margin-top: 1%;
+  margin-bottom: 0;
+  height: 5%;
+  vertical-align: middle;
+}
+
+.checkBoxContainer {
+  position: absolute;
+  margin-bottom: 0;
+  padding-left: 5%;
+  padding-top: 3%;
+  width: 90%;
+  box-shadow: 0px 8px 16px 0px darkgray;
+  z-index: 2;
+  background: white;
+}
+
+.checkBoxContainerButton {
+  width: 100%;
+  background: white;
+  color: black;
+  font-weight: bold;
+  padding: 3%;
+  /* border-bottom: 1px solid black; */
+}
+
+.checkBoxContainerButton:after {
+  content: '▼'; 
+  align-content: right;
+  font-size: 10px;
+  color: black;
+  float: right;
+  margin-left: 5px;
+  /* content: '\2212▼';  */
+}
+
+.active:after {
+  content: '▲';
+  /* "\002B" */
+}
+
+.valueContainer {
+  border: 1px solid black;
+  width: 90%;
+  margin-top: 3%;
+}
+
+.sliderInput {
+  margin-top: 3%;
+  margin-bottom: 3%;
+  margin-left: 8%;
+  margin-right: 4%;
+  /* vertical-align: middle;
+  text-align: center; */
+}
+
+.sliderLabelInput {
+  margin-top: 3%;
+  margin-bottom: 3%;
+  margin-left: 16%;
+  margin-right: 4%;
+  width: 72%;
+  /* vertical-align: middle;
+  text-align: center; */
+}
+
+.sliderLabelInput2 {
+  margin-top: 3%;
+  margin-bottom: 3%;
+  margin-left: 8%;
+  margin-right: 4%;
+  width: 77%;
+}
