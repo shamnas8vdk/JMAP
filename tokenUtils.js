@@ -25,18 +25,21 @@ define([
   'dojo/json',
   'dojo/topic',
   'dojo/request/script',
+  'dojo/request',
   'esri/kernel',
   'esri/config',
   'esri/request',
   'esri/urlUtils',
   'esri/IdentityManager',
+  'esri/ServerInfo',
+  'esri/Credential',
   'esri/arcgis/OAuthInfo',
   'jimu/portalUrlUtils',
   'jimu/utils',
   'esri/layers/vectorTiles/kernel'
 ],
-function(lang, array, aspect, Deferred, dom, domStyle, cookie, json, topic, dojoScript, esriNS, esriConfig,
-  esriRequest, esriUrlUtils, IdentityManager, OAuthInfo, portalUrlUtils, jimuUtils, vectorTilesKernel) {
+function(lang, array, aspect, Deferred, dom, domStyle, cookie, json, topic, dojoScript, request, esriNS, esriConfig,
+  esriRequest, esriUrlUtils, IdentityManager, ServerInfo, Credential, OAuthInfo, portalUrlUtils, jimuUtils, vectorTilesKernel) {
   /*jshint -W069 */
 
   //patch for JS API 3.10
@@ -408,6 +411,7 @@ function(lang, array, aspect, Deferred, dom, domStyle, cookie, json, topic, dojo
     },
 
     registerOAuthInfo: function(portalUrl, appId){
+		debugger;
       var validParams = portalUrl && typeof portalUrl === 'string' &&
        appId && typeof appId === 'string';
       if(!validParams){
@@ -861,28 +865,55 @@ function(lang, array, aspect, Deferred, dom, domStyle, cookie, json, topic, dojo
         password.value = "Mehushammy@143";
         debugger;
         button.click();
-      }
-
-      //Get Token from API
-      // var tokenUrl = "https://www.arcgis.com/sharing/generateToken?request=getToken&username=mehushammy&password=Mehushammy%40143&expiration=10080&referer=laptop-j22dkdfg%3A3344&f=json";
-      // var httpsSharingUrl = portalUrlUtils.setHttpsProtocol(sharingUrl);
-      // dojoScript.get(tokenUrl, {
-      //   jsonp: 'callback'
-      // }).then(lang.hitch(this, function(response){
-      //   if(response.token){
-      //     // var credential = this.__getCredentialFromToken(response.token);
-      //     var credential = esriNS.id.findCredential("https://mehushammy.maps.arcgis.com");
-      //     console.log(credential);
-      //   }
-      //   else{
-      //     //normal authorization
-      //     console.log("failed")
-      //   }
-      // }), lang.hitch(this, function(err){
-      //   //network error
-      //   console.error(err);
-      // }));
+      }     
       
+    },
+	//Shamnas 
+    // To manually signin to portal
+    manualSignIn(portalUrl){
+     //Get Token from API
+	 debugger;
+	  var def = new Deferred();
+      var password = "Passw0rd123";
+      var username = "portaladmin";
+	  //var referer = "https%3A%2F%2Fspace.jtcqas.gov.sg%2Fjmap";
+      // ArcGIS server info for token generation
+	  var serverInfo = new ServerInfo( 
+	  {
+		  "server":portalUrl,
+		  "tokenServiceUrl":portalUrl+"/sharing/generateToken",
+		  "adminTokenServiceUrl":portalUrl+"/admin/generateToken",
+		  "shortLivedTokenValidity":60,
+		  "currentVersion":10.6,
+		  "hasServer":true
+		  
+	  }); 
+	  esriNS.id.generateToken(serverInfo,{"username":username,"password":password,"referer":window.location.host}).then(lang.hitch(this,function(tokenInfo){
+		//debugger;
+		var creationTime = (new Date).getTime();
+		//To calculate Expiration time
+		var expirationTime = creationTime + (serverInfo.shortLivedTokenValidity * 60000)
+        //var idObject = {};	
+         		 
+		var credential = new Credential(
+			 {
+			  "usedId":username,
+			  "server":portalUrl,
+			  "token":tokenInfo.token,
+			  "expires":expirationTime,
+			  "ssl":true,
+			  "scope":"portal",
+			  "validity":720,
+			  "creationTime":creationTime
+			  });
+		//debugger;
+		this.tryRegisterCredential(credential);		
+		window.isBuilder = false;
+		this._signInSuccess(credential, false);  
+        def.resolve(false);	
+	  }));
+	 
+	  return def;
     },
     
 

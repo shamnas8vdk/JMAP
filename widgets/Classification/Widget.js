@@ -203,8 +203,10 @@ function(declare,
 
         arrayUtils.forEach(resp.fields, function(attribute) {
           if(attributes.indexOf(attribute.name) > -1){
-            fieldNames.items.push({ "name": selectedLayer.Attributes[attributeIndex].Display_Name, "value": attribute.name });
-            attributeIndex++;
+             attributes.forEach(function(item,atrIndex,atrArray){
+              if(item==attribute.name)
+              fieldNames.items.push({ "name": selectedLayer.Attributes[atrIndex].Display_Name, "value": selectedLayer.Attributes[atrIndex].Name });
+             });
           }
         })
 
@@ -225,12 +227,17 @@ function(declare,
           },
           onChange: function(){
             var index = this.item._0;
+            var selectedItem = this;
             domConstruct.empty("legendWrapper");
 
             // Render CSS Styles of map on change with getData
             if(index != 0){
-              selectedAttribute = selectedLayer.Attributes[index-1];
-              fieldSelect.on("change", getData(this.item.value[0],URL[0], ID, layer_name));
+              selectedLayer.Attributes.forEach(function(item,itemIdex,itemArray){
+              if(selectedItem.item.value[0] == item.Name){
+                 selectedAttribute = selectedLayer.Attributes[itemIdex];
+                 fieldSelect.on("change", getData(selectedItem.item.value[0],URL[0], ID, layer_name));
+               }
+             });              
             }
           } 
        }, domConstruct.create("div", { class:"selectBox" }, dom.byId("fieldWrapper")));
