@@ -856,14 +856,17 @@ function(lang, array, aspect, Deferred, dom, domStyle, cookie, json, topic, dojo
     _autoFill: function(){
       var username = dom.byId('dijit_form_ValidationTextBox_0');
       var password = dom.byId('dijit_form_ValidationTextBox_1');
+      var portalUsername = dom.byId('user_username');
+      var portalPassword = dom.byId('user_password');
       var button = dom.byId('dijit_form_Button_0_label');
+      var portalButton = dom.byId('signIn');
       var form = dom.byId('dijit_Dialog_0');
+      var portalForm = dom.byId('oauth');
 
       if(form != null && username != null && password != null && button != null){
         domStyle.set(form, "display", "none");
         username.value = "mehushammy";
         password.value = "Mehushammy@143";
-        debugger;
         button.click();
       }     
       
