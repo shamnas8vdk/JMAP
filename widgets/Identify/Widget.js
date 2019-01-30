@@ -360,7 +360,7 @@ define(['dojo/_base/declare',
         this.inherited(arguments);
         this.selSym = new SimpleFillSymbol(SimpleFillSymbol.STYLE_NULL,
                                            new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
-                                           new Color([255, 165, 0]), 3), new Color([255,255,255,0]));
+                                           new Color([0, 255, 0]), 3), new Color([255,255,255,0]));
         this.fetchData();
       },
 
@@ -437,7 +437,7 @@ define(['dojo/_base/declare',
       },
 
       _outResultItem: function (index, item) {
-        this.timedClose();
+        // this.timedClose();
       },
 
       _selectResultItem: function (index, item) {
@@ -2226,7 +2226,7 @@ define(['dojo/_base/declare',
         }));
 
         this.infoWinMouseOut = on(this.map.infoWindow.domNode, 'mouseout', lang.hitch(this, function() {
-          this.timedClose();
+          // this.timedClose();
         }));
       },
 
