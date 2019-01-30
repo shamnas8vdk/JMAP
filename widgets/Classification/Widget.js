@@ -207,6 +207,7 @@ function(declare,
 
       // Set the dropdown fields for attributes
       countyFields.then(function(resp) {
+        console.log(resp);
         // Store information of each attribute in arrays
         var fieldNames, fieldStore;
         var attributeIndex = 0;
@@ -288,21 +289,26 @@ function(declare,
             var field_symbol= new SimpleFillSymbol();
             field_symbol.setColor(new Color(renderStyle[index].color));
             // Uncomment to remove border
-            // field_symbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color(renderStyle[index].color), 2));
+            field_symbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([0,0,0,0.7]), 1));
             renderer.addBreak(renderStyle[index].From, renderStyle[index].To, field_symbol);
           }
+          reapplyRenderLegend(renderer, ID, layer_name, true);
         }
         else{
           var defaultSymbol = new SimpleFillSymbol().setColor(new Color([127, 127, 127, 0.5]));
+          defaultSymbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([0,0,0,0.7]), 1));
           renderer = new UniqueValueRenderer(defaultSymbol, field);
 
           // Loop through styles of attribute, make sure they exists in the styles of the chosen attribute
           for(index = 0; index < renderStyle.length; index++){
-            renderer.addValue(renderStyle[index].Name, new SimpleFillSymbol().setColor(new Color(renderStyle[index].color)));
+            var field_symbol= new SimpleFillSymbol();
+            field_symbol.setColor(new Color(renderStyle[index].color));
+            // Uncomment to remove border
+            field_symbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([0,0,0,0.7]), 1));
+            renderer.addValue(renderStyle[index].Name,field_symbol);
           }
+          reapplyRenderLegend(renderer, ID, layer_name, false);
         }
-
-        reapplyRenderLegend(renderer, ID, layer_name);
         toggleAttributeValues(renderer, ID, layer_name);
       }
 
@@ -366,15 +372,18 @@ function(declare,
               onChange: function(){ 
                 if(!this.checked){
                   renderer.removeValue(this.name);
-                  reapplyRenderLegend(renderer, ID, layerName);
+                  reapplyRenderLegend(renderer, ID, layerName, false);
                 }
                 else{
                   renderer.addValue(this.name, new SimpleFillSymbol().setColor(new Color(this.value)));
-                  reapplyRenderLegend(renderer, ID, layerName);
+                  reapplyRenderLegend(renderer, ID, layerName, false);
                 }
               }
             },domConstruct.create("div", null, dom.byId("checkBox"+index)));
+
             domConstruct.create("label", {  innerHTML: attr_value, class:"checkBoxLabel" }, dom.byId("checkBoxInput"+index));
+            var symbol = domConstruct.create("div", { class:"symbol" }, dom.byId("checkBoxInput"+index));
+            domStyle.set(symbol, "background", new Color(attr_color).toHex());
             domConstruct.create("br", null, dom.byId("checkBoxContainer"));
           }
         }
@@ -385,9 +394,9 @@ function(declare,
           var labelArr = [];
 
           // Form Label value array
-          for(value = 0; value < discreteVal; value++){
-            var displayAmt = value * (max/(discreteVal-1));
-            var displayStr = displayAmt;
+          for(value = 0; value < discreteVal + 1; value++){
+            var displayAmt = value * (max/(discreteVal));
+            var displayStr = Math.round(displayAmt);
             if(displayAmt >= 1000){
               displayStr = (displayAmt/1000) + "K";
             }
@@ -405,7 +414,7 @@ function(declare,
             value: max,
             minimum: 0,
             maximum: max,
-            discreteValues: 10,
+            discreteValues: discreteVal + 1,
             intermediateChanges: true,
             style: "width: 100%;",
             onChange: function(){
@@ -413,12 +422,13 @@ function(declare,
               for(index = 0; index < selectedAttribute.Render_style.length; index ++){
                 var attr = selectedAttribute.Render_style[index];
                 var field_symbol= new SimpleFillSymbol();
+                field_symbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([0,0,0,0.7]), 1));
                 field_symbol.setColor(new Color(attr.color));
                 if(this.value > attr.From){
                   renderer.addBreak(attr.From, attr.To, field_symbol);
                 }
               }
-              reapplyRenderLegend(renderer, ID, layerName);
+              reapplyRenderLegend(renderer, ID, layerName, true);
             }
           }, domConstruct.create("div", null, sliderContainer));
 
@@ -427,7 +437,7 @@ function(declare,
 
           var sliderRules = new HorizontalRule({
             container: "bottomDecoration",
-            count: 10,
+            count: discreteVal + 1,
             style: "height: 5px; margin: 0 12px;"
           }, domConstruct.create("div", null, labelContainer));  
 
@@ -443,11 +453,13 @@ function(declare,
         }
       }
 
-      function reapplyRenderLegend(renderer, ID, layerName){
+      function reapplyRenderLegend(renderer, ID, layerName, check){
         domConstruct.empty("legendWrapper");
         self.map.getLayer(ID).setRenderer(renderer);
         self.map.getLayer(ID).redraw();
-        applyLegend(ID,layerName);
+        if(check){
+          applyLegend(ID,layerName);
+        }
       }
     }
     // ----------- End of Junwei's section ------ //

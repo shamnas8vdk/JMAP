@@ -120,3 +120,10 @@
   margin-right: 4%;
   width: 77%;
 }
+
+.symbol {
+  width: 5%;
+  height: 10px;
+  display: inline-block;
+  transform: skew(20deg);
+}
