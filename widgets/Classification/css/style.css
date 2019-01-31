@@ -24,7 +24,7 @@
 .attr_legend {
   font-size: 110%;
   font-weight: bold;
-  width: 90%;
+  width: 100%;
   margin-top: 5%;
   padding-left: 2%;
   border-top: 1px solid rgb(5, 5, 5);
@@ -33,11 +33,50 @@
   border-right: 1px solid rgb(5, 5, 5);
 }
 
+.layerBoxInput {
+  margin-top: 1%;
+  margin-bottom: 1%;
+  margin-left: 2%;
+  margin-right: 2%;
+  padding-top: 2%;
+  padding-bottom: 2%;
+  /* height: 5%; */
+  vertical-align: middle;
+  border-bottom: 1px solid darkgray;
+}
+
+.layerBoxLabel {
+  margin-right: 5%;
+  margin-left: 5%;
+}
+
+.attrLayerContainer {
+  position: absolute;
+  margin-bottom: 0;
+  padding-left: 3%;
+  padding-top: 3%;
+  width: 90%;
+  height: 200px;
+  box-shadow: 0px 8px 16px 0px darkgray;
+  z-index: 2;
+  background: white;
+  overflow-y: auto;
+}
+
 .checkBoxLabel {
   /* margin-top: 10%;
   margin-bottom: 10%; */
   margin-right: 5%;
   margin-left: 5%;
+}
+
+.symbol {
+  width: 5%;
+  height: 10px;
+  display: inline-block;
+  transform: skew(20deg);
+  margin-right: 5%;
+  margin-left: 2%;
 }
 
 .checkBox {
@@ -56,12 +95,14 @@
 .checkBoxContainer {
   position: absolute;
   margin-bottom: 0;
-  padding-left: 5%;
+  padding-left: 3%;
   padding-top: 3%;
   width: 90%;
+  height: 100px;
   box-shadow: 0px 8px 16px 0px darkgray;
   z-index: 2;
   background: white;
+  overflow-y: auto;
 }
 
 .checkBoxContainerButton {
@@ -90,7 +131,7 @@
 
 .valueContainer {
   border: 1px solid black;
-  width: 90%;
+  width: 100%;
   margin-top: 3%;
 }
 
@@ -119,11 +160,4 @@
   margin-left: 8%;
   margin-right: 4%;
   width: 77%;
-}
-
-.symbol {
-  width: 5%;
-  height: 10px;
-  display: inline-block;
-  transform: skew(20deg);
 }

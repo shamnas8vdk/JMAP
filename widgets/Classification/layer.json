@@ -265,6 +265,272 @@
            "fontSize": "12pt",
            "color": "#444"
       }
+    },
+    {
+      "URL": "https://services2.arcgis.com/4WiMNWDUQZIvdL5U/ArcGIS/rest/services/SadiqueDemoMap/FeatureServer/1",
+      "Name": "SadiqueDemoMap2",
+      "ID": "SadiqueDemoMap_9776",
+      "Attributes": [
+        {
+          "Name": "OBJECTID",
+          "Display_Name": "FID",
+          "isBreak": false,
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
+            }
+          ]
+        },
+        {
+          "Name": "ID",
+          "Display_Name": "ID",
+          "isBreak": false,
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
+            }
+          ]
+        },
+        {
+          "Name": "SPARE",
+          "Display_Name": "SPARE",
+          "isBreak": false,
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
+            }
+          ]
+        },
+        {
+          "Name": "AREA",
+          "Display_Name": "AREA",
+          "isBreak": true,
+          "Render_style": [
+            {
+              "From": 0,
+              "To": 25000,
+              "color": [56, 168, 0, 0.5]
+            },
+            {
+              "From": 25000,
+              "To": 50000,
+              "color": [139, 209, 0, 0.5]
+            },
+            {
+              "From": 50000,
+              "To": 75000,
+              "color": [255, 255, 0, 0.5]
+            },
+            {
+              "From": 75000,
+              "To": 100000,
+              "color": [56, 168, 0, 0.5]
+            },
+            {
+              "From": 100000,
+              "To": 200000,
+              "color": [255, 128, 0, 0.5]
+            },
+            {
+              "From": 200000,
+              "To": 300000,
+              "color": [255, 255, 0, 0.5]
+            }
+          ]
+        },
+        {
+          "Name": "Status",
+          "Display_Name": "Status",
+          "isBreak": false,
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "Stenciled",
+              "color": [255, 0, 0, 0.5]
+            },
+            {
+              "Name": "Not Stenciled",
+              "color": [0, 255, 0, 0.5]
+            }
+          ]
+        },
+        {
+          "Name": "New_Prop_Address",
+          "Display_Name": "Prop_Address",
+          "isBreak": false,
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
+            }
+          ]
+        },
+        {
+          "Name": "Street_Name",
+          "Display_Name": "Street_Name",
+          "isBreak": false,
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
+            }
+          ]
+        },
+        {
+          "Name": "Supervisor",
+          "Display_Name": "Supervisor",
+          "isBreak": false,
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "Caesar",
+              "color": [255, 0, 0, 0.5]
+            },
+            {
+              "Name": "Mohammed",
+              "color": [0, 255, 0, 0.5]
+            }
+          ]
+        },
+        {
+          "Name": "Remarks",
+          "Display_Name": "Remarks",
+          "isBreak": false,
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
+            }
+          ]
+        },
+        {
+          "Name": "GlobalID",
+          "Display_Name": "GlobalID",
+          "isBreak": false,
+          "Render_style": [
+            {
+              "Name": "Default",
+              "color": [127, 127, 127, 0.5]
+            },
+            {
+              "Name": "esriSFS",
+              "color": [210, 250, 192, 255]
+            }
+          ]
+        },
+        {
+          "Name": "Shape__Area",
+          "Display_Name": "Shape__Area",
+          "isBreak": true,
+          "Render_style": [
+            {
+              "From": 0,
+              "To": 5000,
+              "color": [56, 168, 0, 0.5]
+            },
+            {
+              "From": 5000,
+              "To": 10000,
+              "color": [139, 209, 0, 0.5]
+            },
+            {
+              "From": 10000,
+              "To": 15000,
+              "color": [255, 255, 0, 0.5]
+            },
+            {
+              "From": 15000,
+              "To": 20000,
+              "color": [56, 168, 0, 0.5]
+            },
+            {
+              "From": 20000,
+              "To": 25000,
+              "color": [255, 128, 0, 0.5]
+            },
+            {
+              "From": 25000,
+              "To": 300000,
+              "color": [255, 255, 0, 0.5]
+            }
+          ]
+        },
+        {
+          "Name": "Shape__Length",
+          "Display_Name": "Shape__Length",
+          "isBreak": true,
+          "Render_style": [
+            {
+              "From": 0,
+              "To": 25000,
+              "color": [56, 168, 0, 0.5]
+            },
+            {
+              "From": 25000,
+              "To": 50000,
+              "color": [139, 209, 0, 0.5]
+            },
+            {
+              "From": 50000,
+              "To": 75000,
+              "color": [255, 255, 0, 0.5]
+            },
+            {
+              "From": 75000,
+              "To": 100000,
+              "color": [56, 168, 0, 0.5]
+            },
+            {
+              "From": 100000,
+              "To": 200000,
+              "color": [255, 128, 0, 0.5]
+            },
+            {
+              "From": 200000,
+              "To": 300000,
+              "color": [255, 255, 0, 0.5]
+            }
+          ]
+        }
+      ],
+      "Dropdown_style": {
+           "width": "90%",
+           "fontSize": "12pt",
+           "color": "#444"
+      }
     }
   ]
 }

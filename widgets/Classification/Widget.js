@@ -110,56 +110,53 @@ function(declare,
     function toggleLayerFields(){
        // Create new "div" element for innerHTML label
        domConstruct.create("div", { innerHTML: "Currently selected attribute:", class:"selectLabel" }, dom.byId("layerWrapper"));
-  
-       // Declare object to store layer names in layerNames and store them in layerStore
-       var layerNames, layerStore;
-       layerNames = { identifier: "value", label: "name", items: [] };
-       layerNames.items.push({ "name": "Select a Layer", "value": "Select a Layer"});
- 
-       arrayUtils.forEach(layerConfig.layers, function(f) { 
-         // Store List of attributes for each layer into array
-         var attributes = [];
-         arrayUtils.forEach(f.Attributes, function(g) {
-           attributes.push(g.Name);
-         })
-         // Push information into array for storage in Filtering Select Object
-         layerNames.items.push({ "name": f.Name, "value": f.Name, "width": f.Dropdown_style.width, 
-         "fontSize": f.Dropdown_style.fontSize, "color": f.Dropdown_style.color,"attributes": attributes, 
-         "URL": f.URL, "ID": f.ID});
-       });
-       layerStore = new ItemFileReadStore({ data: layerNames });
-       
-       //Declare new dropdown FilteringSelect object and store the variables
-       layerSelect = new FilteringSelect({
-       displayedValue: layerNames.items[0].name,
-       value: layerNames.items[0].value,
-       name: "layersFS",
-       required: false,
-       store: layerStore,
-       searchAttr: "name",
-       style: {
-           "width": layerNames.items[1].width,
-           "fontSize": layerNames.items[1].fontSize,
-           "color": layerNames.items[1].color
-       },
-       onChange: function(){
-         // removeLayer();
-         // Get selected index and toggle to show attributes of selected layer
-         var index = this.item._0;
-         domConstruct.empty("fieldWrapper");
-         domConstruct.empty("legendWrapper");
- 
-         if(index != 0){
-           // Add the layer so it will appear in layerlist widget
-           // addLayer(layerNames.items[index].URL[0],layerNames.items[index].ID[0],layerNames.items[index].name)
-           selectedLayer = layerConfig.layers[index-1];
+
+       // Drowdown for layers
+       var layerWrapper = dom.byId("layerWrapper");
+       var layerBtn = domConstruct.create("div", { innerHTML:"Select a Layer", id: "layerSelectContainerButton", class:"checkBoxContainerButton" }, layerWrapper);
+       var layerContainer = domConstruct.create("div", { id: "layerContainer", class:"attrLayerContainer" }, layerWrapper);
+       domStyle.set(layerContainer, "display", "none");
+
+       //Set onclick event callback for category button
+       on(layerBtn, 'click', function(evt){
+        layerBtn.classList.toggle("active");
+        if(layerContainer.style.display == "none") {
+          domStyle.set(layerContainer, "display", "block");
+        }
+        else
+          domStyle.set(layerContainer, "display", "none");
+      });
+
+      // Go through each layer
+      var index = 0;
+      arrayUtils.forEach(layerConfig.layers, function(layer) { 
+        //Create div to hold label and check box and another div to hold checkbox itself for styling
+        var listLayer = domConstruct.create("div", {  class:"layerBoxInput" }, layerContainer);
+        domConstruct.create("label", {  innerHTML: layer.Name, class:"layerBoxLabel" }, listLayer);
+
+        //Set onclick event callback for category button
+        on(listLayer, 'click', function(evt){
+          domConstruct.empty("fieldWrapper");
+          domConstruct.empty("legendWrapper");
+          domStyle.set(layerContainer, "display", "none");
+          layerBtn.innerHTML = layer.Name;
+
+          // Store List of attributes for each layer into array
+          var attributes = [];
+          arrayUtils.forEach(layer.Attributes, function(attr) {
+            attributes.push(attr.Name);
+          })
+          selectedLayer = layer;
            // Toggle list of attributes dropdown
-           toggleAttributeFields(layerNames.items[index].attributes, layerNames.items[index].URL, 
-             layerNames.items[index].ID, layerNames.items[index].width, layerNames.items[index].fontSize, 
-             layerNames.items[index].color, layerNames.items[index].name, index-1);
-         }
-       } 
-       },domConstruct.create("div", { class:"selectBox" }, dom.byId("layerWrapper")));
+           toggleAttributeFields(attributes, layer.URL, 
+             layer.ID, layer.Dropdown_style.width, layer.Dropdown_style.fontSize, 
+             layer.Dropdown_style.color, layer.Name, index);
+        });
+
+        domConstruct.create("br", null, layerContainer);
+        index++;
+      });
+       //New dropdown end
     }
 
     // Get JSON file of widget dynamically
@@ -194,11 +191,12 @@ function(declare,
     // Display dropdown of all attributes and set render styles
     function toggleAttributeFields(attributes, URL, ID, width, font, color, layer_name, index){
       // Create new "div" element for innerHTML label
-      domConstruct.create("div", { innerHTML: "Currently selected attribute:", class:"selectLabel" }, dom.byId("fieldWrapper"));
+      var fieldWrapper = dom.byId("fieldWrapper");
+      domConstruct.create("div", { innerHTML: "Currently selected attribute:", class:"selectLabel" }, fieldWrapper);
 
       // Request for the layer using URL from selected Layer earlier
       var countyFields = esriRequest({
-        url: URL[0],
+        url: URL,
         content: {
           f: "json"
         },
@@ -207,53 +205,38 @@ function(declare,
 
       // Set the dropdown fields for attributes
       countyFields.then(function(resp) {
-        // Store information of each attribute in arrays
-        var fieldNames, fieldStore;
-        var attributeIndex = 0;
-        fieldNames = { identifier: "value", label: "name", items: [] };
-        fieldNames.items.push({ "name": "Select an Attribute", "value": "Select an Attribute"});
+        //New dropdown
+       var fieldBtn = domConstruct.create("div", { innerHTML:"Select an Attribute", id: "fieldSelectContainerButton", class:"checkBoxContainerButton" }, fieldWrapper);
+       var fieldContainer = domConstruct.create("div", { id: "fieldContainer", class:"attrLayerContainer" }, fieldWrapper);
+       domStyle.set(fieldContainer, "display", "none");
 
-        arrayUtils.forEach(resp.fields, function(attribute) {
-          if(attributes.indexOf(attribute.name) > -1){
-             attributes.forEach(function(item,atrIndex,atrArray){
-              if(item==attribute.name)
-              fieldNames.items.push({ "name": selectedLayer.Attributes[atrIndex].Display_Name, "value": selectedLayer.Attributes[atrIndex].Name });
-             });
-          }
-        })
+       //Set onclick event callback for dropdown
+       on(fieldBtn, 'click', function(evt){
+        fieldBtn.classList.toggle("active");
+        if(fieldContainer.style.display == "none") {
+          domStyle.set(fieldContainer, "display", "block");
+        }
+        else
+          domStyle.set(fieldContainer, "display", "none");
+      });
 
-        fieldStore = new ItemFileReadStore({ data: fieldNames });
+      arrayUtils.forEach(selectedLayer.Attributes, function(attribute) { 
+        //Create div to hold label and check box and another div to hold checkbox itself for styling
+        var listAttr = domConstruct.create("div", {  class:"layerBoxInput" }, fieldContainer);
+        domConstruct.create("label", {  innerHTML: attribute.Display_Name, class:"layerBoxLabel" }, listAttr);
 
-        // Declare new FilteringSelect object for dropdown and initialize fields
-        fieldSelect = new FilteringSelect({
-          displayedValue: fieldNames.items[0].name,
-          value: fieldNames.items[0].value,
-          name: "fieldsFS",
-          required: false,
-          store: fieldStore,
-          searchAttr: "name",
-          style: {
-             "width": width,
-             "fontSize": font,
-             "color": color
-          },
-          onChange: function(){
-            var index = this.item._0;
-            var selectedItem = this;
-            domConstruct.empty("valueWrapper");
-            // domConstruct.empty("legendWrapper");
+        //Set onclick event callback for each attribute
+        on(listAttr, 'click', function(evt){
+          domConstruct.empty("valueWrapper");
+          domStyle.set(fieldContainer, "display", "none");
+          fieldBtn.innerHTML = attribute.Display_Name;
 
-            // Render CSS Styles of map on change with getData
-            if(index != 0){
-              selectedLayer.Attributes.forEach(function(item,itemIdex,itemArray){
-                if(selectedItem.item.value[0] == item.Name){
-                   selectedAttribute = selectedLayer.Attributes[itemIdex];
-                   getData(selectedItem.item.value[0], ID, layer_name);
-                 }
-              });
-            }
-          } 
-       }, domConstruct.create("div", { class:"selectBox" }, dom.byId("fieldWrapper")));
+          selectedAttribute = attribute;
+          getData(attribute.Name, ID, layer_name);
+        });
+
+        domConstruct.create("br", null, fieldContainer);
+      });
       }, function(err) {
         // console.log("failed to get field names: ", err);
       });
@@ -279,8 +262,6 @@ function(declare,
         if(isBreak){
           var symbol = new SimpleFillSymbol();
           symbol.setColor(new Color([150, 150, 150, 0.5]));
-          // symbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([255,0,0]), 0));
-          // defaultSymbol = new SimpleFillSymbol().setColor(new Color([127, 127, 127, 0.5]));
           renderer = new ClassBreaksRenderer(symbol, attr_name);
 
           // Loop through styles of attribute, make sure they exists in the styles of the chosen attribute
@@ -316,8 +297,8 @@ function(declare,
         var legend = new Legend({
           map : self.map,
           layerInfos : [{
-              layer : self.map.getLayer(ID[0]),
-              title : layer_name[0]
+              layer : self.map.getLayer(ID),
+              title : layer_name
           }]
         }, domConstruct.create("div", { class:"attr_legend" }, dom.byId("legendWrapper")));
         legend.startup();
@@ -361,6 +342,12 @@ function(declare,
 
             //Create div to hold label and check box and another div to hold checkbox itself for styling
             domConstruct.create("div", {  id: "checkBoxInput"+index, class:"checkBoxInput" }, checkContainer);
+
+            //Create color symbol
+            var symbol = domConstruct.create("div", { class:"symbol" }, dom.byId("checkBoxInput"+index));
+            domStyle.set(symbol, "background", new Color(attr_color).toHex());
+
+            // Create div to hole checkbox
             domConstruct.create("div", {  id: "checkBox"+index, class:"checkBox" }, dom.byId("checkBoxInput"+index));
 
             //Create checkbox with default checked
@@ -381,8 +368,6 @@ function(declare,
             },domConstruct.create("div", null, dom.byId("checkBox"+index)));
 
             domConstruct.create("label", {  innerHTML: attr_value, class:"checkBoxLabel" }, dom.byId("checkBoxInput"+index));
-            var symbol = domConstruct.create("div", { class:"symbol" }, dom.byId("checkBoxInput"+index));
-            domStyle.set(symbol, "background", new Color(attr_color).toHex());
             domConstruct.create("br", null, dom.byId("checkBoxContainer"));
           }
         }
