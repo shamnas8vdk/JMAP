@@ -207,7 +207,6 @@ function(declare,
 
       // Set the dropdown fields for attributes
       countyFields.then(function(resp) {
-        console.log(resp);
         // Store information of each attribute in arrays
         var fieldNames, fieldStore;
         var attributeIndex = 0;
@@ -296,7 +295,7 @@ function(declare,
         }
         else{
           var defaultSymbol = new SimpleFillSymbol().setColor(new Color([127, 127, 127, 0.5]));
-          defaultSymbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([0,0,0,0.7]), 1));
+          defaultSymbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([0,0,0,0.7]), 0.5));
           renderer = new UniqueValueRenderer(defaultSymbol, field);
 
           // Loop through styles of attribute, make sure they exists in the styles of the chosen attribute
@@ -304,7 +303,7 @@ function(declare,
             var field_symbol= new SimpleFillSymbol();
             field_symbol.setColor(new Color(renderStyle[index].color));
             // Uncomment to remove border
-            field_symbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([0,0,0,0.7]), 1));
+            field_symbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([0,0,0,0.7]), 0.5));
             renderer.addValue(renderStyle[index].Name,field_symbol);
           }
           reapplyRenderLegend(renderer, ID, layer_name, false);
@@ -422,7 +421,7 @@ function(declare,
               for(index = 0; index < selectedAttribute.Render_style.length; index ++){
                 var attr = selectedAttribute.Render_style[index];
                 var field_symbol= new SimpleFillSymbol();
-                field_symbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([0,0,0,0.7]), 1));
+                field_symbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([0,0,0,0.7]), 0.5));
                 field_symbol.setColor(new Color(attr.color));
                 if(this.value > attr.From){
                   renderer.addBreak(attr.From, attr.To, field_symbol);
