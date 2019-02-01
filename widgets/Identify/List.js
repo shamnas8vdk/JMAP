@@ -201,7 +201,7 @@ define(['dojo/_base/declare',
             border: 'none',
             textDecoration: 'none',
             display: 'inline-block',
-            padding: '8px 8px',
+            padding: '8px 8px'
           });
           return category;
         }

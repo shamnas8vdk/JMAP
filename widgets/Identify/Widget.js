@@ -109,6 +109,7 @@ define(['dojo/_base/declare',
       wManager: null,
       pManager: null,
       resultFormatString: "",
+      graphicArr : [],
 
       postCreate: function () {
         this.inherited(arguments);
@@ -200,7 +201,6 @@ define(['dojo/_base/declare',
       },
 
       _initIdentifySymbols: function() {
-        console.log("Selected 1");
         if (this.config.symbols && this.config.symbols.simplemarkersymbol) {
           this.identMarkerSymbol = new SimpleMarkerSymbol(this.config.symbols.simplemarkersymbol);
         } else {
@@ -401,6 +401,7 @@ define(['dojo/_base/declare',
       },
 
       _clear: function () {
+        this.graphicArr = [];
         this.identifyGeom = null;
         html.setStyle(this.btnClear, 'display', 'none');
         this._hideInfoWindow();
@@ -440,8 +441,23 @@ define(['dojo/_base/declare',
         // this.timedClose();
       },
 
+      // _zoomToAreaFromPoint: function(point){
+      //   this.map.setExtent(idResult.geometry.getExtent().expand(1.2), true);
+      //   this.map.setScale(5000).then(this.map.centerAt(idResult.point);
+      // },
+
       _selectResultItem: function (index, item) {
         var idResult = this.list.items[index];
+        if(this.graphicArr.length != 0){
+          array.forEach(this.graphicArr,function(graphic){
+            graphic.setSymbol(new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+              null, new Color([29,139,209])));
+          })
+        }
+        idResult.graphic.setSymbol(new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+          new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+          new Color([0, 255, 0]), 3), new Color([29,139,209])));
+        this.graphicArr.push(idResult.graphic);
         if(idResult.geometry.type === 'point'){
           if(idResult.forceScale === true){
             this.map.setScale(idResult.zoomScale).then(this.map.centerAt(idResult.point).then(lang.hitch(this, function () {
@@ -535,8 +551,8 @@ define(['dojo/_base/declare',
         // }));
         // idResult.graphic.show();
         if (this.map.infoWindow) {
-          idResult.graphic.setInfoTemplate(this._configurePopupTemplate(idResult));
-          this.map.infoWindow.setFeatures([idResult.graphic]);
+          // idResult.graphic.setInfoTemplate(this._configurePopupTemplate(idResult));
+          // this.map.infoWindow.setFeatures([idResult.graphic]);
           if (this.map.infoWindow.reposition) {
             this.map.infoWindow.reposition();
           }
@@ -820,6 +836,10 @@ define(['dojo/_base/declare',
           queryParamsList.push(queryParams);
         }));
         return queryParamsList;
+      },
+
+      manualIdentify : function(objPoint){
+        return pointToExtent(objPoint, this.identifyTolerance);
       },
 
       pointToExtent: function(objPoint, distance){

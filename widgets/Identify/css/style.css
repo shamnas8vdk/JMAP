@@ -779,6 +779,7 @@
   color: #444;
   cursor: pointer;
   padding: 18px;
+  /* width: 30%; */
   width: 100%;
   border-radius: 5px;
   text-align: left;
