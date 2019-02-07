@@ -138,6 +138,7 @@ function(declare,
         on(listLayer, 'click', function(evt){
           domConstruct.empty("fieldWrapper");
           domConstruct.empty("legendWrapper");
+          layerBtn.classList.toggle("active");
           domStyle.set(layerContainer, "display", "none");
           layerBtn.innerHTML = layer.Name;
 
@@ -228,6 +229,7 @@ function(declare,
         //Set onclick event callback for each attribute
         on(listAttr, 'click', function(evt){
           domConstruct.empty("valueWrapper");
+          fieldBtn.classList.toggle("active");
           domStyle.set(fieldContainer, "display", "none");
           fieldBtn.innerHTML = attribute.Display_Name;
 
