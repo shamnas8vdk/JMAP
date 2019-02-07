@@ -816,8 +816,10 @@
 }
 
 .title {
-  /* margin-left: 2%; */
+  margin-left: 2%;
   font-size: 120%;
+  color: #1D8BD1;
+  font-weight: bold;
 }
 
 .toggle:active {
@@ -840,16 +842,21 @@
 }
 
 .tabContainer {
-  padding-right: 5%;
+  /* padding-right: 5%; */
   margin-bottom: 8%;
+  margin-right: 5%;
+  border: 1px solid #1D8BD1;
+  /* border-top: 1px solid #1D8BD1;
+  border-left: 1px solid #1D8BD1;
+  border-right: 1px solid #1D8BD1; */
 }
 
 /* Uncomment to change tab color to blue */
-/* .mdc-tab__text-label.identify-tab{
+.mdc-tab__text-label.identify-tab{
   color: #1D8BD1;
 }
 
 .mdc-tab-indicator__content.mdc-tab-indicator__content--underline.identify-tab{
   background: #1D8BD1;
-} */
+}
 

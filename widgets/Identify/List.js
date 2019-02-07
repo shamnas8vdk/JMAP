@@ -69,10 +69,9 @@ define(['dojo/_base/declare',
         this.own(on(this._listContainer, 'mouseout', lang.hitch(this, this._onMouseOut)));
         domConstruct.place(this._listContainer, this.domNode);
 
-        var tabContainer = domConstruct.create('div', { class:"tabContainer" });
+        var tabContainer = domConstruct.create('div', { class:"tabContainer" }, this.domNode,"first");
         var tabContent = ["Land", "Space", "RBF"];
         this.setTabContainer(tabContainer, tabContent);
-        domConstruct.place(tabContainer, this.domNode,"first");
       },
 
       setTabContainer: function(tabContainer, valueArr){
@@ -148,10 +147,10 @@ define(['dojo/_base/declare',
         domAttr.set(removeDivImg, 'title', item.removeResultMsg);
         this.own(on(removeDivImg, 'click', lang.hitch(this, this._onRemove)));
 
-        var rTitle = domConstruct.create('p', { class:"title" });
+        var rTitle = domConstruct.create('p', { class:"title" },div);
         domAttr.set(rTitle, 'id', this.id.toLowerCase()+item.id);
         rTitle.textContent = rTitle.innerText = item.title;
-        domConstruct.place(rTitle, div);
+        // domConstruct.place(rTitle, div);
         if(item.alt){
           domClass.add(div, this._itemCSS);
         }else{
@@ -192,9 +191,9 @@ define(['dojo/_base/declare',
               formatAttributeTitle(attTitle, ID, itemID)
     
               if (attValArr[1] === 'null') {
-                attVal.textContent = attVal.innerText = ": ";
+                attVal.textContent = attVal.innerText = " ";
               } else {
-                attVal.textContent = attVal.innerText = ": " + attValArr[1].replace(/<[\/]{0,1}(em|EM|strong|STRONG|font|FONT|u|U)[^><]*>/g, "");
+                attVal.textContent = attVal.innerText = " " + attValArr[1].replace(/<[\/]{0,1}(em|EM|strong|STRONG|font|FONT|u|U)[^><]*>/g, "");
               }
 
               // Check which Category this information belongs to, and adds them to the correct containers.
