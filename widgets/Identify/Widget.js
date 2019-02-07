@@ -441,11 +441,6 @@ define(['dojo/_base/declare',
         // this.timedClose();
       },
 
-      // _zoomToAreaFromPoint: function(point){
-      //   this.map.setExtent(idResult.geometry.getExtent().expand(1.2), true);
-      //   this.map.setScale(5000).then(this.map.centerAt(idResult.point);
-      // },
-
       _selectResultItem: function (index, item) {
         var idResult = this.list.items[index];
         if(this.graphicArr.length != 0){
@@ -551,8 +546,8 @@ define(['dojo/_base/declare',
         // }));
         // idResult.graphic.show();
         if (this.map.infoWindow) {
-          // idResult.graphic.setInfoTemplate(this._configurePopupTemplate(idResult));
-          // this.map.infoWindow.setFeatures([idResult.graphic]);
+          idResult.graphic.setInfoTemplate(this._configurePopupTemplate(idResult));
+          this.map.infoWindow.setFeatures([idResult.graphic]);
           if (this.map.infoWindow.reposition) {
             this.map.infoWindow.reposition();
           }

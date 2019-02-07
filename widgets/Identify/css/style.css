@@ -782,9 +782,11 @@
   /* width: 30%; */
   width: 100%;
   border-radius: 5px;
+  border-bottom: 1px solid #1D8BD1;
   text-align: left;
   outline: none;
   font-size: 13px;
+  font-weight: bold;
   transition: 0.4s;
   /* margin-top: 1%;
   margin-bottom: 1%;
@@ -827,13 +829,27 @@
 .toggle:after {
   content: '▲'; 
   font-size: 10px;
-  color: white;
+  color: #1D8BD1;
   float: right;
   margin-left: 5px;
   /* content: '\2212▼';  */
 }
 
-.active:after {
+.active:after, .toggle {
   content: '▼';
-  /* "\002B" */
 }
+
+.tabContainer {
+  padding-right: 5%;
+  margin-bottom: 8%;
+}
+
+/* Uncomment to change tab color to blue */
+/* .mdc-tab__text-label.identify-tab{
+  color: #1D8BD1;
+}
+
+.mdc-tab-indicator__content.mdc-tab-indicator__content--underline.identify-tab{
+  background: #1D8BD1;
+} */
+

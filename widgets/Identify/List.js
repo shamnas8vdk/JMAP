@@ -68,6 +68,49 @@ define(['dojo/_base/declare',
         this.own(on(this._listContainer, 'mouseover', lang.hitch(this, this._onMouseOver)));
         this.own(on(this._listContainer, 'mouseout', lang.hitch(this, this._onMouseOut)));
         domConstruct.place(this._listContainer, this.domNode);
+
+        var tabContainer = domConstruct.create('div', { class:"tabContainer" });
+        var tabContent = ["Land", "Space", "RBF"];
+        this.setTabContainer(tabContainer, tabContent);
+        domConstruct.place(tabContainer, this.domNode,"first");
+      },
+
+      setTabContainer: function(tabContainer, valueArr){
+        // Create Divs to hold tab based on material design
+        var tabBar = domConstruct.create('div', { role:"tablist", class:"mdc-tab-bar" }, tabContainer);
+        var scroller = domConstruct.create('div', { class:"mdc-tab-scroller"}, tabBar);
+        var scrollArea = domConstruct.create('div', { class:"mdc-tab-scroller__scroll-area"}, scroller);
+        var scrollContent = domConstruct.create('div', { class:"mdc-tab-scroller__scroll-content"},scrollArea);
+
+        // Create array to hold all created items for styles
+        var buttons = [];
+        for(index = 0; index < valueArr.length; index++){
+
+          // Create button element and classes
+          var button = domConstruct.create('button', { role:"tab", class:"mdc-tab mdc-tab--active"},scrollContent);
+          var spanContent = domConstruct.create('span', { class:"mdc-tab__content"},button);
+          var spanText = domConstruct.create('span', { innerHTML:valueArr[index] ,class:"mdc-tab__text-label identify-tab"},spanContent);
+
+          // Set first tab to active
+          if(index == 0){
+            var spanContentActive = domConstruct.create('span', { class:"mdc-tab-indicator mdc-tab-indicator--active"},button);
+            var spanTextActive = domConstruct.create('span', { class:"mdc-tab-indicator__content mdc-tab-indicator__content--underline identify-tab"},spanContentActive);
+          }
+          var spanRipple = domConstruct.create('span', { class:"mdc-tab__ripple"},button);
+          buttons.push(button);
+
+          // Set highlight on click
+          on(button, 'click', function(evt){
+            array.forEach(buttons, function(btn){
+              var active = btn.getElementsByClassName("mdc-tab-indicator mdc-tab-indicator--active")[0];
+              if(active){
+                btn.removeChild(active);
+              }
+            });
+            var spanContentActive = domConstruct.create('span', { class:"mdc-tab-indicator mdc-tab-indicator--active"}, this);
+            var spanTextActive = domConstruct.create('span', { class:"mdc-tab-indicator__content mdc-tab-indicator__content--underline identify-tab"},spanContentActive);
+          });
+        }
       },
 
       toggleView: function() {
@@ -127,8 +170,6 @@ define(['dojo/_base/declare',
         // Store the current object ID and Item id for reference in the loops later
         var ID = this.id;
         var itemID = item.id;
-        // var btnContainer = domConstruct.create('div', { class:"btnContainer" });
-        // domConstruct.place(btnContainer, div);
 
         // AJAX request for JSON of category information
         $.getJSON( getJSONPath(), function( data ){
@@ -141,9 +182,6 @@ define(['dojo/_base/declare',
 
             //Create a container for each category to encapsulate related data
             var container = setContainer(CategoryNo, category, data);
-
-            //Add button into btnContainer
-            // domConstruct.place(category, btnContainer);
 
             //Create a for loop for all attributes gotten from the object
             for (var AttributeIndex = 0; AttributeIndex < arrayLength; AttributeIndex++) {
@@ -196,9 +234,8 @@ define(['dojo/_base/declare',
         function setCategoryButton(){
           var category = domConstruct.create('div', { class:"toggle" });
           domStyle.set(category,  {
-            background: '#1D8BD1',
-            color: 'white',
-            border: 'none',
+            background: 'white',
+            color: '#1D8BD1',
             textDecoration: 'none',
             display: 'inline-block',
             padding: '8px 8px'
@@ -225,7 +262,6 @@ define(['dojo/_base/declare',
           domConstruct.place(category, categoryContainer);
           domConstruct.place(container, categoryContainer);
           domConstruct.place(categoryContainer, div);
-          // domStyle.set(categoryContainer, "display", "none");
           return container;
         }
 
