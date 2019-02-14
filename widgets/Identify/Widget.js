@@ -438,21 +438,38 @@ define(['dojo/_base/declare',
       },
 
       _outResultItem: function (index, item) {
-        // this.timedClose();
+        this.timedClose();
       },
 
-      _selectResultItem: function (index, item) {
-        var idResult = this.list.items[index];
+      _graphicHighlight: function(graphic){
+        console.log(this.graphicsLayer);
         if(this.graphicArr.length != 0){
           array.forEach(this.graphicArr,function(graphic){
             graphic.setSymbol(new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
               null, new Color([29,139,209])));
           })
         }
-        idResult.graphic.setSymbol(new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+        graphic.setSymbol(new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
           new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
           new Color([0, 255, 0]), 3), new Color([29,139,209])));
-        this.graphicArr.push(idResult.graphic);
+        this.graphicArr.push(graphic);
+      },
+
+      _graphicCheck: function(geom){
+        var check = false;
+        if(this.graphicsLayer.graphics.length != 0){
+          array.forEach(this.graphicsLayer.graphics,function(graphic){
+            if(JSON.stringify(graphic.geometry.rings) == JSON.stringify(geom.rings)){
+              check = true;
+            }
+          })
+        }
+        return check;
+      },
+
+      _selectResultItem: function (index, item) {
+        var idResult = this.list.items[index];
+        this._graphicHighlight(idResult.graphic);
         if(idResult.geometry.type === 'point'){
           if(idResult.forceScale === true){
             this.map.setScale(idResult.zoomScale).then(this.map.centerAt(idResult.point).then(lang.hitch(this, function () {
@@ -523,8 +540,8 @@ define(['dojo/_base/declare',
       },
 
       mouseOutGraphic: function (event) {
-        // this.timedClose();
-        // this._hideInfoWindow();
+        this.timedClose();
+        this._hideInfoWindow();
       },
 
       timedClose: function(){
@@ -834,7 +851,7 @@ define(['dojo/_base/declare',
       },
 
       manualIdentify : function(objPoint){
-        return pointToExtent(objPoint, this.identifyTolerance);
+        return this.pointToExtent(objPoint, this.identifyTolerance);
       },
 
       pointToExtent: function(objPoint, distance){
@@ -1282,7 +1299,7 @@ define(['dojo/_base/declare',
                 link: lyrIdLinks
               };
               iGra.attributes = Atts;
-              if(this.returngeometryforzoom){
+              if(this.returngeometryforzoom && !this._graphicCheck(iGra.geometry)){
                 this.graphicsLayer.add(iGra);
               }
               if(this.enableGraphicClickInfo){
@@ -1381,7 +1398,7 @@ define(['dojo/_base/declare',
                   link: ''
                 };
                 iGra2.attributes = Atts2;
-                if(this.returngeometryforzoom){
+                if(this.returngeometryforzoom && !this._graphicCheck(iGra2.geometry)){
                   this.graphicsLayer.add(iGra2);
                 }
                 if(this.enableGraphicClickInfo){
@@ -2061,7 +2078,7 @@ define(['dojo/_base/declare',
                 if(this.enableGraphicClickInfo){
                   iGra.setInfoTemplate(this._configurePopupTemplate(idResult));
                 }
-                if(this.returngeometryforzoom){
+                if(this.returngeometryforzoom && !this._graphicCheck(iGra.geometry)){
                   this.graphicsLayer.add(iGra);
                 }
                 this.list.add(idResult);
@@ -2156,7 +2173,7 @@ define(['dojo/_base/declare',
                     link: ''
                   };
                   iGra2.attributes = Atts2;
-                  if(this.returngeometryforzoom){
+                  if(this.returngeometryforzoom && !this._graphicCheck(iGra2.geometry)){
                     this.graphicsLayer.add(iGra2);
                   }
                   if(this.enableGraphicClickInfo){
@@ -2241,7 +2258,7 @@ define(['dojo/_base/declare',
         }));
 
         this.infoWinMouseOut = on(this.map.infoWindow.domNode, 'mouseout', lang.hitch(this, function() {
-          // this.timedClose();
+          this.timedClose();
         }));
       },
 

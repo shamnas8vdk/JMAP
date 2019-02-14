@@ -56,6 +56,7 @@ define(['dojo/_base/declare',
       _itemSelectedCSS: 'identify-list-item selected',
       _itemAltCSS: 'identify-list-item alt',
       _wrapResults: null,
+      _listItems: [],
 
       startup: function() {
         this.customConfig = new customConfig();
@@ -121,8 +122,18 @@ define(['dojo/_base/declare',
         }
       },
 
+      duplicateCheck: function(geom){
+        for(itemNo=0; itemNo <this._listItems.length; itemNo++){
+          if(JSON.stringify(this._listItems[itemNo].rings) == JSON.stringify(geom.rings)){
+            return true;
+          }
+        }
+        this._listItems.push(geom);
+        return false;
+      },
+
       add: function(item) {
-        if (arguments.length === 0) {
+        if (arguments.length === 0 || this.duplicateCheck(item.graphic.geometry)) {
           return;
         }
         this.items.push(item);
