@@ -20,9 +20,16 @@ define([
     'jimu/BaseWidget',
     'dojo/_base/html',
     'dojo/on',
-    './levelViewer'
+    './levelViewer',
+    './building',
+    'esri/tasks/query',
+    'esri/tasks/QueryTask',
+    'esri/tasks/GeometryService',
+    'esri/tasks/BufferParameters'
   ],
-  function(declare, lang, BaseWidget, html, on, levelViewer) {
+  function(declare, lang, BaseWidget, html, 
+    on, levelViewer, building, Query, QueryTask, 
+    GeometryService, BufferParameters) {
     var clazz = declare([BaseWidget], {
       name: 'ZoomSlider',
 
@@ -42,7 +49,8 @@ define([
       postCreate: function(){
         this.inherited(arguments);
         this.own(on(this.map, 'zoom-end', lang.hitch(this, this._zoomHandler)));
-        this._zoomHandler();
+        this.own(on(this.map, 'extent-change', lang.hitch(this, this.levelCheck)));
+        // this.map.on("extent-change", this.levelCheck(this.map.geographicExtent));extent-change
         this.btnZoomIn.title = window.jimuNls.common.zoomIn;
         this.btnZoomOut.title = window.jimuNls.common.zoomOut;
       },
@@ -71,12 +79,46 @@ define([
         if(disabledButton){
           html.addClass(disabledButton, this._disabledClass);
         }
-        if(level >= 18){
-          createList();
-        }
-        if(level < 18){
-          removeList();
-        }
+      },
+
+      //Check if map is centered at a single feature
+      levelCheck: function(){
+        var URL = getLayerURL();
+        var queryTask = new QueryTask(URL);
+        var queryParams = new Query();
+        var ext = this.map.geographicExtent;
+        queryParams.spatialRelationship = Query.SPATIAL_REL_CONTAINS;
+        queryParams.geometry = ext;
+        queryParams.returnGeometry = true;
+        queryParams.outFields = ['*'];
+        queryParams.outSpatialReference = this.map.spatialReference;
+        queryTask.executeForCount(queryParams,function(result){
+          if(result==1){
+            createList();
+          }
+          else{
+            removeList();
+          }
+        });
+      },
+
+      // Get feature from centerpoint of map
+      getCenterPointGeometry: function(){
+        var URL = getLayerURL();
+        var queryTask = new QueryTask(URL);
+        var queryParams = new Query();
+        var mapPoint = this.map.geographicExtent.getCenter();
+        queryParams.spatialRelationship = Query.SPATIAL_REL_WITHIN;
+        queryParams.geometry = mapPoint;
+        queryParams.returnGeometry = true;
+        queryParams.outFields = ['*'];
+        queryParams.outSpatialReference = this.map.spatialReference;
+
+        queryTask.execute(queryParams,function(result){
+          if(result.features.length > 0){
+            return result.features[0];
+          }
+        });
       },
 
       _onBtnZoomInClicked: function(){
@@ -110,6 +152,10 @@ define([
           html.addClass(this.btnZoomIn, this._cornerLeading);
           html.addClass(this.btnZoomOut, this._cornerTrailing);
         }
+      },
+
+      _buildLevelInformation: function(){
+
       }
 
     });

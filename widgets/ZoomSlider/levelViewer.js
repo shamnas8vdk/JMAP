@@ -138,7 +138,7 @@ function setOnclickEvent(listElement){
         $(window).off("mousemove");
         if (!wasDragging) {
             // if mouse wasnt moved, then we allow click to happen
-            alert( "Handler for .click() called." ); 
+            // alert( "Handler for .click() called." ); 
         }
     });
 }
