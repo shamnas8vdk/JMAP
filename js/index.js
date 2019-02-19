@@ -10,14 +10,16 @@ var h = input_pass.height();
 $('.spanColor').height(h + 23);
 input_pass.on('focus', function () {
   topbar.removeClass('error success');
-  input.text('');
+  input_pass.text('');
 });
 
 // On submission of login credentials
 btn.on('click', function () {
   var pass = $('#password').val();
   var user = $('#username').val();
+  var cfg = {};
   if(authenticateCredentials(user, pass)){
+    storeCredentials(user, pass);
     location.assign("home.html");
   }
   else{
@@ -35,5 +37,37 @@ input_pass.keypress(function () {
 
 function authenticateCredentials(username, password){
   //Authenticate username and password here
+  var rights = ["Identify_Right","Classification_Right"];
+  
+  sessionStorage.setItem(
+    'Rights',
+    rights
+  );
   return true;
+}
+
+function storeCredentials(username, password){
+  $.getJSON( getJSONPath(), function( data ){
+    var passphrase = data.credentialPass;
+    var encryptedUsername = CryptoJS.AES.encrypt(username,passphrase);
+    var encryptedPassword = CryptoJS.AES.encrypt(password,passphrase);
+    sessionStorage.setItem('Username',encryptedUsername.toString());
+    sessionStorage.setItem('Password',encryptedPassword.toString());
+    // To Decrypt 
+    // E.g. CryptoJS.AES.decrypt(encryptedUsername.toString(), passphrase).toString(CryptoJS.enc.Utf8);
+    // E.g. CryptoJS.AES.decrypt(encryptedPassword.toString(), passphrase).toString(CryptoJS.enc.Utf8);
+  });
+}
+
+// Get JSON file of config dynamically
+function getJSONPath(){
+  var array = window.location.href.split("/");
+  var JSONpath;
+  if(array[array.length - 1] == "" || array[array.length - 1] == null){
+    JSONpath = window.location.href + "js/config.json";
+  }
+  else{
+    JSONpath = window.location.href.replace(array[array.length - 1],"js/config.json");
+  }
+  return JSONpath;
 }

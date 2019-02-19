@@ -322,6 +322,72 @@ function (declare, lang, array, html, dojoConfig, cookie,
       return url;
     },
 
+    parseConfigRights: function(config){
+      var authorizedRights = sessionStorage.getItem("Rights").split(",");
+      rightConfig = getRights();
+      arrayUtils.forEach(rightConfig.widgets, function(widget) {
+        var URI = widget.widget_uri;
+        var widgetRight = widget.right;
+
+        var tempWidget;
+        var index = 0;
+        var spliceIndex = null;
+        arrayUtils.forEach(config.widgetOnScreen.widgets, function(widget) {
+          if(authorizedRights.includes(widgetRight) && widget.uri == URI){
+            tempWidget = widget;
+            spliceIndex = index;
+          }
+          index++;
+        });
+        if(spliceIndex != null){
+          config.widgetOnScreen.widgets.splice(spliceIndex,1);
+        }
+
+        arrayUtils.forEach(config.widgetOnScreen.groups, function(group) {
+          index = 0;
+          spliceIndex = null;
+          arrayUtils.forEach(group.widgets, function(widget) {
+            if(authorizedRights.includes(widgetRight) && widget.uri == URI){
+              tempWidget = widget;
+              spliceIndex = index;
+            }
+            index++;
+          })
+          if(spliceIndex != null){
+            group.widgets.splice(spliceIndex,1);
+          }
+        });
+
+        index = 0;
+        spliceIndex = null;
+        arrayUtils.forEach(config.widgetPool.widgets, function(widget) {
+          if(authorizedRights.includes(widgetRight) && widget.uri == URI){
+            tempWidget = widget;
+            spliceIndex = index;
+          }
+          index++;
+        });
+        if(spliceIndex != null){
+          config.widgetPool.widgets.splice(spliceIndex,1);
+        }
+        
+        arrayUtils.forEach(config.widgetPool.groups, function(group) {
+          index = 0;
+          spliceIndex = null;
+          arrayUtils.forEach(group.widgets, function(widget) {
+            if(authorizedRights.includes(widgetRight) && widget.uri == URI){
+              tempWidget = widget;
+              spliceIndex = index;
+            }
+            index++;
+          })
+          if(spliceIndex != null){
+            group.widgets.splice(spliceIndex,1);
+          }
+        });
+      });
+    },
+
     processItemIDAndTokenOfResources:function(resUrl, appInfo){
       //replace resUrl's ${itemId} and token
       if (resUrl.indexOf('${itemId}') > 0) {

@@ -871,52 +871,115 @@ function(lang, array, aspect, Deferred, dom, domStyle, cookie, json, topic, dojo
       }     
       
     },
+
+    // Get JSON file of config dynamically
+    getJSONPath: function(){
+      var array = window.location.href.split("/");
+      var JSONpath;
+      if(array[array.length - 1] == "" || array[array.length - 1] == null){
+        JSONpath = window.location.href + "js/config.json";
+      }
+      else{
+        JSONpath = window.location.href.replace(array[array.length - 1],"js/config.json");
+      }
+      return JSONpath;
+    },
+
 	//Shamnas 
     // To manually signin to portal
     manualSignIn(portalUrl){
      //Get Token from API
-	 debugger;
-	  var def = new Deferred();
-      var password = "Passw0rd123";
-      var username = "portaladmin";
-	  //var referer = "https%3A%2F%2Fspace.jtcqas.gov.sg%2Fjmap";
-      // ArcGIS server info for token generation
-	  var serverInfo = new ServerInfo( 
-	  {
-		  "server":portalUrl,
-		  "tokenServiceUrl":portalUrl+"/sharing/generateToken",
-		  "adminTokenServiceUrl":portalUrl+"/admin/generateToken",
-		  "shortLivedTokenValidity":60,
-		  "currentVersion":10.6,
-		  "hasServer":true
-		  
-	  }); 
-	  esriNS.id.generateToken(serverInfo,{"username":username,"password":password,"referer":window.location.host}).then(lang.hitch(this,function(tokenInfo){
-		//debugger;
-		var creationTime = (new Date).getTime();
-		//To calculate Expiration time
-		var expirationTime = creationTime + (serverInfo.shortLivedTokenValidity * 60000)
-        //var idObject = {};	
-         		 
-		var credential = new Credential(
-			 {
-			  "usedId":username,
-			  "server":portalUrl,
-			  "token":tokenInfo.token,
-			  "expires":expirationTime,
-			  "ssl":true,
-			  "scope":"portal",
-			  "validity":720,
-			  "creationTime":creationTime
-			  });
-		//debugger;
-		this.tryRegisterCredential(credential);		
-		window.isBuilder = false;
-		this._signInSuccess(credential, false);  
-        def.resolve(false);	
-	  }));
-	 
-	  return def;
+   debugger;
+    // To get credentials dynamically, decrypt and generate credential
+      var encryptedName = sessionStorage.getItem("Username");
+      var encryptedPass = sessionStorage.getItem("Password");
+      $.getJSON( this.getJSONPath(), function( data ){
+        var passphrase = data.credentialPass;
+        var username = CryptoJS.AES.decrypt(encryptedName, passphrase).toString(CryptoJS.enc.Utf8);
+        var password = CryptoJS.AES.decrypt(encryptedPass, passphrase).toString(CryptoJS.enc.Utf8);
+
+        var def = new Deferred();
+        //var referer = "https%3A%2F%2Fspace.jtcqas.gov.sg%2Fjmap";
+          // ArcGIS server info for token generation
+        var serverInfo = new ServerInfo( 
+        {
+          "server":portalUrl,
+          "tokenServiceUrl":portalUrl+"/sharing/generateToken",
+          "adminTokenServiceUrl":portalUrl+"/admin/generateToken",
+          "shortLivedTokenValidity":60,
+          "currentVersion":10.6,
+          "hasServer":true
+          
+        }); 
+        esriNS.id.generateToken(serverInfo,{"username":username,"password":password,"referer":window.location.host}).then(lang.hitch(this,function(tokenInfo){
+        //debugger;
+        var creationTime = (new Date).getTime();
+        //To calculate Expiration time
+        var expirationTime = creationTime + (serverInfo.shortLivedTokenValidity * 60000)
+            //var idObject = {};	
+                
+        var credential = new Credential(
+          {
+            "usedId":username,
+            "server":portalUrl,
+            "token":tokenInfo.token,
+            "expires":expirationTime,
+            "ssl":true,
+            "scope":"portal",
+            "validity":720,
+            "creationTime":creationTime
+            });
+        //debugger;
+        this.tryRegisterCredential(credential);		
+        window.isBuilder = false;
+        this._signInSuccess(credential, false);  
+            def.resolve(false);	
+        }));
+      
+        return def;
+      });
+
+      // var def = new Deferred();
+      //   var password = "Passw0rd123";
+      //   var username = "portaladmin";
+      // //var referer = "https%3A%2F%2Fspace.jtcqas.gov.sg%2Fjmap";
+      //   // ArcGIS server info for token generation
+      // var serverInfo = new ServerInfo( 
+      // {
+      //   "server":portalUrl,
+      //   "tokenServiceUrl":portalUrl+"/sharing/generateToken",
+      //   "adminTokenServiceUrl":portalUrl+"/admin/generateToken",
+      //   "shortLivedTokenValidity":60,
+      //   "currentVersion":10.6,
+      //   "hasServer":true
+        
+      // }); 
+      // esriNS.id.generateToken(serverInfo,{"username":username,"password":password,"referer":window.location.host}).then(lang.hitch(this,function(tokenInfo){
+      // //debugger;
+      // var creationTime = (new Date).getTime();
+      // //To calculate Expiration time
+      // var expirationTime = creationTime + (serverInfo.shortLivedTokenValidity * 60000)
+      //     //var idObject = {};	
+              
+      // var credential = new Credential(
+      //   {
+      //     "usedId":username,
+      //     "server":portalUrl,
+      //     "token":tokenInfo.token,
+      //     "expires":expirationTime,
+      //     "ssl":true,
+      //     "scope":"portal",
+      //     "validity":720,
+      //     "creationTime":creationTime
+      //     });
+      // //debugger;
+      // this.tryRegisterCredential(credential);		
+      // window.isBuilder = false;
+      // this._signInSuccess(credential, false);  
+      //     def.resolve(false);	
+      // }));
+    
+      // return def;
     },
     
 
