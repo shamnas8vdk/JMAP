@@ -87,19 +87,24 @@ define([
         var queryTask = new QueryTask(URL);
         var queryParams = new Query();
         var ext = this.map.geographicExtent;
+        var current = this;
         queryParams.spatialRelationship = Query.SPATIAL_REL_CONTAINS;
         queryParams.geometry = ext;
         queryParams.returnGeometry = true;
         queryParams.outFields = ['*'];
         queryParams.outSpatialReference = this.map.spatialReference;
-        queryTask.executeForCount(queryParams,function(result){
-          if(result==1){
-            createList();
-          }
-          else{
-            removeList();
-          }
-        });
+        console.log( this.map.getScale());
+        // Compare scale before query
+        if(getLayerScale() > this.map.getScale()){
+          queryTask.executeForCount(queryParams,function(result){
+            if(result==1){
+              createList();
+            }
+            else{
+              removeList();
+            }
+          });
+        }
       },
 
       // Get feature from centerpoint of map
@@ -116,6 +121,7 @@ define([
 
         queryTask.execute(queryParams,function(result){
           if(result.features.length > 0){
+            console.log(result.features[0]);
             return result.features[0];
           }
         });
