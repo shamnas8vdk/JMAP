@@ -83,6 +83,7 @@ define([
 
       //Check if map is centered at a single feature
       levelCheck: function(){
+        // Get URL and form new query
         var URL = getLayerURL();
         var queryTask = new QueryTask(URL);
         var queryParams = new Query();
@@ -93,12 +94,14 @@ define([
         queryParams.returnGeometry = true;
         queryParams.outFields = ['*'];
         queryParams.outSpatialReference = this.map.spatialReference;
-        console.log( this.map.getScale());
-        // Compare scale before query
+
+        // Compare scale to be valid before executing query
         if(getLayerScale() > this.map.getScale()){
           queryTask.executeForCount(queryParams,function(result){
             if(result==1){
+              // Create the level widget only if 1 feature is inside extent
               createList();
+              // current.getCenterPointGeometry();
             }
             else{
               removeList();
@@ -109,10 +112,13 @@ define([
 
       // Get feature from centerpoint of map
       getCenterPointGeometry: function(){
+        // Get URL and form new query
         var URL = getLayerURL();
         var queryTask = new QueryTask(URL);
         var queryParams = new Query();
         var mapPoint = this.map.geographicExtent.getCenter();
+
+        // Use within to find the feature mapPoint is within
         queryParams.spatialRelationship = Query.SPATIAL_REL_WITHIN;
         queryParams.geometry = mapPoint;
         queryParams.returnGeometry = true;
@@ -121,8 +127,7 @@ define([
 
         queryTask.execute(queryParams,function(result){
           if(result.features.length > 0){
-            console.log(result.features[0]);
-            return result.features[0];
+            // Do Something here
           }
         });
       },
