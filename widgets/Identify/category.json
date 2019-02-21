@@ -1,5 +1,5 @@
 {
-  "categories": {
+  "Land": {
     "layer_name": "Layer Name",
     "display_key": "OBJECTID",
     "type": [
@@ -30,6 +30,83 @@
           "Shape__Length"
         ]
       }
+    ]
+  },
+  "Space": {
+    "layer_name": "Layer Name",
+    "display_key": "OBJECTID",
+    "type": [
+      {
+        "Heading":"Category1",
+        "Attributes": [
+          "OBJECTID",
+          "ID",
+          "SPARE",
+          "AREA"
+        ]
+      },
+      {
+        "Heading":"Category2",
+        "Attributes": [
+          "Status",
+          "New_Prop_Address",
+          "Street_Name",
+          "Supervisor"
+        ]
+      },
+      {
+        "Heading":"Category3",
+        "Attributes": [
+          "Remarks",
+          "GlobalID",
+          "Shape__Area",
+          "Shape__Length"
+        ]
+      }
+    ]
+  },
+  "Unit": {
+    "layer_name": "Layer Name",
+    "display_key": "OBJECTID",
+    "type": [
+      {
+        "Heading":"Category1",
+        "Attributes": [
+          "OBJECTID",
+          "ID",
+          "SPARE",
+          "AREA"
+        ]
+      },
+      {
+        "Heading":"Category2",
+        "Attributes": [
+          "Status",
+          "New_Prop_Address",
+          "Street_Name",
+          "Supervisor"
+        ]
+      },
+      {
+        "Heading":"Category3",
+        "Attributes": [
+          "Remarks",
+          "GlobalID",
+          "Shape__Area",
+          "Shape__Length"
+        ]
+      }
+    ]
+  },
+  "layer_types":{
+    "Land": [
+      "Layer_About"
+    ],
+    "Space":[
+      "Layer_Legend"
+    ],
+    "Unit":[
+      
     ]
   }
 }

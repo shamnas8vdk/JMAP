@@ -22,7 +22,7 @@ define(['dojo/_base/declare',
          'dojo/on',
          'esri/layers/FeatureLayer',
          'esri/layers/ArcGISTiledMapServiceLayer',
-         'esri/layers/MapImageLayer',
+         'esri/layers/ArcGISDynamicMapServiceLayer',
          'esri/layers/LayerDrawingOptions' ,
          'esri/symbols/SimpleLineSymbol',
          'esri/renderers/ClassBreaksRenderer',
@@ -51,7 +51,7 @@ function(declare,
          HorizontalRuleLabels,
          domConstruct,
          on,
-         MapImageLayer,
+         FeatureLayer,
          ArcGISTiledMapServiceLayer,
          ArcGISDynamicMapServiceLayer,
          LayerDrawingOptions,
@@ -61,6 +61,10 @@ function(declare,
          Legend,
          LayerInfos) {
         var currentLayer = null;
+        var selectedLayer = null;
+        var selectedAttribute = null;
+        var layerConfig = null;
+        var layerBtn;
   //To create a widget, you need to derive from BaseWidget.
   return declare([BaseWidget], {
     // DemoWidget code goes here
@@ -69,7 +73,6 @@ function(declare,
     //templateString: template,
     
     baseClass: 'jimu-widget-demo',
-    currentLayer: null,
 
     postCreate: function() {
       this.inherited(arguments);
@@ -79,9 +82,6 @@ function(declare,
     startup: function() {
       this.inherited(arguments);
       var app = {};
-      var layerConfig = null;
-      var selectedLayer = null;
-      var selectedAttribute = null;
       self = this;
       app.defaultFrom = "#ffffcc";
       app.defaultTo = "#006837";
@@ -100,11 +100,11 @@ function(declare,
     if(layerConfig == null){
       $.getJSON( getJSONPath(), function( data ){
         layerConfig = data;
-        toggleLayerFields()
+        toggleLayerFields();
       });
     }
     else{
-      toggleLayerFields()
+      toggleLayerFields();
     }
 
     function toggleLayerFields(){
@@ -113,7 +113,7 @@ function(declare,
 
        // Drowdown for layers
        var layerWrapper = dom.byId("layerWrapper");
-       var layerBtn = domConstruct.create("div", { innerHTML:"Select a Layer", id: "layerSelectContainerButton", class:"checkBoxContainerButton" }, layerWrapper);
+       layerBtn = domConstruct.create("div", { innerHTML:"Select a Layer", id: "layerSelectContainerButton", class:"checkBoxContainerButton" }, layerWrapper);
        var layerContainer = domConstruct.create("div", { id: "layerContainer", class:"attrLayerContainer" }, layerWrapper);
        domStyle.set(layerContainer, "display", "none");
 
@@ -149,9 +149,11 @@ function(declare,
           })
           selectedLayer = layer;
            // Toggle list of attributes dropdown
-           toggleAttributeFields(attributes, layer.URL, 
+          toggleAttributeFields(attributes, layer.URL, 
              layer.ID, layer.Dropdown_style.width, layer.Dropdown_style.fontSize, 
              layer.Dropdown_style.color, layer.Name, index);
+          // removeLayer();
+          // addLayer(layer.URL,layer.ID, layer.Name);
         });
 
         domConstruct.create("br", null, layerContainer);
@@ -175,7 +177,7 @@ function(declare,
 
     // Add Layer
     function addLayer(URL,ID, Name){
-      var selectedLayer = new MapImageLayer(URL,{
+      var selectedLayer = new FeatureLayer(URL,{
         id: ID
       });
       self.map.addLayer(selectedLayer);
@@ -186,6 +188,8 @@ function(declare,
     function removeLayer(){
       if(currentLayer != null){
         self.map.removeLayer(currentLayer);
+        selectedLayer = null;
+        selectedAttribute = null;
       }
     }
 
@@ -196,23 +200,23 @@ function(declare,
       domConstruct.create("div", { innerHTML: "Currently selected attribute:", class:"selectLabel" }, fieldWrapper);
 
       // Request for the layer using URL from selected Layer earlier
-      var countyFields = esriRequest({
-        url: URL,
-        content: {
-          f: "json"
-        },
-        callbackParamName: "callback"
-      });
+      // var countyFields = esriRequest({
+      //   url: URL,
+      //   content: {
+      //     f: "json"
+      //   },
+      //   callbackParamName: "callback"
+      // });
 
       // Set the dropdown fields for attributes
-      countyFields.then(function(resp) {
-        //New dropdown
-       var fieldBtn = domConstruct.create("div", { innerHTML:"Select an Attribute", id: "fieldSelectContainerButton", class:"checkBoxContainerButton" }, fieldWrapper);
-       var fieldContainer = domConstruct.create("div", { id: "fieldContainer", class:"attrLayerContainer" }, fieldWrapper);
-       domStyle.set(fieldContainer, "display", "none");
+      // countyFields.then(function(resp) {
+          //New dropdown
+      var fieldBtn = domConstruct.create("div", { innerHTML:"Select an Attribute", id: "fieldSelectContainerButton", class:"checkBoxContainerButton" }, fieldWrapper);
+      var fieldContainer = domConstruct.create("div", { id: "fieldContainer", class:"attrLayerContainer" }, fieldWrapper);
+      domStyle.set(fieldContainer, "display", "none");
 
-       //Set onclick event callback for dropdown
-       on(fieldBtn, 'click', function(evt){
+      //Set onclick event callback for dropdown
+      on(fieldBtn, 'click', function(evt){
         fieldBtn.classList.toggle("active");
         if(fieldContainer.style.display == "none") {
           domStyle.set(fieldContainer, "display", "block");
@@ -234,21 +238,21 @@ function(declare,
           fieldBtn.innerHTML = attribute.Display_Name;
 
           selectedAttribute = attribute;
-          getData(attribute.Name, ID, layer_name);
+          applyRenderer(attribute.Name, ID, layer_name, selectedLayer.Layer_ID);
         });
 
         domConstruct.create("br", null, fieldContainer);
       });
-      }, function(err) {
-        // console.log("failed to get field names: ", err);
-      });
+      // }, function(err) {
+      //   // console.log("failed to get field names: ", err);
+      // });
 
-      function getData(field,ID, layer_name) {
-        // Apply Render
-        applyRenderer(field,ID, layer_name)
-      }
+      // function getData(field,ID, layer_name, Layer_ID) {
+      //   // Apply Render
+      //   applyRenderer(field,ID, layer_name)
+      // }
 
-      function applyRenderer(field, ID, layer_name) {
+      function applyRenderer(field, ID, layer_name, Layer_ID) {
 
         // Get Layer and attribute render information according to URL
         var renderStyle;
@@ -274,7 +278,7 @@ function(declare,
             field_symbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([0,0,0,0.7]), 1));
             renderer.addBreak(renderStyle[index].From, renderStyle[index].To, field_symbol);
           }
-          reapplyRenderLegend(renderer, ID, layer_name, true);
+          reapplyRenderLegend(renderer, ID, layer_name, true, Layer_ID);
         }
         else{
           var defaultSymbol = new SimpleFillSymbol().setColor(new Color([127, 127, 127, 0.5]));
@@ -289,17 +293,17 @@ function(declare,
             field_symbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([0,0,0,0.7]), 0.5));
             renderer.addValue(renderStyle[index].Name,field_symbol);
           }
-          reapplyRenderLegend(renderer, ID, layer_name, false);
+          reapplyRenderLegend(renderer, ID, layer_name, false, Layer_ID);
         }
-        toggleAttributeValues(renderer, ID, layer_name);
+        toggleAttributeValues(renderer, ID, layer_name, Layer_ID);
       }
 
       //Apply the legend after rendering the attributes
-      function applyLegend(ID, layer_name){
+      function applyLegend(layer, layer_name){
         var legend = new Legend({
           map : self.map,
           layerInfos : [{
-              layer : self.map.getLayer(ID),
+              layer : layer,
               title : layer_name
           }]
         }, domConstruct.create("div", { class:"attr_legend" }, dom.byId("legendWrapper")));
@@ -310,7 +314,7 @@ function(declare,
         // console.log("error: ", JSON.stringify(err));
       }
 
-      function toggleAttributeValues(renderer, ID, layerName){
+      function toggleAttributeValues(renderer, ID, layerName, Layer_ID){
         var attr_value;
         var CheckedMultiSelect;
 
@@ -321,13 +325,12 @@ function(declare,
         if(selectedAttribute.isBreak == false){
 
           //Create button to toggle filter
-          var checkBtn = domConstruct.create("div", { innerHTML:"Filter Value", id: "checkBoxContainerButton", class:"checkBoxContainerButton" }, valueContainer);
+          var checkBtn = domConstruct.create("div", { innerHTML:"Filter Value", id: "filterBoxContainerButton", class:"filterBoxContainerButton" }, valueContainer);
           var checkContainer = domConstruct.create("div", { id: "checkBoxContainer", class:"checkBoxContainer" }, valueContainer);
           domStyle.set(checkContainer, "display", "none");
 
           //Set onclick event callback for category button
           on(checkBtn, 'click', function(evt){
-            checkBtn.classList.toggle("active");
             if(checkContainer.style.display == "none") {
               domStyle.set(checkContainer, "display", "block");
             }
@@ -360,11 +363,11 @@ function(declare,
               onChange: function(){ 
                 if(!this.checked){
                   renderer.removeValue(this.name);
-                  reapplyRenderLegend(renderer, ID, layerName, false);
+                  reapplyRenderLegend(renderer, ID, layerName, false, Layer_ID);
                 }
                 else{
                   renderer.addValue(this.name, new SimpleFillSymbol().setColor(new Color(this.value)));
-                  reapplyRenderLegend(renderer, ID, layerName, false);
+                  reapplyRenderLegend(renderer, ID, layerName, false, Layer_ID);
                 }
               }
             },domConstruct.create("div", null, dom.byId("checkBox"+index)));
@@ -414,7 +417,7 @@ function(declare,
                   renderer.addBreak(attr.From, attr.To, field_symbol);
                 }
               }
-              reapplyRenderLegend(renderer, ID, layerName, true);
+              reapplyRenderLegend(renderer, ID, layerName, true, Layer_ID);
             }
           }, domConstruct.create("div", null, sliderContainer));
 
@@ -439,12 +442,35 @@ function(declare,
         }
       }
 
-      function reapplyRenderLegend(renderer, ID, layerName, check){
-        domConstruct.empty("legendWrapper");
-        self.map.getLayer(ID).setRenderer(renderer);
-        self.map.getLayer(ID).redraw();
-        if(check){
-          applyLegend(ID,layerName);
+      function reapplyRenderLegend(renderer, ID, layerName, check, Layer_ID){
+        if(self.map.getLayer(ID)){
+          domConstruct.empty("legendWrapper");
+          self.map.getLayer(ID).setRenderer(renderer);
+          self.map.getLayer(ID).redraw();
+          if(check){
+            applyLegend(ID,layerName);
+          }
+        }
+        else{
+          // Loop through layers on the map and find the map corresponding to the URL
+          for (var property in self.map._layers) {
+            if (self.map._layers[property].url == selectedLayer.URL) {
+
+              // Set the visible sublayer based on Layer_ID of the layer in layer.json
+              self.map._layers[property].setVisibleLayers([Layer_ID]);
+              var optionsArray = [];
+              var drawingOptions = new LayerDrawingOptions();
+              drawingOptions.renderer = renderer;
+              optionsArray[Layer_ID] = drawingOptions;
+              self.map._layers[property].setLayerDrawingOptions(optionsArray);
+
+              //Render Legend if is classbreaks renderer
+              domConstruct.empty("legendWrapper");
+              if(check){
+                applyLegend(self.map._layers[property], selectedAttribute.Display_Name);
+              }
+            }
+          }
         }
       }
     }
@@ -529,18 +555,27 @@ function(declare,
       // }
             
     },
-   
 
+    clear: function(){
+      if(currentLayer != null){
+        self.map.removeLayer(currentLayer);
+        currentLayer = null;
+        selectedLayer = null;
+        selectedAttribute = null;
+        layerConfig = null;
+      }
+      layerBtn.innerHTML = "Select a Layer";
+      domConstruct.empty("fieldWrapper");
+      domConstruct.empty("valueWrapper");
+      domConstruct.empty("legendWrapper");
+    },
+   
     onOpen: function(){
       // console.log('onOpen');
     },
 
     onClose: function(){
-      // if(currentLayer != null){
-      //   self.map.removeLayer(currentLayer);
-      //   currentLayer = null;
-      // }
-      // console.log('onClose');
+      this.clear();
     },
 
     onMinimize: function(){

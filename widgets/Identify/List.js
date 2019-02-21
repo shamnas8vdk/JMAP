@@ -57,6 +57,11 @@ define(['dojo/_base/declare',
       _itemAltCSS: 'identify-list-item alt',
       _wrapResults: null,
       _listItems: [],
+      tabContainer : null,
+      landContainer : null,
+      spaceContainer : null,
+      unitContainer : null,
+      displayContainer: null,
 
       startup: function() {
         this.customConfig = new customConfig();
@@ -71,8 +76,12 @@ define(['dojo/_base/declare',
         domConstruct.place(this._listContainer, this.domNode);
 
         var tabContainer = domConstruct.create('div', { class:"tabContainer" }, this.domNode,"first");
-        var tabContent = ["Land", "Space", "RBF"];
+        landContainer = domConstruct.create('div', { class:"landContainer" }, this._listContainer);
+        spaceContainer = domConstruct.create('div', { class:"spaceContainer" }, this._listContainer);
+        unitContainer = domConstruct.create('div', { class:"unitContainer" }, this._listContainer);
+        var tabContent = ["Land", "Space", "Unit"];
         this.setTabContainer(tabContainer, tabContent);
+        // this.toggleTab("none");
       },
 
       setTabContainer: function(tabContainer, valueArr){
@@ -84,10 +93,11 @@ define(['dojo/_base/declare',
 
         // Create array to hold all created items for styles
         var buttons = [];
+        var current = this;
         for(index = 0; index < valueArr.length; index++){
 
           // Create button element and classes
-          var button = domConstruct.create('button', { role:"tab", class:"mdc-tab mdc-tab--active"},scrollContent);
+          var button = domConstruct.create('button', { role:"tab", name: valueArr[index], class:"mdc-tab mdc-tab--active", id: valueArr[index]+"_btn"},scrollContent);
           var spanContent = domConstruct.create('span', { class:"mdc-tab__content"},button);
           var spanText = domConstruct.create('span', { innerHTML:valueArr[index] ,class:"mdc-tab__text-label identify-tab"},spanContent);
 
@@ -97,6 +107,7 @@ define(['dojo/_base/declare',
             var spanTextActive = domConstruct.create('span', { class:"mdc-tab-indicator__content mdc-tab-indicator__content--underline identify-tab"},spanContentActive);
           }
           var spanRipple = domConstruct.create('span', { class:"mdc-tab__ripple"},button);
+          // button.disabled = true;
           buttons.push(button);
 
           // Set highlight on click
@@ -109,6 +120,7 @@ define(['dojo/_base/declare',
             });
             var spanContentActive = domConstruct.create('span', { class:"mdc-tab-indicator mdc-tab-indicator--active"}, this);
             var spanTextActive = domConstruct.create('span', { class:"mdc-tab-indicator__content mdc-tab-indicator__content--underline identify-tab"},spanContentActive);
+            current.toggleTab(this.name);
           });
         }
       },
@@ -132,6 +144,68 @@ define(['dojo/_base/declare',
         return false;
       },
 
+      toggleTab: function(tabName){
+        switch(tabName) {
+          case "Land":
+            // code block
+            // document.getElementById("Land_btn").disabled = false;
+            document.getElementById("Land_btn").click();
+            landContainer.style.display = "block";
+            // document.getElementById("Space_btn").disabled = true;
+            spaceContainer.style.display = "none";
+            // document.getElementById("Unit_btn").disabled = true;
+            unitContainer.style.display = "none";
+            displayContainer = landContainer;
+            break;
+          case "Space":
+            // code block
+            // document.getElementById("Space_btn").disabled = false;
+            document.getElementById("Space_btn").click();
+            spaceContainer.style.display = "block";
+            // document.getElementById("Land_btn").disabled = true;
+            landContainer.style.display = "none";
+            // document.getElementById("Unit_btn").disabled = true;
+            unitContainer.style.display = "none";
+            displayContainer = spaceContainer;
+            break;
+          case "Unit":
+            // code block
+            // document.getElementById("Unit_btn").disabled = false;
+            document.getElementById("Unit_btn").click();
+            unitContainer.style.display = "block";
+            // document.getElementById("Land_btn").disabled = true;
+            landContainer.style.display = "none";
+            // document.getElementById("Space_btn").disabled = true;
+            spaceContainer.style.display = "none";
+            displayContainer = unitContainer;
+            break;
+          default:
+            // code block
+            // document.getElementById("Unit_btn").disabled = true;
+            // document.getElementById("Land_btn").disabled = true;
+            // document.getElementById("Space_btn").disabled = true;
+            landContainer.style.display = "none";
+            spaceContainer.style.display = "none";
+            unitContainer.style.display = "none";
+        }
+      },
+
+      tabCheck: function(types, layerName){
+
+        if(types.Land.includes(layerName)){
+          this.toggleTab("Land");
+          return "Land";
+        }
+        else if(types.Space.includes(layerName)){
+          this.toggleTab("Space");
+          return "Space";
+        }
+        else if(types.Unit.includes(layerName)){
+          this.toggleTab("Unit");
+          return "Unit";
+        }
+      },
+
       add: function(item) {
         if (arguments.length === 0 || this.duplicateCheck(item.graphic.geometry)) {
           return;
@@ -140,11 +214,6 @@ define(['dojo/_base/declare',
         var div = domConstruct.create('div');
         domAttr.set(div, 'id', this.id.toLowerCase()+item.id);
         domAttr.set(div, 'title', item.zoom2msg);
-
-        // var iconDiv = domConstruct.create('div');
-        // domAttr.set(iconDiv, 'id', this.id.toLowerCase()+item.id);
-        // domClass.add(iconDiv, 'iconDiv');
-        // domConstruct.place(iconDiv, div);
 
         var removeDiv = domConstruct.create('div');
         domConstruct.place(removeDiv, div);
@@ -180,18 +249,24 @@ define(['dojo/_base/declare',
         // Store the current object ID and Item id for reference in the loops later
         var ID = this.id;
         var itemID = item.id;
+        var layerTitle = item.title;
+        var current = this;
 
         // AJAX request for JSON of category information
         $.getJSON( getJSONPath(), function( data ){
-          
+
+          // Disable tabs accordingly
+          var tabType = current.tabCheck(data.layer_types, layerTitle);
+          domConstruct.place(div, displayContainer, "first");
+
           //Create for loop to loop through each category
-          for (CategoryNo = 0; CategoryNo < data.categories.type.length; CategoryNo++) {
+          for (CategoryNo = 0; CategoryNo < data[tabType].type.length; CategoryNo++) {
 
             //Create a button for each category with the corresponding style
             var category = setCategoryButton();
 
             //Create a container for each category to encapsulate related data
-            var container = setContainer(CategoryNo, category, data);
+            var container = setContainer(CategoryNo, category, data, tabType);
 
             //Create a for loop for all attributes gotten from the object
             for (var AttributeIndex = 0; AttributeIndex < arrayLength; AttributeIndex++) {
@@ -208,9 +283,9 @@ define(['dojo/_base/declare',
               }
 
               // Check which Category this information belongs to, and adds them to the correct containers.
-              if(categoryAttributesCheck(data, CategoryNo, attTitle.textContent)) {
-                if(attTitle.innerText.trim() == data.categories.display_key){
-                  setSelectedTitle(data.categories.layer_name+": "+attVal.innerText);
+              if(categoryAttributesCheck(data, CategoryNo, attTitle.textContent, tabType)) {
+                if(attTitle.innerText.trim() == data[tabType].display_key){
+                  setSelectedTitle(data[tabType].layer_name+": "+attVal.innerText);
                 }
                 container.innerHTML += attTitle.innerText + attVal.innerText+ "<br />";
                 // domConstruct.place(attTitle, label);
@@ -254,10 +329,10 @@ define(['dojo/_base/declare',
         }
 
         //Create a container for each category to encapsulate related data
-        function setContainer(CategoryNo, category, data){
+        function setContainer(CategoryNo, category, data, tabType){
           var container = domConstruct.create('div',{ class:"attrCategory" });
           var categoryContainer = domConstruct.create('div', { class:"category" });
-          category.textContent = data.categories.type[CategoryNo].Heading;
+          category.textContent = data[tabType].type[CategoryNo].Heading;
 
           //Set onclick event callback for category button
           on(category, 'click', function(evt){
@@ -327,15 +402,15 @@ define(['dojo/_base/declare',
         }
 
         //Check if attributes are in and unique to the category
-        function categoryAttributesCheck(data, CategoryNo, attribute){
+        function categoryAttributesCheck(data, CategoryNo, attribute, tabType){
           var check =  true;
 
-          if(data.categories.type[CategoryNo].Attributes.indexOf(attribute) == -1){
+          if(data[tabType].type[CategoryNo].Attributes.indexOf(attribute) == -1){
             check = false;
           }
 
           for (i = CategoryNo-1; i > -1; i--){
-            if(data.categories.type[i].Attributes.indexOf(attribute) > -1){
+            if(data[tabType].type[i].Attributes.indexOf(attribute) > -1){
               check = false
             }
           } 
@@ -542,7 +617,8 @@ define(['dojo/_base/declare',
             domClass.add(linkImg, 'linkIcon');
           }
         });
-        domConstruct.place(div, this._listContainer,"first");
+        // domConstruct.place(div, displayContainer, "first");
+        // domConstruct.place(displayContainer, this._listContainer);
       },
 
       remove: function(index) {

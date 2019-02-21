@@ -395,18 +395,20 @@ define(['dojo/_base/declare',
         if(this.autoactivatedtool){
           this.drawBox.activate(this.autoactivatedtool.toUpperCase());
         }
+        this.btnClear.innerText = "Clear All Results";
         this.own(on(this.btnClear, 'click', lang.hitch(this, this._clear)));
         html.setStyle(this.btnClear, 'display', 'none');
         this.own(on(this.list,'remove', lang.hitch(this, this._removeResultItem)));
       },
 
       _clear: function () {
+        debugger;
         this.graphicArr = [];
         this.identifyGeom = null;
         html.setStyle(this.btnClear, 'display', 'none');
         this._hideInfoWindow();
         this.graphicsLayer.clear();
-        this.tabContainer.selectTab(this.nls.identifylabel);
+        // this.tabContainer.selectTab(this.nls.identifylabel);
         this.list.clear();
         this.divResultMessage.textContent = this.nls.noResults;
         this.drawBox.clear();
@@ -598,7 +600,7 @@ define(['dojo/_base/declare',
         this.iResultLen = 0;
         this.resultFound = false;
         //this.list.clear(); //Commented out to keep an ongoing List of items for Multi-select feature
-        this.pManager.maximizePanel(this.pManager.panels[0]); //Maximizes the right panel on clicking a feature
+        // this.pManager.maximizePanel(this.pManager.panels[0]); //Maximizes the right panel on clicking a feature
         this.tabContainer.selectTab(this.nls.resultslabel);
         html.setStyle(this.progressBar.domNode, 'display', 'block');
         html.setStyle(this.divResult, 'display', 'none');
