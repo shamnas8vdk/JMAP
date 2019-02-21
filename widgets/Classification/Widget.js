@@ -448,7 +448,7 @@ function(declare,
           self.map.getLayer(ID).setRenderer(renderer);
           self.map.getLayer(ID).redraw();
           if(check){
-            applyLegend(ID,layerName);
+            applyLegend(self.map.getLayer(ID),layerName);
           }
         }
         else{
