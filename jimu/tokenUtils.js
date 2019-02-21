@@ -889,8 +889,8 @@ function(lang, array, aspect, Deferred, dom, domStyle, cookie, json, topic, dojo
     // To manually signin to portal
     manualSignIn(portalUrl){
      //Get Token from API
-   debugger;
-    // To get credentials dynamically, decrypt and generate credential
+      debugger;
+      // To get credentials dynamically, decrypt and generate credential
       var encryptedName = sessionStorage.getItem("Username");
       var encryptedPass = sessionStorage.getItem("Password");
       $.getJSON( this.getJSONPath(), function( data ){
@@ -981,7 +981,11 @@ function(lang, array, aspect, Deferred, dom, domStyle, cookie, json, topic, dojo
     
       // return def;
     },
-    
+
+    // Redirect back to login
+    redirectToLogin: function(){
+      location.assign("index.html");
+    },
 
     isStart: function(){
       return this._started;
