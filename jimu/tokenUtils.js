@@ -984,7 +984,7 @@ function(lang, array, aspect, Deferred, dom, domStyle, cookie, json, topic, dojo
 
     // Redirect back to login
     redirectToLogin: function(){
-      location.assign("index.html");
+      location.assign("index.html?access=invalid");
     },
 
     isStart: function(){

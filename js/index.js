@@ -7,6 +7,7 @@ var article = $('.article');
 var tries = 0;
 var h = input_pass.height();
 
+
 $('.spanColor').height(h + 23);
 input_pass.on('focus', function () {
   topbar.removeClass('error success');
@@ -34,6 +35,10 @@ $('.form').keypress(function (e) {
 input_pass.keypress(function () {
   topbar.removeClass('success error');
 });
+
+if(getParameterByName("access",window.location.href) == "invalid"){
+  alert("Credentials Invalid");
+}
 
 function authenticateCredentials(username, password){
   //Authenticate username and password here
@@ -70,4 +75,15 @@ function getJSONPath(){
     JSONpath = window.location.href.replace(array[array.length - 1],"js/config.json");
   }
   return JSONpath;
+}
+
+//check if access is valid
+function getParameterByName(name, url) {
+  if (!url) url = window.location.href;
+  name = name.replace(/[\[\]]/g, '\\$&');
+  var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+      results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return '';
+  return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
