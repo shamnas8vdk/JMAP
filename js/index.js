@@ -6,6 +6,9 @@ var input_user = $('#username');
 var article = $('.article');
 var tries = 0;
 var h = input_pass.height();
+// var modal = $("#errorDialog");
+// var modalClose = document.getElementsByClassName("close")[0];
+var errorMsg = document.getElementsByClassName("credential-error")[0];
 
 
 $('.spanColor').height(h + 23);
@@ -37,8 +40,13 @@ input_pass.keypress(function () {
 });
 
 if(getParameterByName("access",window.location.href) == "invalid"){
-  alert("Credentials Invalid");
+  errorMsg.style.display = "block";
 }
+
+// When the user clicks on <span> (x), close the modal
+// modalClose.onclick = function() {
+//   modal.hide();
+// }
 
 function authenticateCredentials(username, password){
   //Authenticate username and password here

@@ -19,6 +19,17 @@
 </head>
 
 <body>
+  <!-- <div id="errorDialog" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="close">&times;</span>
+        <h2>Invalid Credentials</h2>
+      </div>
+      <div class="modal-body">
+        <p>Please try again with the correct username and password</p>
+      </div>
+    </div>
+  </div> -->
   <div class="form">
     <div class="forceColor"></div>
     <div class="topbar">
@@ -28,6 +39,9 @@
       </div>  
       <input type="text" class="input" id="username" placeholder="Username" />
       <input type="password" class="input" id="password" placeholder="Password" />
+      <div class="credential-error">
+          <p>Please re-enter with correct credentials</p>
+      </div>
     </div>
     <button class="submit" id="submit">Login</button>
   </div>
