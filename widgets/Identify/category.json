@@ -1,5 +1,11 @@
 {
-  "Land": {
+  "layer_list":[
+    "Layer_About",
+    "Layer_Legend",
+    "Layer_Add_Data",
+    "Land and Space Management"
+  ],
+  "Layer_About": {
     "layer_name": "Layer Name",
     "display_key": "OBJECTID",
     "type": [
@@ -32,7 +38,7 @@
       }
     ]
   },
-  "Space": {
+  "Layer_Legend": {
     "layer_name": "Layer Name",
     "display_key": "OBJECTID",
     "type": [
@@ -65,7 +71,7 @@
       }
     ]
   },
-  "Unit": {
+  "Layer_Add_Data": {
     "layer_name": "Layer Name",
     "display_key": "OBJECTID",
     "type": [
@@ -96,17 +102,6 @@
           "Shape__Length"
         ]
       }
-    ]
-  },
-  "layer_types":{
-    "Land": [
-      "Layer_About"
-    ],
-    "Space":[
-      "Layer_Legend"
-    ],
-    "Unit":[
-      
     ]
   }
 }

@@ -58,10 +58,9 @@ define(['dojo/_base/declare',
       _wrapResults: null,
       _listItems: [],
       tabContainer : null,
-      landContainer : null,
-      spaceContainer : null,
-      unitContainer : null,
       displayContainer: null,
+      layerListConfig : null,
+      listContainers : new Object(),
 
       startup: function() {
         this.customConfig = new customConfig();
@@ -75,13 +74,29 @@ define(['dojo/_base/declare',
         this.own(on(this._listContainer, 'mouseout', lang.hitch(this, this._onMouseOut)));
         domConstruct.place(this._listContainer, this.domNode);
 
-        var tabContainer = domConstruct.create('div', { class:"tabContainer" }, this.domNode,"first");
-        landContainer = domConstruct.create('div', { class:"landContainer" }, this._listContainer);
-        spaceContainer = domConstruct.create('div', { class:"spaceContainer" }, this._listContainer);
-        unitContainer = domConstruct.create('div', { class:"unitContainer" }, this._listContainer);
-        var tabContent = ["Land", "Space", "Unit"];
-        this.setTabContainer(tabContainer, tabContent);
-        // this.toggleTab("none");
+        this.tabContainer = domConstruct.create('div', { class:"tabContainer", id:"tabContainer" }, this.domNode,"first");
+        this.setLayerListConfig();
+      },
+
+      setLayerListConfig: function(){
+        var current = this;
+        $.getJSON( this.getJSONPath(), function( data ){
+          current.layerListConfig = data;
+          current.setTabContainer(current.tabContainer, data.layer_list);
+        })
+      },
+
+      //Get Path of JSON dynamically
+      getJSONPath: function(){
+        var array = window.location.href.split("/");
+        var JSONpath;
+        if(array[array.length - 1] == "" || array[array.length - 1] == null){
+          JSONpath = window.location.href + "widgets/Identify/category.json";
+        }
+        else{
+          JSONpath = window.location.href.replace(array[array.length - 1],"widgets/Identify/category.json");
+        }
+        return JSONpath;
       },
 
       setTabContainer: function(tabContainer, valueArr){
@@ -89,12 +104,15 @@ define(['dojo/_base/declare',
         var tabBar = domConstruct.create('div', { role:"tablist", class:"mdc-tab-bar" }, tabContainer);
         var scroller = domConstruct.create('div', { class:"mdc-tab-scroller"}, tabBar);
         var scrollArea = domConstruct.create('div', { class:"mdc-tab-scroller__scroll-area"}, scroller);
-        var scrollContent = domConstruct.create('div', { class:"mdc-tab-scroller__scroll-content"},scrollArea);
+        var scrollContent = domConstruct.create('div', { class:"mdc-tab-scroller__scroll-content scroll-tab"},scrollArea);
 
         // Create array to hold all created items for styles
         var buttons = [];
         var current = this;
         for(index = 0; index < valueArr.length; index++){
+          // Create containers for each tab layer and add to dictionary
+          var tempContainer = domConstruct.create('div', { class: valueArr[index] }, this._listContainer);
+          this.listContainers[valueArr[index]] = tempContainer;
 
           // Create button element and classes
           var button = domConstruct.create('button', { role:"tab", name: valueArr[index], class:"mdc-tab mdc-tab--active", id: valueArr[index]+"_btn"},scrollContent);
@@ -123,6 +141,108 @@ define(['dojo/_base/declare',
             current.toggleTab(this.name);
           });
         }
+        var paddles = this.setPaddles(scrollContent);
+        // Make the tabs scrollable
+        this.setTabScroll(scrollContent, paddles[0], paddles[1]);
+      },
+
+      // Create paddle arrows and set to scroll
+      setPaddles: function(scrollContent){
+        let currentOffSet = scrollContent.scrollLeft;
+        var leftPaddle = domConstruct.create('button', { role:"tab", class:"mdc-tab mdc-tab--active paddle left-paddle", id: "leftPaddle"},scrollContent,"first");
+        leftPaddle.innerText = "<";
+        var rightPaddle = domConstruct.create('button', { role:"tab", class:"mdc-tab mdc-tab--active paddle right-paddle", id: "rightPaddle"},scrollContent,"last");
+        rightPaddle.innerText = ">";
+
+        on(leftPaddle, 'click', (e) => {
+          scrollContent.scrollLeft-=50;
+          if(scrollContent.scrollLeft == 0){
+            leftPaddle.style.display = "none";
+          }
+          if(rightPaddle.style.display == "none"){
+            rightPaddle.style.display = "block";
+          }
+          currentOffSet = scrollContent.scrollLeft;
+        });
+
+        on(rightPaddle, 'click', (e) => {
+          scrollContent.scrollLeft+=50;
+          if(scrollContent.scrollLeft == currentOffSet){
+            rightPaddle.style.display = "none";
+          }
+          if(scrollContent.scrollLeft > 0){
+            leftPaddle.style.display = "block";
+          }
+          currentOffSet = scrollContent.scrollLeft;
+        });
+
+        on(scrollContent, "wheel", (e) =>{
+          console.log(rightPaddle);
+          e.preventDefault();
+          if(e.deltaY < 0){
+            scrollContent.scrollLeft+=50;
+            if(scrollContent.scrollLeft == currentOffSet){
+              rightPaddle.style.display = "none";
+            }
+            if(scrollContent.scrollLeft > 0){
+              leftPaddle.style.display = "block";
+            }
+            currentOffSet = scrollContent.scrollLeft;
+          }
+          else{
+            scrollContent.scrollLeft-=50;
+            if(scrollContent.scrollLeft == 0){
+              leftPaddle.style.display = "none";
+            }
+            if(rightPaddle.style.display == "none"){
+              rightPaddle.style.display = "block";
+            }
+            currentOffSet = scrollContent.scrollLeft;
+          }
+        })
+        return [leftPaddle,rightPaddle];
+      },
+      
+      // Set to scroll by drag or wheel
+      setTabScroll: function(tabScroll, leftPaddle, rightPaddle){
+        let isDown = false;
+        let startX;
+        let scrollLeft = tabScroll.scrollLeft;
+
+        on(tabScroll, 'mousedown', (e) => {
+          isDown = true;
+          startX = e.pageX - tabScroll.offsetLeft;
+          scrollLeft = tabScroll.scrollLeft;
+        });
+
+        on(tabScroll, 'mouseleave', () => {
+          isDown = false;
+        });
+
+        on(tabScroll, 'mouseup', () => {
+          isDown = false;
+        });
+
+        on(tabScroll, 'mousemove', (e) => {
+          if(!isDown) return;
+          var maxScrollLeft = tabScroll.scrollWidth - tabScroll.clientWidth;
+          e.preventDefault();
+          const x = e.pageX - tabScroll.offsetLeft;
+          const walk = (x - startX) * 3; //scroll-fast
+          tabScroll.scrollLeft = scrollLeft - walk;
+          if(tabScroll.scrollLeft > 0){
+            leftPaddle.style.display="block";
+          }
+          if(tabScroll.scrollLeft < maxScrollLeft){
+            rightPaddle.style.display="block";
+          }
+          if(tabScroll.scrollLeft == 0){
+            leftPaddle.style.display="none";
+          }
+          if(tabScroll.scrollLeft == maxScrollLeft){
+            rightPaddle.style.display="none";
+          }
+        });
       },
 
       toggleView: function() {
@@ -145,64 +265,15 @@ define(['dojo/_base/declare',
       },
 
       toggleTab: function(tabName){
-        switch(tabName) {
-          case "Land":
-            // code block
-            // document.getElementById("Land_btn").disabled = false;
-            document.getElementById("Land_btn").click();
-            landContainer.style.display = "block";
-            // document.getElementById("Space_btn").disabled = true;
-            spaceContainer.style.display = "none";
-            // document.getElementById("Unit_btn").disabled = true;
-            unitContainer.style.display = "none";
-            displayContainer = landContainer;
-            break;
-          case "Space":
-            // code block
-            // document.getElementById("Space_btn").disabled = false;
-            document.getElementById("Space_btn").click();
-            spaceContainer.style.display = "block";
-            // document.getElementById("Land_btn").disabled = true;
-            landContainer.style.display = "none";
-            // document.getElementById("Unit_btn").disabled = true;
-            unitContainer.style.display = "none";
-            displayContainer = spaceContainer;
-            break;
-          case "Unit":
-            // code block
-            // document.getElementById("Unit_btn").disabled = false;
-            document.getElementById("Unit_btn").click();
-            unitContainer.style.display = "block";
-            // document.getElementById("Land_btn").disabled = true;
-            landContainer.style.display = "none";
-            // document.getElementById("Space_btn").disabled = true;
-            spaceContainer.style.display = "none";
-            displayContainer = unitContainer;
-            break;
-          default:
-            // code block
-            // document.getElementById("Unit_btn").disabled = true;
-            // document.getElementById("Land_btn").disabled = true;
-            // document.getElementById("Space_btn").disabled = true;
-            landContainer.style.display = "none";
-            spaceContainer.style.display = "none";
-            unitContainer.style.display = "none";
-        }
-      },
-
-      tabCheck: function(types, layerName){
-
-        if(types.Land.includes(layerName)){
-          this.toggleTab("Land");
-          return "Land";
-        }
-        else if(types.Space.includes(layerName)){
-          this.toggleTab("Space");
-          return "Space";
-        }
-        else if(types.Unit.includes(layerName)){
-          this.toggleTab("Unit");
-          return "Unit";
+        for (var containerName in this.listContainers) {
+          if(containerName == tabName){
+            document.getElementById(containerName+"_btn").click();
+            this.listContainers[containerName].style.display = "block";
+            this.displayContainer = this.listContainers[containerName];
+          }
+          else{
+            this.listContainers[containerName].style.display = "none";
+          }
         }
       },
 
@@ -252,63 +323,46 @@ define(['dojo/_base/declare',
         var layerTitle = item.title;
         var current = this;
 
-        // AJAX request for JSON of category information
-        $.getJSON( getJSONPath(), function( data ){
+        // Disable tabs accordingly
+        this.toggleTab(layerTitle);
+        domConstruct.place(div, this.displayContainer, "first");
 
-          // Disable tabs accordingly
-          var tabType = current.tabCheck(data.layer_types, layerTitle);
-          domConstruct.place(div, displayContainer, "first");
+        //Create for loop to loop through each category
+        for (CategoryNo = 0; CategoryNo < this.layerListConfig[layerTitle].type.length; CategoryNo++) {
 
-          //Create for loop to loop through each category
-          for (CategoryNo = 0; CategoryNo < data[tabType].type.length; CategoryNo++) {
+          //Create a button for each category with the corresponding style
+          var category = setCategoryButton();
 
-            //Create a button for each category with the corresponding style
-            var category = setCategoryButton();
+          //Create a container for each category to encapsulate related data
+          var container = setContainer(CategoryNo, category, this.layerListConfig, layerTitle);
 
-            //Create a container for each category to encapsulate related data
-            var container = setContainer(CategoryNo, category, data, tabType);
+          //Create a for loop for all attributes gotten from the object
+          for (var AttributeIndex = 0; AttributeIndex < arrayLength; AttributeIndex++) {
 
-            //Create a for loop for all attributes gotten from the object
-            for (var AttributeIndex = 0; AttributeIndex < arrayLength; AttributeIndex++) {
+            //Split the attributes and assign their corresponding font and styles
+            attValArr = attArr[AttributeIndex].split(': ');
+            attTitle = setAttributeTitle(ID, itemID);
+            formatAttributeTitle(attTitle, ID, itemID)
+  
+            if (attValArr[1] === 'null') {
+              attVal.textContent = attVal.innerText = " ";
+            } else {
+              attVal.textContent = attVal.innerText = " " + attValArr[1].replace(/<[\/]{0,1}(em|EM|strong|STRONG|font|FONT|u|U)[^><]*>/g, "");
+            }
 
-              //Split the attributes and assign their corresponding font and styles
-              attValArr = attArr[AttributeIndex].split(': ');
-              attTitle = setAttributeTitle(ID, itemID);
-              formatAttributeTitle(attTitle, ID, itemID)
-    
-              if (attValArr[1] === 'null') {
-                attVal.textContent = attVal.innerText = " ";
-              } else {
-                attVal.textContent = attVal.innerText = " " + attValArr[1].replace(/<[\/]{0,1}(em|EM|strong|STRONG|font|FONT|u|U)[^><]*>/g, "");
+            // Check which Category this information belongs to, and adds them to the correct containers.
+            if(categoryAttributesCheck(this.layerListConfig, CategoryNo, attTitle.textContent, layerTitle)) {
+              if(attTitle.innerText.trim() == this.layerListConfig[layerTitle].display_key){
+                setSelectedTitle(this.layerListConfig[layerTitle].layer_name+": "+attVal.innerText);
               }
-
-              // Check which Category this information belongs to, and adds them to the correct containers.
-              if(categoryAttributesCheck(data, CategoryNo, attTitle.textContent, tabType)) {
-                if(attTitle.innerText.trim() == data[tabType].display_key){
-                  setSelectedTitle(data[tabType].layer_name+": "+attVal.innerText);
-                }
-                container.innerHTML += attTitle.innerText + attVal.innerText+ "<br />";
-                // domConstruct.place(attTitle, label);
-                // domConstruct.place(attVal, label);
-                // domConstruct.place(label, container);
-              }
+              container.innerHTML += attTitle.innerText + attVal.innerText+ "<br />";
+              // domConstruct.place(attTitle, label);
+              // domConstruct.place(attVal, label);
+              // domConstruct.place(label, container);
             }
           }
-          domConstruct.place("<br/>", div);
-        });
-
-        //Get Path of JSON dynamically
-        function getJSONPath(){
-          var array = window.location.href.split("/");
-          var JSONpath;
-          if(array[array.length - 1] == "" || array[array.length - 1] == null){
-            JSONpath = window.location.href + "widgets/Identify/category.json";
-          }
-          else{
-            JSONpath = window.location.href.replace(array[array.length - 1],"widgets/Identify/category.json");
-          }
-          return JSONpath;
         }
+        domConstruct.place("<br/>", div);
 
         //Set title of the area
         function setSelectedTitle(title){
