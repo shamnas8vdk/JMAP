@@ -276,7 +276,18 @@ function(declare,
             field_symbol.setColor(new Color(renderStyle[index].color));
             // Uncomment to remove border
             field_symbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([0,0,0,0.7]), 1));
-            renderer.addBreak(renderStyle[index].From, renderStyle[index].To, field_symbol);
+            // renderer.addBreak(renderStyle[index].From, renderStyle[index].To, field_symbol,"hello");
+            renderer.addBreak({
+
+              minValue: renderStyle[index].From,
+            
+              maxValue: renderStyle[index].To,
+            
+              symbol: field_symbol,
+            
+              label: renderStyle[index].From + " to " + renderStyle[index].To
+            
+            });
           }
           reapplyRenderLegend(renderer, ID, layer_name, true, Layer_ID);
         }
