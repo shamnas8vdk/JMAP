@@ -355,7 +355,7 @@ define(['dojo/_base/declare',
               if(attTitle.innerText.trim() == this.layerListConfig[layerTitle].display_key){
                 setSelectedTitle(this.layerListConfig[layerTitle].layer_name+": "+attVal.innerText);
               }
-              container.innerHTML += attTitle.innerText + attVal.innerText+ "<br />";
+              container.innerHTML += "<strong>"+ attTitle.innerText +" : </strong>"+ attVal.innerText+ "<br />";
               // domConstruct.place(attTitle, label);
               // domConstruct.place(attVal, label);
               // domConstruct.place(label, container);
