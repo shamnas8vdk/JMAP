@@ -425,7 +425,7 @@ function(declare,
                 field_symbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([0,0,0,0.7]), 0.5));
                 field_symbol.setColor(new Color(attr.color));
                 if(this.value > attr.From){
-                  renderer.addBreak(attr.From, attr.To, field_symbol);
+                 // renderer.addBreak(attr.From, attr.To, field_symbol);
                   renderer.addBreak({
 
                     minValue: attr.From,
