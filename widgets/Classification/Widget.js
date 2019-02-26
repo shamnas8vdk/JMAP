@@ -285,7 +285,7 @@ function(declare,
             
               symbol: field_symbol,
             
-              label: renderStyle[index].From + " to " + renderStyle[index].To
+              label: renderStyle[index].From + " To " + renderStyle[index].To
             
             });
           }
@@ -426,6 +426,17 @@ function(declare,
                 field_symbol.setColor(new Color(attr.color));
                 if(this.value > attr.From){
                   renderer.addBreak(attr.From, attr.To, field_symbol);
+                  renderer.addBreak({
+
+                    minValue: attr.From,
+                  
+                    maxValue: attr.To,
+                  
+                    symbol: field_symbol,
+                  
+                    label: attr.From + " To " + attr.To
+                  
+                  });
                 }
               }
               reapplyRenderLegend(renderer, ID, layerName, true, Layer_ID);
