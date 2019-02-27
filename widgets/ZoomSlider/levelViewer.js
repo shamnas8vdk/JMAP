@@ -1,6 +1,6 @@
 var mainpage;
 
-function createList(){
+function createList(number){
     if(document.getElementById("levelList")){
         return;
     }
@@ -18,7 +18,7 @@ function createList(){
 
     // Create List Element
     var list = $("<ul class='mdc-list'></ul>");
-    addListElements(list, 10)
+    var listArr = addListElements(list, number)
 
     // Append elements in order
     divider.append(buttonUp);
@@ -30,10 +30,12 @@ function createList(){
     // Make the DIV element draggable and add scroll events for arrows
     setScrollEvent();
     dragElement(document.getElementById("levelList"));  
+    return listArr;
 }
 
 function addListElements(mainList, number){
     var index;
+    var listArr = [];
 
     for (index = 0; index < number; index++) { 
         var listElement;
@@ -47,7 +49,7 @@ function addListElements(mainList, number){
         }
 
         // Handle onclick event for list element here
-        setOnclickEvent(listElement);
+        // setOnclickEvent(listElement);
 
         // Create span element with 2 span child for double lined lists
         var span = $("<span class='mdc-list-item__text primaryText'></span>").text(content + (index +1));
@@ -61,7 +63,9 @@ function addListElements(mainList, number){
         // Append to the main ul and add separator
         mainList.append(listElement);
         mainList.append(separator);
+        listArr.push(listElement);
     }
+    return listArr;
 }
 
 function removeList(){
@@ -137,8 +141,12 @@ function setOnclickEvent(listElement){
         isDragging = false;
         $(window).off("mousemove");
         if (!wasDragging) {
+            console.log(callbackFunction);
             // if mouse wasnt moved, then we allow click to happen
-            // alert( "Handler for .click() called." ); 
+            if(callbackFunction != null){
+                var levelNo = this.getElementsByClassName("mdc-list-item__text primaryText")[0].innerText;
+                callbackFunction(levelNo);
+            }
         }
     });
 }

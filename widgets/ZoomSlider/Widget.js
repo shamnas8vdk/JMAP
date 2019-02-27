@@ -25,11 +25,12 @@ define([
     'esri/tasks/query',
     'esri/tasks/QueryTask',
     'esri/tasks/GeometryService',
-    'esri/tasks/BufferParameters'
+    'esri/tasks/BufferParameters',
+    'dojo/_base/array'
   ],
   function(declare, lang, BaseWidget, html, 
     on, levelViewer, building, Query, QueryTask, 
-    GeometryService, BufferParameters) {
+    GeometryService, BufferParameters, arrayUtils) {
     var clazz = declare([BaseWidget], {
       name: 'ZoomSlider',
 
@@ -100,8 +101,9 @@ define([
           queryTask.executeForCount(queryParams,function(result){
             if(result==1){
               // Create the level widget only if 1 feature is inside extent
-              createList();
-              // current.getCenterPointGeometry();
+              // And specify the number of floors as argument
+              var listArr = createList(10);
+              current.setOnClickEvents(listArr);
             }
             else{
               removeList();
@@ -128,9 +130,68 @@ define([
         queryTask.execute(queryParams,function(result){
           if(result.features.length > 0){
             // Do Something here
+
           }
         });
       },
+
+      setOnClickEvents: function(listArr){
+        var current = this;
+        arrayUtils.forEach(listArr, function(listElement) { 
+          var isDragging = false;
+          listElement
+          .click(function(ev) {
+              // Prevent click event from propagating and closing itself
+              ev.stopPropagation(); 
+          })
+          .mousedown(function(ev) {
+              $(window).mousemove(function() {
+                  // If mouse moved, the element is being dragged
+                  isDragging = true;
+                  $(window).off("mousemove");
+              });
+          })
+          .mouseup(function(ev) {
+              var wasDragging = isDragging;
+              isDragging = false;
+              $(window).off("mousemove");
+              if (!wasDragging) {
+                var levelNo = this.getElementsByClassName("mdc-list-item__text primaryText")[0].innerText;
+                current.setDefinitions(levelNo);
+              }
+          });
+        });
+      },
+
+      // set definitions of layer according to level number
+      setDefinitions: function(levelNo){
+        var targetLayer = null;
+        var layerDefs = [];
+        var URL = getLayerURL();
+
+        // Find the active layer in the map by matching URL
+        for (var property in this.map._layers) {
+          if (URL.includes(this.map._layers[property].url)){
+            targetLayer = this.map._layers[property];
+          }
+        }
+
+        if(levelNo == 1 && targetLayer != null){
+          // Set visible layers
+          if(!targetLayer.visibleLayers.includes(2)){
+            let visibleLayerArr = targetLayer.visibleLayers;
+            visibleLayerArr.push(2); // Push the sub layer index here
+            visibleLayerArr = visibleLayerArr.filter(num => num != -1);
+            targetLayer.setVisibleLayers(visibleLayerArr);
+          }
+
+          // Set layer definitions here
+          layerDefs[2] = "STATE_NAME='Wyoming'";
+          targetLayer.setLayerDefinitions(layerDefs);
+        }
+      },
+
+      
 
       _onBtnZoomInClicked: function(){
         this.map._extentUtil({ numLevels: 1});

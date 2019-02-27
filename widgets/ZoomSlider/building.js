@@ -1,7 +1,7 @@
 var layerExtentConfig =
 {
-    "URL": "https://services2.arcgis.com/4WiMNWDUQZIvdL5U/ArcGIS/rest/services/SadiqueDemoMap/FeatureServer/1",
-    "scale": 700
+    "URL": "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer/3",
+    "scale": 73957190
 }
 
 function getLayerURL(){
