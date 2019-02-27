@@ -44,7 +44,7 @@ define([
       _cornerBottom: 'jimu-corner-bottom',
       _cornerLeading: 'jimu-corner-leading',
       _cornerTrailing: 'jimu-corner-trailing',
-
+      _visibleLayers : null,
       moveTopOnActive: false,
 
       postCreate: function(){
@@ -107,6 +107,12 @@ define([
             }
             else{
               removeList();
+              if(current.getTargetLayer() != null && current._visibleLayers != null){
+                let visibleLayerArr = current.getTargetLayer().visibleLayers.filter((v, i, a) => a.indexOf(v) === i && v != -1);
+                visibleLayerArr.pop(current._visibleLayers);
+                current.getTargetLayer().setVisibleLayers(visibleLayerArr);
+                current.clearDefinitions(current._visibleLayers);
+              }
             }
           });
         }
@@ -124,13 +130,13 @@ define([
         queryParams.spatialRelationship = Query.SPATIAL_REL_WITHIN;
         queryParams.geometry = mapPoint;
         queryParams.returnGeometry = true;
-        queryParams.outFields = ['*'];
+        queryParams.outFields = ['STATE_NAME'];
         queryParams.outSpatialReference = this.map.spatialReference;
 
         queryTask.execute(queryParams,function(result){
           if(result.features.length > 0){
             // Do Something here
-
+            
           }
         });
       },
@@ -165,23 +171,15 @@ define([
 
       // set definitions of layer according to level number
       setDefinitions: function(levelNo){
-        var targetLayer = null;
+        var targetLayer = this.getTargetLayer();
         var layerDefs = [];
-        var URL = getLayerURL();
-
-        // Find the active layer in the map by matching URL
-        for (var property in this.map._layers) {
-          if (URL.includes(this.map._layers[property].url)){
-            targetLayer = this.map._layers[property];
-          }
-        }
 
         if(levelNo == 1 && targetLayer != null){
           // Set visible layers
           if(!targetLayer.visibleLayers.includes(2)){
-            let visibleLayerArr = targetLayer.visibleLayers;
-            visibleLayerArr.push(2); // Push the sub layer index here
-            visibleLayerArr = visibleLayerArr.filter(num => num != -1);
+            this._visibleLayers = 2;
+            let visibleLayerArr = targetLayer.visibleLayers.filter((v, i, a) => a.indexOf(v) === i && v != -1);
+            visibleLayerArr.push(2); 
             targetLayer.setVisibleLayers(visibleLayerArr);
           }
 
@@ -191,7 +189,25 @@ define([
         }
       },
 
-      
+      // Clear all current layer definitions
+      clearDefinitions: function(layerIndex){
+        var layerDefs = [];
+        layerDefs[layerIndex] = "";
+        this.getTargetLayer().setLayerDefinitions(layerDefs);
+      },
+
+      getTargetLayer: function(){
+        var targetLayer = null;
+        var URL = getLayerURL();
+
+        // Find the active layer in the map by matching URL
+        for (var property in this.map._layers) {
+          if (URL.includes(this.map._layers[property].url)){
+            targetLayer = this.map._layers[property];
+          }
+        }
+        return targetLayer;
+      },
 
       _onBtnZoomInClicked: function(){
         this.map._extentUtil({ numLevels: 1});
