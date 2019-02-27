@@ -45,6 +45,7 @@ define([
       _cornerLeading: 'jimu-corner-leading',
       _cornerTrailing: 'jimu-corner-trailing',
       _visibleLayers : null,
+      _selectedFeature: null,
       moveTopOnActive: false,
 
       postCreate: function(){
@@ -93,15 +94,16 @@ define([
         queryParams.spatialRelationship = Query.SPATIAL_REL_CONTAINS;
         queryParams.geometry = ext;
         queryParams.returnGeometry = true;
-        queryParams.outFields = ['*'];
+        queryParams.outFields = getQueryAttributes();
         queryParams.outSpatialReference = this.map.spatialReference;
 
         // Compare scale to be valid before executing query
         if(getLayerScale() > this.map.getScale()){
-          queryTask.executeForCount(queryParams,function(result){
-            if(result==1){
+          queryTask.execute(queryParams,function(result){
+            if(result.features.length==1){
               // Create the level widget only if 1 feature is inside extent
               // And specify the number of floors as argument
+              current._selectedFeature = result.features[0];
               var listArr = createList(10);
               current.setOnClickEvents(listArr);
             }
@@ -118,7 +120,7 @@ define([
         }
       },
 
-      // Get feature from centerpoint of map
+      // Get feature from centerpoint of map currently not used
       getCenterPointGeometry: function(){
         // Get URL and form new query
         var URL = getLayerURL();
@@ -136,7 +138,7 @@ define([
         queryTask.execute(queryParams,function(result){
           if(result.features.length > 0){
             // Do Something here
-            
+
           }
         });
       },
