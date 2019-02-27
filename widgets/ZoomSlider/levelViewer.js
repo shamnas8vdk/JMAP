@@ -45,7 +45,7 @@ function addListElements(mainList, number){
         listElement = $("<li class='mdc-list-item listElement'></li>");
 
         if(index < 9){
-            listElement.css('padding-left', '34%'); // change to 34 if using chrome, 38 for IE
+            listElement.css('padding-left', '38%'); // change to 34 if using chrome, 38 for IE
         }
 
         // Handle onclick event for list element here
