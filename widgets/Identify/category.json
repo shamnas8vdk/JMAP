@@ -3,7 +3,7 @@
     "Layer_About",
     "Layer_Legend",
     "Layer_Add_Data",
-    "Land and Space Management"
+    "processed_Farm_land"
   ],
   "Layer_About": {
     "layer_name": "Layer Name",
@@ -71,7 +71,7 @@
       }
     ]
   },
-  "Layer_Add_Data": {
+  "processed_Farm_land": {
     "layer_name": "Layer Name",
     "display_key": "OBJECTID",
     "type": [

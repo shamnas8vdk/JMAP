@@ -99,12 +99,13 @@ define(['dojo/_base/declare',
         return JSONpath;
       },
 
+      // Set the tab bar with material web library
       setTabContainer: function(tabContainer, valueArr){
         // Create Divs to hold tab based on material design
         var tabBar = domConstruct.create('div', { role:"tablist", class:"mdc-tab-bar" }, tabContainer);
         var scroller = domConstruct.create('div', { class:"mdc-tab-scroller"}, tabBar);
         var scrollArea = domConstruct.create('div', { class:"mdc-tab-scroller__scroll-area"}, scroller);
-        var scrollContent = domConstruct.create('div', { class:"mdc-tab-scroller__scroll-content scroll-tab"},scrollArea);
+        var scrollContent = domConstruct.create('div', { class:"mdc-tab-scroller__scroll-content scroll-tab", id:"scrollContent"},scrollArea);
 
         // Create array to hold all created items for styles
         var buttons = [];
@@ -125,11 +126,13 @@ define(['dojo/_base/declare',
             var spanTextActive = domConstruct.create('span', { class:"mdc-tab-indicator__content mdc-tab-indicator__content--underline identify-tab"},spanContentActive);
           }
           var spanRipple = domConstruct.create('span', { class:"mdc-tab__ripple"},button);
-          // button.disabled = true;
+          button.style.display = "none";
           buttons.push(button);
-
-          // Set highlight on click
+          // Set highlight tab on click
           on(button, 'click', function(evt){
+            current.tabContainer.style.display = "block";
+            this.style.display = "block";
+            current.paddlesArrowDisplayCheck();
             array.forEach(buttons, function(btn){
               var active = btn.getElementsByClassName("mdc-tab-indicator mdc-tab-indicator--active")[0];
               if(active){
@@ -146,7 +149,7 @@ define(['dojo/_base/declare',
         this.setTabScroll(scrollContent, paddles[0], paddles[1]);
       },
 
-      // Create paddle arrows and set to scroll
+      // Create paddle arrows and set to scroll on click
       setPaddles: function(scrollContent){
         let currentOffSet = scrollContent.scrollLeft;
         var leftPaddle = domConstruct.create('button', { role:"tab", class:"mdc-tab mdc-tab--active paddle left-paddle", id: "leftPaddle"},scrollContent,"first");
@@ -175,32 +178,29 @@ define(['dojo/_base/declare',
           }
           currentOffSet = scrollContent.scrollLeft;
         });
-
-        on(scrollContent, "wheel", (e) =>{
-          console.log(rightPaddle);
-          e.preventDefault();
-          if(e.deltaY < 0){
-            scrollContent.scrollLeft+=50;
-            if(scrollContent.scrollLeft == currentOffSet){
-              rightPaddle.style.display = "none";
-            }
-            if(scrollContent.scrollLeft > 0){
-              leftPaddle.style.display = "block";
-            }
-            currentOffSet = scrollContent.scrollLeft;
-          }
-          else{
-            scrollContent.scrollLeft-=50;
-            if(scrollContent.scrollLeft == 0){
-              leftPaddle.style.display = "none";
-            }
-            if(rightPaddle.style.display == "none"){
-              rightPaddle.style.display = "block";
-            }
-            currentOffSet = scrollContent.scrollLeft;
-          }
-        })
         return [leftPaddle,rightPaddle];
+      },
+
+      // Check the width of the tab bar and display the arrows accordingly
+      paddlesArrowDisplayCheck: function(){
+        var tabScroll = document.getElementById("scrollContent");
+        var leftPaddle = document.getElementById("leftPaddle");
+        var rightPaddle = document.getElementById("rightPaddle");
+        var maxScrollLeft = tabScroll.scrollWidth - tabScroll.clientWidth;
+        // console.log(maxScrollLeft + " "+ tabScroll.scrollLeft);
+        // console.log(rightPaddle.clientWidth);
+        if(tabScroll.scrollLeft > 0 && leftPaddle.style.display != "block"){
+          leftPaddle.style.display="block";
+        }
+        if(tabScroll.scrollLeft < maxScrollLeft && rightPaddle.style.display != "block"){
+          rightPaddle.style.display="block";
+        }
+        if(tabScroll.scrollLeft == 0 && leftPaddle.style.display!="none"){
+          leftPaddle.style.display="none";
+        }
+        if(tabScroll.scrollLeft <= maxScrollLeft && maxScrollLeft-2 <= tabScroll.scrollLeft && rightPaddle.style.display!="none"){
+          rightPaddle.style.display="none";
+        }
       },
       
       // Set to scroll by drag or wheel
@@ -208,6 +208,7 @@ define(['dojo/_base/declare',
         let isDown = false;
         let startX;
         let scrollLeft = tabScroll.scrollLeft;
+        var current = this;
 
         on(tabScroll, 'mousedown', (e) => {
           isDown = true;
@@ -225,24 +226,24 @@ define(['dojo/_base/declare',
 
         on(tabScroll, 'mousemove', (e) => {
           if(!isDown) return;
-          var maxScrollLeft = tabScroll.scrollWidth - tabScroll.clientWidth;
           e.preventDefault();
           const x = e.pageX - tabScroll.offsetLeft;
           const walk = (x - startX) * 3; //scroll-fast
           tabScroll.scrollLeft = scrollLeft - walk;
-          if(tabScroll.scrollLeft > 0){
-            leftPaddle.style.display="block";
-          }
-          if(tabScroll.scrollLeft < maxScrollLeft){
-            rightPaddle.style.display="block";
-          }
-          if(tabScroll.scrollLeft == 0){
-            leftPaddle.style.display="none";
-          }
-          if(tabScroll.scrollLeft == maxScrollLeft){
-            rightPaddle.style.display="none";
-          }
+          current.paddlesArrowDisplayCheck();
         });
+
+        on(tabScroll, "wheel", (e) =>{
+          e.preventDefault();
+          if(e.deltaY < 0){
+            tabScroll.scrollLeft+=50;
+            current.paddlesArrowDisplayCheck();
+          }
+          else{
+            tabScroll.scrollLeft-=50;
+            current.paddlesArrowDisplayCheck();
+          }
+        })
       },
 
       toggleView: function() {
@@ -254,6 +255,7 @@ define(['dojo/_base/declare',
         }
       },
 
+      // Check if the geometry is already selected
       duplicateCheck: function(geom){
         for(itemNo=0; itemNo <this._listItems.length; itemNo++){
           if(JSON.stringify(this._listItems[itemNo].rings) == JSON.stringify(geom.rings)){
@@ -264,6 +266,16 @@ define(['dojo/_base/declare',
         return false;
       },
 
+      // Remove the geom from the geometry checking array
+      removeGeom: function(geom){
+        for(itemNo=0; itemNo <this._listItems.length; itemNo++){
+          if(JSON.stringify(this._listItems[itemNo].rings) == JSON.stringify(geom.rings)){
+            this._listItems.splice(itemNo,1);
+          }
+        }
+      },
+
+      // Toggle the tab on click
       toggleTab: function(tabName){
         for (var containerName in this.listContainers) {
           if(containerName == tabName){
@@ -277,8 +289,20 @@ define(['dojo/_base/declare',
         }
       },
 
+      // Clear all the containers from each tab and hide tabs
+      clearContainers: function(){
+        this._listItems = [];
+        $("rightPaddle").hide();
+        $("leftPaddle").hide();
+        for (var containerName in this.listContainers) {
+          this.listContainers[containerName].innerHTML = "";
+          $("#"+containerName+"_btn").hide();
+        }
+      },
+
       add: function(item) {
         if (arguments.length === 0 || this.duplicateCheck(item.graphic.geometry)) {
+          console.log("duplicate entered");
           return;
         }
         this.items.push(item);
@@ -321,7 +345,6 @@ define(['dojo/_base/declare',
         var ID = this.id;
         var itemID = item.id;
         var layerTitle = item.title;
-        var current = this;
 
         // Disable tabs accordingly
         this.toggleTab(layerTitle);
@@ -675,15 +698,8 @@ define(['dojo/_base/declare',
         // domConstruct.place(displayContainer, this._listContainer);
       },
 
+      // Rearrange the display the tabs on item removed from tab containers
       remove: function(index) {
-        // this.selectedIndex = -1;
-        // this._selectedNode = null;
-        // var item = this.items[index];
-        // domConstruct.destroy(this.id.toLowerCase() + item.id + '');
-        // this.items.splice(index, 1);
-        // if (this.items.length === 0) {
-        //   this._init();
-        // }
         var item = this.items[index];
         domConstruct.destroy(this.id.toLowerCase() + item.id + "");
         this.items.splice(index, 1);
@@ -703,7 +719,7 @@ define(['dojo/_base/declare',
 
       clear: function() {
         this.items.length = 0;
-        this._listContainer.innerHTML = '';
+        this.clearContainers();
         this._init();
       },
 
@@ -773,8 +789,28 @@ define(['dojo/_base/declare',
         if (!item) {
           return;
         }
+        this.removeGeom(item.geometry);
+        this.onRemoveDisplayCheck(item.title);
         this._selectedNode = id;
         this.emit('remove', this.selectedIndex, item);
+      },
+
+      onRemoveDisplayCheck: function(itemTitle){
+        var isAllTabsHidden = true;
+        if(this.listContainers[itemTitle].childNodes.length == 1){
+          $("#"+itemTitle+"_btn").hide();
+        }
+        for (var property in this.listContainers) {
+          if($("#"+property+"_btn").css('display') != "none"){
+            $("#"+property+"_btn").click();
+            isAllTabsHidden = false;
+          }
+        }
+        if(isAllTabsHidden){
+          this.tabContainer.style.display = "none";
+          this.clearContainers();
+        }
+        this.paddlesArrowDisplayCheck();
       },
 
       addComplete: function() {

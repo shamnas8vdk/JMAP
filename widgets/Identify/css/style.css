@@ -846,6 +846,7 @@
   margin-bottom: 8%;
   margin-right: 5%;
   border: 1px solid #1D8BD1;
+  display: none;
   /* border-top: 1px solid #1D8BD1;
   border-left: 1px solid #1D8BD1;
   border-right: 1px solid #1D8BD1; */
@@ -868,18 +869,19 @@
 }
 
 .mdc-tab.mdc-tab--active.paddle {
-	position: sticky; 
-	/* top: 0;
-	bottom: 0;  */
+  position: sticky; 
+	top: 0;
+	bottom: 0; 
   width: 5%;
   padding: 0;
   z-index: 2; 
+  display: none;
 }
 
 .mdc-tab.mdc-tab--active.paddle.left-paddle {
   color: #1D8BD1;
   left: 0;
-  display: none;
+  /* display: none; */
 }
 
 .mdc-tab.mdc-tab--active.paddle.right-paddle {

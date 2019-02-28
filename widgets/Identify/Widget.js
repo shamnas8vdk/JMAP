@@ -402,14 +402,14 @@ define(['dojo/_base/declare',
       },
 
       _clear: function () {
-        debugger;
         this.graphicArr = [];
         this.identifyGeom = null;
         html.setStyle(this.btnClear, 'display', 'none');
         this._hideInfoWindow();
         this.graphicsLayer.clear();
-        // this.tabContainer.selectTab(this.nls.identifylabel);
+        this.tabContainer.selectTab(this.nls.identifylabel);
         this.list.clear();
+        // this.list.tabContainer.style.display = "none";
         this.divResultMessage.textContent = this.nls.noResults;
         this.drawBox.clear();
         if(this.identifyResultsArray){
@@ -832,6 +832,7 @@ define(['dojo/_base/declare',
         return identifyParamsList;
       },
 
+      // fix layer query
       createQueryParams: function (layers, geom) {
         var queryParamsList = [];
         array.forEach(layers, lang.hitch(this, function (layer) {
