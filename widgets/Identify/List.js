@@ -116,7 +116,7 @@ define(['dojo/_base/declare',
           this.listContainers[valueArr[index]] = tempContainer;
 
           // Create button element and classes
-          var button = domConstruct.create('button', { role:"tab", name: valueArr[index], class:"mdc-tab mdc-tab--active", id: valueArr[index]+"_btn"},scrollContent);
+          var button = domConstruct.create('button', { role:"tab", name: valueArr[index], class:"mdc-tab mdc-tab--active", id: valueArr[index].replace(/\s/g, "")+"_btn"},scrollContent);
           var spanContent = domConstruct.create('span', { class:"mdc-tab__content"},button);
           var spanText = domConstruct.create('span', { innerHTML:valueArr[index] ,class:"mdc-tab__text-label identify-tab"},spanContent);
 
@@ -279,7 +279,7 @@ define(['dojo/_base/declare',
       toggleTab: function(tabName){
         for (var containerName in this.listContainers) {
           if(containerName == tabName){
-            document.getElementById(containerName+"_btn").click();
+            document.getElementById(containerName.replace(/\s/g, "") + "_btn").click();
             this.listContainers[containerName].style.display = "block";
             this.displayContainer = this.listContainers[containerName];
           }
@@ -296,7 +296,7 @@ define(['dojo/_base/declare',
         $("leftPaddle").hide();
         for (var containerName in this.listContainers) {
           this.listContainers[containerName].innerHTML = "";
-          $("#"+containerName+"_btn").hide();
+          $("#"+containerName.replace(/\s/g, "")+"_btn").hide();
         }
       },
 
@@ -797,12 +797,13 @@ define(['dojo/_base/declare',
 
       onRemoveDisplayCheck: function(itemTitle){
         var isAllTabsHidden = true;
+        console.log(this.listContainers[itemTitle].childNodes.length);
         if(this.listContainers[itemTitle].childNodes.length == 1){
-          $("#"+itemTitle+"_btn").hide();
+          $("#"+itemTitle.replace(/\s/g, "")+"_btn").hide();
         }
         for (var property in this.listContainers) {
-          if($("#"+property+"_btn").css('display') != "none"){
-            $("#"+property+"_btn").click();
+          if($("#"+property.replace(/\s/g, "")+"_btn").css('display') != "none"){
+            $("#"+property.replace(/\s/g, "")+"_btn").click();
             isAllTabsHidden = false;
           }
         }
