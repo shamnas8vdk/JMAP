@@ -300,9 +300,25 @@ define(['dojo/_base/declare',
         }
       },
 
+      //LevelChecker
+      checkLevelAdd: function(title, val){
+        if(sessionStorage.getItem(title) != null){
+          value = sessionStorage.getItem(title);
+          if(val == value){
+            return true;
+          }
+          else{
+            return false;
+          }
+        }
+        else{
+          return true;
+        }
+      },
+
       add: function(item) {
+        console.log(item);
         if (arguments.length === 0 || this.duplicateCheck(item.graphic.geometry)) {
-          console.log("duplicate entered");
           return;
         }
         this.items.push(item);
@@ -339,6 +355,7 @@ define(['dojo/_base/declare',
         var attValArr, tHasColor, bIndex, eIndex, tColor, vHasColor, vColor;
         var label, attTitle, attVal, breakline;
         var arrayLength = attArr.length;
+        var levelCheck = true;
 
         // ----------- Junwei authored the below section ------ //
         // Store the current object ID and Item id for reference in the loops later
@@ -408,6 +425,8 @@ define(['dojo/_base/declare',
         //Create a container for each category to encapsulate related data
         function setContainer(CategoryNo, category, data, tabType){
           var container = domConstruct.create('div',{ class:"attrCategory" });
+          domStyle.set(container, "display", "none");
+          category.classList.toggle("active");
           var categoryContainer = domConstruct.create('div', { class:"category" });
           category.textContent = data[tabType].type[CategoryNo].Heading;
 
@@ -797,7 +816,6 @@ define(['dojo/_base/declare',
 
       onRemoveDisplayCheck: function(itemTitle){
         var isAllTabsHidden = true;
-        console.log(this.listContainers[itemTitle].childNodes.length);
         if(this.listContainers[itemTitle].childNodes.length == 1){
           $("#"+itemTitle.replace(/\s/g, "")+"_btn").hide();
         }
