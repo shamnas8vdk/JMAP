@@ -285,7 +285,7 @@ function(declare,
             
               symbol: field_symbol,
             
-              label: renderStyle[index].From + " To " + renderStyle[index].To
+              label: renderStyle[index].From + " to " + renderStyle[index].To
             
             });
           }
@@ -315,7 +315,8 @@ function(declare,
           map : self.map,
           layerInfos : [{
               layer : layer,
-              title : layer_name
+              title : layer_name,
+              hideLayers: selectedLayer.hiddenLayer_IDS
           }]
         }, domConstruct.create("div", { class:"attr_legend" }, dom.byId("legendWrapper")));
         legend.startup();
@@ -425,18 +426,7 @@ function(declare,
                 field_symbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([0,0,0,0.7]), 0.5));
                 field_symbol.setColor(new Color(attr.color));
                 if(this.value > attr.From){
-                 // renderer.addBreak(attr.From, attr.To, field_symbol);
-                  renderer.addBreak({
-
-                    minValue: attr.From,
-                  
-                    maxValue: attr.To,
-                  
-                    symbol: field_symbol,
-                  
-                    label: attr.From + " To " + attr.To
-                  
-                  });
+                  renderer.addBreak(attr.From, attr.To, field_symbol);
                 }
               }
               reapplyRenderLegend(renderer, ID, layerName, true, Layer_ID);
@@ -477,9 +467,15 @@ function(declare,
           // Loop through layers on the map and find the map corresponding to the URL
           for (var property in self.map._layers) {
             if (self.map._layers[property].url == selectedLayer.URL) {
+              var hideLayers = null;
+              if(!self.map._layers[property].visibleLayers.includes(Layer_ID)){
+                let visibleLayerArr = self.map._layers[property].visibleLayers.filter((v, i, a) => a.indexOf(v) === i && v != -1);
+                visibleLayerArr.push(Layer_ID); 
+                self.map._layers[property].setVisibleLayers(visibleLayerArr);
+              }
 
               // Set the visible sublayer based on Layer_ID of the layer in layer.json
-              self.map._layers[property].setVisibleLayers([Layer_ID]);
+              // self.map._layers[property].setVisibleLayers([Layer_ID]);
               var optionsArray = [];
               var drawingOptions = new LayerDrawingOptions();
               drawingOptions.renderer = renderer;

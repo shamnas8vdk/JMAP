@@ -4,6 +4,7 @@
       "URL": "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer",
       "Name": "States",
       "Layer_ID": 3,
+      "hiddenLayer_IDS": [0,1,2],
       "ID": "null",
       "Attributes": [
         {
@@ -195,10 +196,6 @@
           "Display_Name": "Status",
           "isBreak": false,
           "Render_style": [
-            {
-              "Name": "Default",
-              "color": [127, 127, 127, 0.5]
-            },
             {
               "Name": "Stenciled",
               "color": [255, 0, 0, 0.5]
