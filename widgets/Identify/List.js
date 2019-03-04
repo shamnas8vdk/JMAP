@@ -317,7 +317,6 @@ define(['dojo/_base/declare',
       },
 
       add: function(item) {
-        console.log(item);
         if (arguments.length === 0 || this.duplicateCheck(item.graphic.geometry)) {
           return;
         }

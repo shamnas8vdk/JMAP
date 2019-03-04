@@ -579,7 +579,6 @@ define(['dojo/_base/declare',
         this.drawBox.clear();
 
         this.map.graphics.clear();
-        //this.map.graphics.add(graphic);
         html.setStyle(this.btnClear, 'display', 'block');
 
         this.identifyGeom = graphic.geometry;
@@ -705,7 +704,7 @@ define(['dojo/_base/declare',
         }));
 
         var tasks = array.map(layers, lang.hitch(this, function (layer) {
-          return new IdentifyTask(layer.url);
+          return new IdentifyTask(layer.url); // fix query
         }));
 
         var tasks2 = array.map(featureLayers, lang.hitch(this, function (layer) {
@@ -786,7 +785,7 @@ define(['dojo/_base/declare',
         }));
       },
 
-      createIdentifyParams: function (layers, geom) {
+      createIdentifyParams: function (layers, geom) { //Fix identify params here
         var identifyParamsList = [];
         array.forEach(layers, lang.hitch(this, function (layer) {
           var identifyParams = new IdentifyParameters();
@@ -795,6 +794,14 @@ define(['dojo/_base/declare',
           identifyParams.geometry = geom;
           identifyParams.tolerance = this.identifytolerance;
           identifyParams.mapExtent = this.map.extent;
+          var identifyURL = sessionStorage.getItem('Identify_URL');
+          var queryString = sessionStorage.getItem('Identify_Query');
+          var queryIndex = sessionStorage.getItem('Identify_LayerIndex');
+          if(layer.url == identifyURL){ // check url and visbility of the layer
+            var defs = [];
+            defs[queryIndex]=queryString;
+            identifyParams.layerDefinitions = defs;
+          }
           identifyParams.returnGeometry = this.returngeometryforzoom;
           if (this.usemaptime && this.map.timeExtent !== null){
             identifyParams.timeExtent = new TimeExtent(this.map.timeExtent.startTime, this.map.timeExtent.endTime);
@@ -806,7 +813,10 @@ define(['dojo/_base/declare',
           }
 //RJS 02/17/17 - Use the WAB layerInfo vlass to see if the layer/sublayer is visible and visible at the maps scale
 //              Old way just used the map services default layer visibility
-          if(this.identifylayeroption !== 'all'){
+          if(queryIndex){
+            identifyParams.layerIds = [queryIndex];
+          }
+          else if(this.identifylayeroption !== 'all'){
             var vsl = [];
             var layerInfosObject = LayerInfos.getInstanceSync();
             var li = layerInfosObject.getLayerInfoById(layer.id);
@@ -851,10 +861,6 @@ define(['dojo/_base/declare',
           queryParamsList.push(queryParams);
         }));
         return queryParamsList;
-      },
-
-      manualIdentify : function(objPoint){
-        return this.pointToExtent(objPoint, this.identifyTolerance);
       },
 
       pointToExtent: function(objPoint, distance){

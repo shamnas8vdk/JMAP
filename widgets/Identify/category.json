@@ -1,11 +1,11 @@
 {
   "layer_list":[
-    "Layer_About",
+    "Detailed Counties",
     "Layer_Legend",
     "Layer_Add_Data",
     "processed_Farm_land"
   ],
-  "Layer_About": {
+  "Detailed Counties": {
     "layer_name": "Layer Name",
     "display_key": "OBJECTID",
     "type": [
@@ -13,8 +13,8 @@
         "Heading":"Category1",
         "Attributes": [
           "OBJECTID",
-          "ID",
-          "SPARE",
+          "STATE_NAME",
+          "STATE_FIPS",
           "AREA"
         ]
       },
