@@ -27,6 +27,11 @@ define([
     'dojo/Deferred',
     'dojo/promise/all',
     'dojo/dom-construct',
+    'dojo/dom-style',
+    'dijit/form/CheckBox',
+    './filterConfig',
+    'esri/layers/ArcGISDynamicMapServiceLayer',
+    'dojo/_base/array',
     'jimu/BaseWidget',
     'jimu/WidgetManager',
     'jimu/PanelManager',
@@ -52,7 +57,8 @@ define([
     './utils',
     'dojo/NodeList-dom'
   ],
-  function(declare, lang, array, html, when, on, aspect, query, keys, Deferred, all, domConstruct, 
+  function(declare, lang, array, html, when, on, aspect, query, keys, Deferred, all, domConstruct, domStyle, 
+    CheckBox, filterConfig, ArcGISDynamicMapServiceLayer, arrayUtils,
     BaseWidget, WidgetManager, PanelManager, LayerInfos, jimuUtils, wkidUtils, esriConfig, Search, Locator,
     FeatureLayer, PopupTemplate, esriLang, Point, Extent, coordinateFormatter, Graphic, SpatialReference, 
     SimpleLineSymbol, SimpleFillSymbol, Color, screenUtils, FeatureQuery, utils) {
@@ -66,6 +72,8 @@ define([
       _pointOfSpecifiedUtmCache: null,
       wManager: null,
       pManager: null,
+      sourceIndex: null,
+      filterBoxes: [],
 
       postCreate: function() {
         if (this.closeable || !this.isOnScreen) {
@@ -209,18 +217,96 @@ define([
               */
 
               this.fetchData('framework');
-              // this.generateFilterDropdown();
+              this.generateFilterDropdown();
             }));
           }));
       },
 
       generateFilterDropdown(){
+        // Add feature layer as new source 
+        this.addConfigSearchSource();
+
+        // Create reference to this widget
+        var current = this;
         query(".searchGroup", this.searchNode).forEach(function(node){
-          //Create button to toggle filter
+
+          // Create button to toggle filter
           var checkBtn = domConstruct.create("div", { innerHTML: "🔧", role:"button" ,id: "searchBoxContainerButton", class:"searchBtn searchSubmit searchBoxContainerButton" }, node);
-          // var checkContainer = domConstruct.create("div", { id: "searchBoxContainer", class:"checkBoxContainer" }, node);
-          // domStyle.set(checkContainer, "display", "none");
+          var filterContainer = domConstruct.create("div", { id: "searchBoxContainer", class:"filterBoxContainer" }, node);
+          domStyle.set(filterContainer, "display", "none");
+
+          // Set Container to appear on click
+          on(checkBtn, 'click', function(evt){
+            if(filterContainer.style.display == "none") {
+              domStyle.set(filterContainer, "display", "block");
+            }
+            else
+              domStyle.set(filterContainer, "display", "none");
+          });
+
+          //Create checkboxes
+          for(index = 0; index < getQueryAttributes().length; index ++){
+            // Create div to hold label and check box and another div to hold checkbox itself for styling
+            var checkboxInput = domConstruct.create("div", {  class:"checkBoxInput" }, filterContainer);
+
+            // Create div to hole checkbox
+            var checkboxDiv = domConstruct.create("div", { class:"checkBox" }, checkboxInput);
+
+            //Create checkbox with default checked
+            var checkBox = new CheckBox({
+              name: getQueryAttributes()[index],
+              checked: true,
+              onChange: function(){
+                current.setConfigOutfields(this.name);
+              }
+            },domConstruct.create("div", null, checkboxDiv));
+
+            // Push into global variable array for checking
+            current.filterBoxes.push(checkBox);
+            domConstruct.create("label", {  innerHTML: getQueryAttributes()[index], class:"checkBoxLabel" }, checkboxInput);
+            domConstruct.create("br", null, filterContainer);
+          }
         })
+      },
+
+      // Set the search parameters to filter by these attributes only
+      setConfigOutfields: function(attribute){
+        var sources = this.searchDijit.get("sources");
+        sources[this.sourceIndex].searchFields = this.getFilterCheckboxArr();
+        this.searchDijit.set("sources", sources);
+        // this.searchDijit.set("activeSourceIndex",this.sourceIndex);
+      },
+
+      // Get the array of all filter checkboxes that are checked
+      getFilterCheckboxArr: function(){
+        var attrArr = [];
+        arrayUtils.forEach(this.filterBoxes, function(box) { 
+          if(box.checked){
+            attrArr.push(box.name);
+          }
+        })
+        return attrArr;
+      },
+
+      // Add the config in filterConfig.js as a new source
+      addConfigSearchSource: function(){
+        var sources = this.searchDijit.get("sources");
+        sources.push({
+          featureLayer: new FeatureLayer(getLayerURL()),
+          searchFields: getQueryAttributes(),
+          suggestionTemplate: getQuerySuggestionTemplate(),
+          exactMatch: false,
+          outFields: ["*"],
+          name: getQueryName(),
+          placeholder: getQueryName(),
+          maxResults: 6,
+          maxSuggestions: 6,
+          enableSuggestions: true,
+          minCharacters: 0,
+          localSearchOptions: {distance: 5000},
+        });
+        this.sourceIndex = sources.length - 1;
+        this.searchDijit.set("sources", sources);
       },
 
       onReceiveData: function(name, widgetId, data) {
@@ -805,14 +891,14 @@ define([
         if (this.searchResults && this.searchResults[dataSourceIndex] &&
           this.searchResults[dataSourceIndex][dataIndex]) {
           result = this.searchResults[dataSourceIndex][dataIndex];
-          // Uncomment to simulate highlight on click
-          // this._zoomToPoint(result.feature.geometry)
+          this._zoomToPoint(result.feature.geometry)
           this.searchDijit.select(result);
         }
       },
 
-      // geometry must be a esri/geometry/Point object
       _zoomToPoint(geometry){
+        // geometry.setX(-121457.9483293097);
+        // geometry.setY(1220677.2239853442);
         this.map.emit('click', {mapPoint: geometry});  
       },
 
