@@ -84,7 +84,6 @@ define(['dojo/_base/declare',
           config: configItem,
           dockableItem: item
         });
-
         if(window.appInfo.isRunInMobile){
           containerNode = jimuConfig.layoutId;
         }else{
@@ -574,6 +573,27 @@ define(['dojo/_base/declare',
       }
 
       return ret;
+    },
+
+    _getGroupById: function(id){
+      var ret = null;
+      array.some(this.groupList, function(group){
+        if(group.config.id === id){
+          ret = group;
+          return true; //break if found
+        }
+      });
+
+      return ret;
+    },
+
+    _hideShowIconItem: function(groupId, layerName, checked){
+      var ret = this._getGroupById(groupId);
+      if (checked && !ret.itemExistByMapTo(layerName)) { // if checked and element does not exist, append to itemList of ret
+        ret.addItemByMapTo(layerName);
+      } else if (!checked) { // otherwise, remove from itemList
+        ret.removeItemByMapTo(layerName);
+      }
     },
 
     _addToOpenedIds: function(id){

@@ -13,6 +13,7 @@
   "properties": {
     "inPanel": false,
     "isController": true,
-    "hasConfig": false
+    "hasConfig": false,
+    "isThemeWidget": true
   }
 }

@@ -10,8 +10,7 @@
 }
 
 .jimu-anchorbar-iconitem .icon-item.dockable{
-  /* margin-top: -20px; */
-  margin: 10px;
+  margin-top: -20px;
 }
 
 .jimu-anchorbar-iconitem .icon-item:hover{
@@ -323,8 +322,4 @@
 .jimu-rtl .jimu-more-icon-cover{
   right: 0;
   left: auto;
-}
-/* for map background color */
-#map {
-  background-color: #ffffff !important;
 }

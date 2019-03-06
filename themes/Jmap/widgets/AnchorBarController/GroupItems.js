@@ -15,6 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////
 
 define(['dojo/_base/declare',
+  'dojo/dom-construct',
   'dojo/_base/array',
   'dojo/_base/lang',
   'dojo/fx',
@@ -28,7 +29,7 @@ define(['dojo/_base/declare',
   'dijit/_TemplatedMixin',
   'dojo/text!./GroupItems.html',
   './BaseIconItem'
-  ], function(declare, array, lang, coreFx, on, Evented, domStyle, domClass,
+  ], function(declare, domConstruct, array, lang, coreFx, on, Evented, domStyle, domClass,
   domGeometry, Move, _WidgetBase, _TemplatedMixin, template, BaseIconItem){
   /* global jimuConfig */
   /**
@@ -49,7 +50,6 @@ define(['dojo/_base/declare',
 
     postCreate: function() {
       this.inherited(arguments);
-
       //create widget group
       array.forEach(this.config.widgets, function(widgetConfig, subIndex){
         var groupItem = new BaseIconItem({
@@ -57,7 +57,6 @@ define(['dojo/_base/declare',
           backgroundIndex: subIndex
         });
         groupItem.placeAt(this.containerNode);
-
         this.own(on(groupItem, 'nodeClick', lang.hitch(this, this._onIconClick)));
         this.itemList.push(groupItem);
       }, this);
@@ -75,6 +74,46 @@ define(['dojo/_base/declare',
 
     getItemList: function(){
       return this.itemList;
+    },
+
+    removeItemByMapTo: function(mapTo){
+      for(var i = this.itemList.length - 1; i >= 0; i--) {
+        if(this.itemList[i].config.mapTo === mapTo) {
+          this.itemList[i].destroyRecursive();
+          this.itemList.splice(i, 1);
+        }
+      }
+    },
+
+    addItemByMapTo: function(mapTo){
+      array.forEach(this.config.widgets, function(widgetConfig, subIndex){
+        if (widgetConfig.mapTo === mapTo) {
+          var groupItem = new BaseIconItem({
+            config: widgetConfig,
+            backgroundIndex: subIndex
+          });
+          this.itemList.push(groupItem);
+        }
+      }, this);
+
+      // sort itemList
+      this.itemList.sort(function(a, b) {
+        return a.backgroundIndex - b.backgroundIndex
+      });
+
+      // re-create containerNode according to itemList
+      domConstruct.empty(this.containerNode);
+      array.forEach(this.itemList, function(groupItem){
+        groupItem.placeAt(this.containerNode);
+        this.own(on(groupItem, 'nodeClick', lang.hitch(this, this._onIconClick)));
+      }, this);
+    },
+
+    itemExistByMapTo: function(mapTo){
+      if (this.itemList.some(groupItem => groupItem.config.mapTo === mapTo)) {
+        return true;
+      }
+      return false;
     },
 
     makeMoveable: function(handleNode, box) {
