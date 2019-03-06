@@ -109,7 +109,9 @@
 	margin-bottom: 10%; */
 	margin-right: 5%;
 	margin-left: 5%;
-  }
+	width: auto;
+	position: absolute;
+}
   
 .checkBox {
 	display:inline;
@@ -120,11 +122,14 @@
 .checkBoxInput {
 	margin-top: 1%;
 	margin-bottom: 0;
-	height: 5%;
+	height: auto;
+	width: auto;
 	vertical-align: middle;
 }
+  
 
-.checkBoxContainer {
+
+.filterBoxContainer {
 	position: absolute;
 	margin-bottom: 0;
 	padding-left: 5%;
