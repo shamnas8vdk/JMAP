@@ -435,14 +435,15 @@ function(declare,
               domStyle.set(checkContainer, "display", "none");
           });
 
+          var checkBoxArr = [];
+
           // Loop through attribute values
           for(index = 0; index < selectedAttribute.Render_style.length; index ++){
-            var checkBoxArr = [];
             //Get the name of the value
             attr_value = selectedAttribute.Render_style[index].From + " to " + selectedAttribute.Render_style[index].To;
             var attr_color = selectedAttribute.Render_style[index].color;
-            var From = selectedAttribute.Render_style[index].From;
-            var To = selectedAttribute.Render_style[index].To;
+            var FromVal = selectedAttribute.Render_style[index].From;
+            var ToVal = selectedAttribute.Render_style[index].To;
 
             //Create div to hold label and check box and another div to hold checkbox itself for styling
             var checkBoxInput = domConstruct.create("div", {  id: "checkBoxInput"+index, class:"checkBoxInput" }, checkContainer);
@@ -458,28 +459,34 @@ function(declare,
             var checkBox = new CheckBox({
               name: attr_value,
               value: attr_color,
-              from: From,
-              to: To,
+              From: FromVal,
+              To: ToVal,
               checked: true,
               onChange: function(){ 
-                if(!this.checked){
-                  // renderer.removeValue(this.name);
-                  renderer.removeBreak(this.from, this.to)
-                  reapplyRenderLegend(renderer, ID, layerName, true, Layer_ID);
-                }
-                else{
-                  var field_symbol = new SimpleFillSymbol();
+                renderer.clearBreaks();
+                arrayUtils.forEach(checkBoxArr, function(box) {
+                  var field_symbol= new SimpleFillSymbol();
                   field_symbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([0,0,0,0.7]), 0.5));
-                  field_symbol.setColor(new Color(this.value));
-                  // renderer.addBreak(this.from, this.to, field_symbol);
-                  renderer.addBreak({
-                    minValue: this.from,
-                    maxValue:this.to,
-                    symbol: field_symbol,
-                    label: this.from + " to " + this.to
-                  });
-                  reapplyRenderLegend(renderer, ID, layerName, true, Layer_ID);
-                }
+                  if(box.checked){
+                    field_symbol.setColor(new Color(box.value));
+                    renderer.addBreak({
+                      minValue: box.From,
+                      maxValue: box.To,
+                      symbol: field_symbol,
+                      label: box.From + " to " + box.To
+                    });
+                  }
+                  else{
+                    field_symbol.setColor(new Color([150, 150, 150, 0.5]));
+                    renderer.addBreak({
+                      minValue: box.From,
+                      maxValue: box.To,
+                      symbol: field_symbol,
+                      label: box.From + " to " + box.To
+                    });
+                  }
+                })
+                reapplyRenderLegend(renderer, ID, layerName, true, Layer_ID);
               }
             },domConstruct.create("div", null, checkBox));
             checkBoxArr.push(checkBox);
