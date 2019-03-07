@@ -65,6 +65,7 @@ function(declare,
         var selectedAttribute = null;
         var layerConfig = null;
         var layerBtn;
+        var originalLayerRenderer= null;
   //To create a widget, you need to derive from BaseWidget.
   return declare([BaseWidget], {
     // DemoWidget code goes here
@@ -82,6 +83,7 @@ function(declare,
     startup: function() {
       this.inherited(arguments);
       var app = {};
+      var dropdownContainers = new Object();
       self = this;
       app.defaultFrom = "#ffffcc";
       app.defaultTo = "#006837";
@@ -96,15 +98,24 @@ function(declare,
 
     // ----------- Junwei authored the below section ------ //
     //Get JSON data of layers with AJAX
-
-    if(layerConfig == null){
-      $.getJSON( getJSONPath(), function( data ){
-        layerConfig = data;
+      setClearBtn(this);
+      if(layerConfig == null){
+        $.getJSON( getJSONPath(), function( data ){
+          layerConfig = data;
+          toggleLayerFields();
+        });
+      }
+      else{
         toggleLayerFields();
+      }
+
+    function setClearBtn(current){
+      var clearBtn = dom.byId("clearClassificationBtn");
+
+      //Set onclick event callback for clear button
+      on(clearBtn, 'click', function(evt){
+        current.clear();
       });
-    }
-    else{
-      toggleLayerFields();
     }
 
     function toggleLayerFields(){
@@ -116,10 +127,12 @@ function(declare,
        layerBtn = domConstruct.create("div", { innerHTML:"Select a Layer", id: "layerSelectContainerButton", class:"checkBoxContainerButton" }, layerWrapper);
        var layerContainer = domConstruct.create("div", { id: "layerContainer", class:"attrLayerContainer" }, layerWrapper);
        domStyle.set(layerContainer, "display", "none");
+       dropdownContainers["layerSelectContainerButton"] = layerContainer;
 
        //Set onclick event callback for category button
        on(layerBtn, 'click', function(evt){
         layerBtn.classList.toggle("active");
+        dropdownCheck("layerSelectContainerButton");
         if(layerContainer.style.display == "none") {
           domStyle.set(layerContainer, "display", "block");
         }
@@ -193,6 +206,18 @@ function(declare,
       }
     }
 
+    //Dropdown check
+    function dropdownCheck(containerName){
+      for (var name in dropdownContainers) {
+        if(document.getElementById(name) && name != containerName && dropdownContainers[name].style.display == "block"){
+          if(name != "filterBoxContainerButton"){
+            document.getElementById(name).classList.toggle("active");
+          }
+          dropdownContainers[name].style.display = "none";
+        }
+      }
+    }
+
     // Display dropdown of all attributes and set render styles
     function toggleAttributeFields(attributes, URL, ID, width, font, color, layer_name, index){
       // Create new "div" element for innerHTML label
@@ -214,10 +239,12 @@ function(declare,
       var fieldBtn = domConstruct.create("div", { innerHTML:"Select an Attribute", id: "fieldSelectContainerButton", class:"checkBoxContainerButton" }, fieldWrapper);
       var fieldContainer = domConstruct.create("div", { id: "fieldContainer", class:"attrLayerContainer" }, fieldWrapper);
       domStyle.set(fieldContainer, "display", "none");
+      dropdownContainers["fieldSelectContainerButton"] = fieldContainer;
 
       //Set onclick event callback for dropdown
       on(fieldBtn, 'click', function(evt){
         fieldBtn.classList.toggle("active");
+        dropdownCheck("fieldSelectContainerButton");
         if(fieldContainer.style.display == "none") {
           domStyle.set(fieldContainer, "display", "block");
         }
@@ -340,9 +367,11 @@ function(declare,
           var checkBtn = domConstruct.create("div", { innerHTML:"Filter Value", id: "filterBoxContainerButton", class:"filterBoxContainerButton" }, valueContainer);
           var checkContainer = domConstruct.create("div", { id: "checkBoxContainer", class:"checkBoxContainer" }, valueContainer);
           domStyle.set(checkContainer, "display", "none");
+          dropdownContainers["filterBoxContainerButton"] = checkContainer;
 
           //Set onclick event callback for category button
           on(checkBtn, 'click', function(evt){
+            dropdownCheck("filterBoxContainerButton");
             if(checkContainer.style.display == "none") {
               domStyle.set(checkContainer, "display", "block");
             }
@@ -358,14 +387,14 @@ function(declare,
             attr_color = selectedAttribute.Render_style[index].color;
 
             //Create div to hold label and check box and another div to hold checkbox itself for styling
-            domConstruct.create("div", {  id: "checkBoxInput"+index, class:"checkBoxInput" }, checkContainer);
+            var checkBoxInput = domConstruct.create("div", {  id: "checkBoxInput"+index, class:"checkBoxInput" }, checkContainer);
 
             //Create color symbol
             var symbol = domConstruct.create("div", { class:"symbol" }, dom.byId("checkBoxInput"+index));
             domStyle.set(symbol, "background", new Color(attr_color).toHex());
 
             // Create div to hole checkbox
-            domConstruct.create("div", {  id: "checkBox"+index, class:"checkBox" }, dom.byId("checkBoxInput"+index));
+            var checkBox = domConstruct.create("div", {  id: "checkBox"+index, class:"checkBox" }, checkBoxInput);
 
             //Create checkbox with default checked
             var checkBox = new CheckBox({
@@ -382,92 +411,180 @@ function(declare,
                   reapplyRenderLegend(renderer, ID, layerName, false, Layer_ID);
                 }
               }
-            },domConstruct.create("div", null, dom.byId("checkBox"+index)));
+            },domConstruct.create("div", null, checkBox));
 
-            domConstruct.create("label", {  innerHTML: attr_value, class:"checkBoxLabel" }, dom.byId("checkBoxInput"+index));
-            domConstruct.create("br", null, dom.byId("checkBoxContainer"));
+            domConstruct.create("label", {  innerHTML: attr_value, class:"checkBoxLabel" }, checkBoxInput);
+            domConstruct.create("br", null, checkContainer);
           }
         }
         else{
-          // Get max numerical value and amount of discrete levels
-          var max = selectedAttribute.Render_style[selectedAttribute.Render_style.length-1].To;
-          var discreteVal = selectedAttribute.Render_style.length
-          var labelArr = [];
+          //------------------------ Start of Check box codes for Classbreaks--------------------------
+          //Create button to toggle filter
+          var checkBtn = domConstruct.create("div", { innerHTML:"Filter Value", id: "filterBoxContainerButton", class:"filterBoxContainerButton" }, valueContainer);
+          var checkContainer = domConstruct.create("div", { id: "checkBoxContainer", class:"checkBoxContainer" }, valueContainer);
+          domStyle.set(checkContainer, "display", "none");
+          dropdownContainers["filterBoxContainerButton"] = checkContainer;
 
-          // Form Label value array
-          for(value = 0; value < discreteVal + 1; value++){
-            var displayAmt = value * (max/(discreteVal));
-            var displayStr = Math.round(displayAmt);
-            if(displayAmt >= 1000){
-              displayStr = (displayAmt/1000) + "K";
+          //Set onclick event callback for category button
+          on(checkBtn, 'click', function(evt){
+            dropdownCheck("filterBoxContainerButton");
+            if(checkContainer.style.display == "none") {
+              domStyle.set(checkContainer, "display", "block");
             }
-            if(displayAmt >= 1000000){
-              displayStr = (displayAmt/1000000) + "M";
-            }
-            labelArr.push(displayStr);
-          }
+            else
+              domStyle.set(checkContainer, "display", "none");
+          });
 
-          // Create div to hold slider for styling
-          var sliderContainer = domConstruct.create("div", {  id: "sliderInput", class:"sliderInput" }, valueContainer);
+          // Loop through attribute values
+          for(index = 0; index < selectedAttribute.Render_style.length; index ++){
+            var checkBoxArr = [];
+            //Get the name of the value
+            attr_value = selectedAttribute.Render_style[index].From + " to " + selectedAttribute.Render_style[index].To;
+            var attr_color = selectedAttribute.Render_style[index].color;
+            var From = selectedAttribute.Render_style[index].From;
+            var To = selectedAttribute.Render_style[index].To;
 
-          var slider = new HorizontalSlider({
-            name: "slider",
-            value: max,
-            minimum: 0,
-            maximum: max,
-            discreteValues: discreteVal + 1,
-            intermediateChanges: true,
-            style: "width: 100%;",
-            onChange: function(){
-              renderer.clearBreaks();
-              for(index = 0; index < selectedAttribute.Render_style.length; index ++){
-                var attr = selectedAttribute.Render_style[index];
-                var field_symbol= new SimpleFillSymbol();
-                field_symbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([0,0,0,0.7]), 0.5));
-                field_symbol.setColor(new Color(attr.color));
-                if(this.value > attr.From){
-                  renderer.addBreak(attr.From, attr.To, field_symbol);
+            //Create div to hold label and check box and another div to hold checkbox itself for styling
+            var checkBoxInput = domConstruct.create("div", {  id: "checkBoxInput"+index, class:"checkBoxInput" }, checkContainer);
+
+            //Create color symbol
+            var symbol = domConstruct.create("div", { class:"symbol" }, dom.byId("checkBoxInput"+index));
+            domStyle.set(symbol, "background", new Color(attr_color).toHex());
+
+            // Create div to hole checkbox
+            var checkBox = domConstruct.create("div", {  id: "checkBox"+index, class:"checkBox" }, checkBoxInput);
+
+            //Create checkbox with default checked
+            var checkBox = new CheckBox({
+              name: attr_value,
+              value: attr_color,
+              from: From,
+              to: To,
+              checked: true,
+              onChange: function(){ 
+                if(!this.checked){
+                  // renderer.removeValue(this.name);
+                  renderer.removeBreak(this.from, this.to)
+                  reapplyRenderLegend(renderer, ID, layerName, true, Layer_ID);
+                }
+                else{
+                  var field_symbol = new SimpleFillSymbol();
+                  field_symbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([0,0,0,0.7]), 0.5));
+                  field_symbol.setColor(new Color(this.value));
+                  // renderer.addBreak(this.from, this.to, field_symbol);
+                  renderer.addBreak({
+                    minValue: this.from,
+                    maxValue:this.to,
+                    symbol: field_symbol,
+                    label: this.from + " to " + this.to
+                  });
+                  reapplyRenderLegend(renderer, ID, layerName, true, Layer_ID);
                 }
               }
-              reapplyRenderLegend(renderer, ID, layerName, true, Layer_ID);
-            }
-          }, domConstruct.create("div", null, sliderContainer));
+            },domConstruct.create("div", null, checkBox));
+            checkBoxArr.push(checkBox);
 
-          //Create div to hold label markers for styling
-          var labelContainer = domConstruct.create("div", {  id: "sliderLabelInput", class:"sliderLabelInput" }, valueContainer);
+            domConstruct.create("label", {  innerHTML: attr_value, class:"checkBoxLabel" }, checkBoxInput);
+            domConstruct.create("br", null, checkContainer);
+          }
+          //------------------------ End of Check box codes for Classbreaks--------------------------
 
-          var sliderRules = new HorizontalRule({
-            container: "bottomDecoration",
-            count: discreteVal + 1,
-            style: "height: 5px; margin: 0 12px;"
-          }, domConstruct.create("div", null, labelContainer));  
+          // ------------------------------- Start of Slider codes -----------------------------------//
+          // Get max numerical value and amount of discrete levels
+          // var max = selectedAttribute.Render_style[selectedAttribute.Render_style.length-1].To;
+          // var discreteVal = selectedAttribute.Render_style.length
+          // var labelArr = [];
 
-          //Create div to hold numeric labels for styling
-          var labelContainer2 = domConstruct.create("ol", {  id: "sliderLabelInput2", class:"sliderLabelInput2" }, valueContainer);
+          // // Form Label value array
+          // for(value = 0; value < discreteVal + 1; value++){
+          //   var displayAmt = value * (max/(discreteVal));
+          //   var displayStr = Math.round(displayAmt);
+          //   if(displayAmt >= 1000){
+          //     displayStr = (displayAmt/1000) + "K";
+          //   }
+          //   if(displayAmt >= 1000000){
+          //     displayStr = (displayAmt/1000000) + "M";
+          //   }
+          //   labelArr.push(displayStr);
+          // }
 
-          var sliderLabels = new HorizontalRuleLabels({
-            container: "bottomDecoration",
-            labels: labelArr,
-            labelStyle: "font-size: 0.75em",
-            style: "height: 1em; font-weight: bold;"
-          }, domConstruct.create("div", null, labelContainer2));
+          // // Create div to hold slider for styling
+          // var sliderContainer = domConstruct.create("div", {  id: "sliderInput", class:"sliderInput" }, valueContainer);
+
+          // var slider = new HorizontalSlider({
+          //   name: "slider",
+          //   value: max,
+          //   minimum: 0,
+          //   maximum: max,
+          //   discreteValues: discreteVal + 1,
+          //   intermediateChanges: true,
+          //   style: "width: 100%;",
+          //   onChange: function(){
+              // renderer.clearBreaks();
+              // for(index = 0; index < selectedAttribute.Render_style.length; index ++){
+              //   var attr = selectedAttribute.Render_style[index];
+              //   var field_symbol= new SimpleFillSymbol();
+              //   field_symbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([0,0,0,0.7]), 0.5));
+              //   field_symbol.setColor(new Color(attr.color));
+              //   if(this.value > attr.From){
+              //     // renderer.addBreak(attr.From, attr.To, field_symbol);
+              //     renderer.addBreak({
+
+              //       minValue: attr.From,
+                  
+              //       maxValue: attr.To,
+                  
+              //       symbol: field_symbol,
+                  
+              //       label: attr.From + " to " + attr.To
+                  
+              //     });
+              //   }
+              // }
+              // reapplyRenderLegend(renderer, ID, layerName, true, Layer_ID);
+          //   }
+          // }, domConstruct.create("div", null, sliderContainer));
+
+          // //Create div to hold label markers for styling
+          // var labelContainer = domConstruct.create("div", {  id: "sliderLabelInput", class:"sliderLabelInput" }, valueContainer);
+
+          // var sliderRules = new HorizontalRule({
+          //   container: "bottomDecoration",
+          //   count: discreteVal + 1,
+          //   style: "height: 5px; margin: 0 12px;"
+          // }, domConstruct.create("div", null, labelContainer));  
+
+          // //Create div to hold numeric labels for styling
+          // var labelContainer2 = domConstruct.create("ol", {  id: "sliderLabelInput2", class:"sliderLabelInput2" }, valueContainer);
+
+          // var sliderLabels = new HorizontalRuleLabels({
+          //   container: "bottomDecoration",
+          //   labels: labelArr,
+          //   labelStyle: "font-size: 0.75em",
+          //   style: "height: 1em; font-weight: bold;"
+          // }, domConstruct.create("div", null, labelContainer2));
+        // ------------------------------- End of Slider codes -----------------------------------//
         }
       }
 
       function reapplyRenderLegend(renderer, ID, layerName, check, Layer_ID){
+        // Check if is dynamic layer or not
         if(self.map.getLayer(ID)){
+          if(originalLayerRenderer == null){
+            originalLayerRenderer = self.map.getLayer(ID).renderer;
+          }
           domConstruct.empty("legendWrapper");
           self.map.getLayer(ID).setRenderer(renderer);
           self.map.getLayer(ID).redraw();
-          if(check){
-            applyLegend(self.map.getLayer(ID),layerName);
-          }
+          // Uncomment if they want the legend again
+          // if(check){
+          //   applyLegend(self.map.getLayer(ID),layerName);
+          // }
         }
         else{
           // Loop through layers on the map and find the map corresponding to the URL
           for (var property in self.map._layers) {
             if (self.map._layers[property].url == selectedLayer.URL) {
-              var hideLayers = null;
               if(!self.map._layers[property].visibleLayers.includes(Layer_ID)){
                 let visibleLayerArr = self.map._layers[property].visibleLayers.filter((v, i, a) => a.indexOf(v) === i && v != -1);
                 visibleLayerArr.push(Layer_ID); 
@@ -475,18 +592,16 @@ function(declare,
               }
 
               // Set the visible sublayer based on Layer_ID of the layer in layer.json
-              // self.map._layers[property].setVisibleLayers([Layer_ID]);
               var optionsArray = [];
               var drawingOptions = new LayerDrawingOptions();
               drawingOptions.renderer = renderer;
               optionsArray[Layer_ID] = drawingOptions;
               self.map._layers[property].setLayerDrawingOptions(optionsArray);
-
-              //Render Legend if is classbreaks renderer
-              domConstruct.empty("legendWrapper");
-              if(check){
-                applyLegend(self.map._layers[property], selectedAttribute.Display_Name);
-              }
+              // Uncomment if they want the legend again
+              // domConstruct.empty("legendWrapper");
+              // if(check){
+              //   applyLegend(self.map._layers[property], selectedAttribute.Display_Name);
+              // }
             }
           }
         }
@@ -575,6 +690,7 @@ function(declare,
     },
 
     clear: function(){
+      this.removeRenderer(selectedLayer.ID,selectedLayer.Layer_ID)
       if(currentLayer != null){
         self.map.removeLayer(currentLayer);
         currentLayer = null;
@@ -587,13 +703,33 @@ function(declare,
       domConstruct.empty("valueWrapper");
       domConstruct.empty("legendWrapper");
     },
+
+    removeRenderer: function(ID, Layer_ID){
+      if(ID && originalLayerRenderer){
+        self.map.getLayer(ID).setRenderer(originalLayerRenderer);
+        self.map.getLayer(ID).redraw();
+      }
+      else{
+        // Loop through layers on the map and find the map corresponding to the URL
+        for (var property in self.map._layers) {
+          if (self.map._layers[property].url == selectedLayer.URL) {
+            var optionsArray = [];
+            var drawingOptions = new LayerDrawingOptions();
+            drawingOptions.renderer = null;
+            optionsArray[Layer_ID] = drawingOptions;
+            self.map._layers[property].setLayerDrawingOptions(optionsArray);
+          }
+        }
+      }
+    },
    
     onOpen: function(){
       // console.log('onOpen');
     },
 
     onClose: function(){
-      this.clear();
+      // this.clear();
+      // console.log("onclose");
     },
 
     onMinimize: function(){

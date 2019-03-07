@@ -175,3 +175,17 @@
   margin-right: 4%;
   width: 77%;
 }
+
+.clear-classification-container{
+  width: 100%;
+  text-align: right;
+  color: #1D8BD1;
+  font-size: 110%;
+  font-weight: bold;
+  margin-bottom: 3%;
+}
+
+.clear-classification-btn{
+  display:inline-block;
+  cursor:pointer;
+}

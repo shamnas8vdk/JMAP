@@ -4,7 +4,6 @@
       "URL": "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer",
       "Name": "States",
       "Layer_ID": 3,
-      "hiddenLayer_IDS": [0,1,2],
       "ID": "null",
       "Attributes": [
         {
@@ -29,32 +28,32 @@
           "Render_style": [
             {
               "From": 0,
-              "To": 5000,
+              "To": 10,
               "color": [255, 255, 0, 0.5]
             },
             {
-              "From": 5000,
-              "To": 10000,
+              "From": 10,
+              "To": 20,
               "color": [255, 0, 255, 0.5]
             },
             {
-              "From": 10000,
-              "To": 15000,
+              "From": 20,
+              "To": 30,
               "color": [0, 255, 0, 0.5]
             },
             {
-              "From": 15000,
-              "To": 20000,
+              "From": 30,
+              "To": 40,
               "color": [128, 255, 0, 0.5]
             },
             {
-              "From": 20000,
-              "To": 25000,
+              "From": 40,
+              "To": 50,
               "color": [255, 128, 0, 0.5]
             },
             {
-              "From": 25000,
-              "To": 300000,
+              "From": 50,
+              "To": 100000,
               "color": [0, 0, 0, 0.5]
             }
           ]
