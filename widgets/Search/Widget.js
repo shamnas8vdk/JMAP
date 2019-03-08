@@ -73,7 +73,9 @@ define([
       wManager: null,
       pManager: null,
       sourceIndex: null,
-      filterBoxes: [],
+      filterBoxes : new Object(),
+      filterContainer: null,
+      checkBtn: null,
 
       postCreate: function() {
         if (this.closeable || !this.isOnScreen) {
@@ -231,56 +233,66 @@ define([
         query(".searchGroup", this.searchNode).forEach(function(node){
 
           // Create button to toggle filter
-          var checkBtn = domConstruct.create("div", { innerHTML: "🔧", role:"button" ,id: "searchBoxContainerButton", class:"searchBtn searchSubmit searchBoxContainerButton" }, node);
-          var filterContainer = domConstruct.create("div", { id: "searchBoxContainer", class:"filterBoxContainer" }, node);
-          domStyle.set(filterContainer, "display", "none");
+          current.checkBtn = domConstruct.create("div", { innerHTML: "🔧", role:"button", class:"searchBtn searchSubmit searchBoxContainerButton" }, node);
+          current.filterContainer = domConstruct.create("div", { id: "searchBoxContainer", class:"filterBoxContainer" }, node);
+          domStyle.set(current.checkBtn, "display", "none");
+          domStyle.set(current.filterContainer, "display", "none");
 
           // Set Container to appear on click
-          on(checkBtn, 'click', function(evt){
-            if(filterContainer.style.display == "none") {
-              domStyle.set(filterContainer, "display", "block");
+          on(current.checkBtn, 'click', function(evt){
+            if(current.filterContainer.style.display == "none") {
+              domStyle.set(current.filterContainer, "display", "block");
             }
             else
-              domStyle.set(filterContainer, "display", "none");
+              domStyle.set(current.filterContainer, "display", "none");
           });
 
-          //Create checkboxes
-          for(index = 0; index < getQueryAttributes().length; index ++){
-            // Create div to hold label and check box and another div to hold checkbox itself for styling
-            var checkboxInput = domConstruct.create("div", {  class:"checkBoxInput" }, filterContainer);
+          arrayUtils.forEach(getQueryLayers(), function(Layer) { 
+            var sourceFilters = domConstruct.create("div", null, current.filterContainer);
+            domStyle.set(sourceFilters, "display", "none");
+            current.filterBoxes[Layer.URL]["container"] = sourceFilters;
+            current.filterBoxes[Layer.URL]["boxes"] = [];
 
-            // Create div to hole checkbox
-            var checkboxDiv = domConstruct.create("div", { class:"checkBox" }, checkboxInput);
+            //Create checkboxes
+            for(index = 0; index < Layer.attributes.length; index ++){
+              // Create div to hold label and check box and another div to hold checkbox itself for styling
+              var checkboxInput = domConstruct.create("div", {  class:"checkBoxInput" }, sourceFilters);
 
-            //Create checkbox with default checked
-            var checkBox = new CheckBox({
-              name: getQueryAttributes()[index],
-              checked: true,
-              onChange: function(){
-                current.setConfigOutfields(this.name);
-              }
-            },domConstruct.create("div", null, checkboxDiv));
+              // Create div to hole checkbox
+              var checkboxDiv = domConstruct.create("div", { class:"checkBox" }, checkboxInput);
 
-            // Push into global variable array for checking
-            current.filterBoxes.push(checkBox);
-            domConstruct.create("label", {  innerHTML: getQueryAttributes()[index], class:"checkBoxLabel" }, checkboxInput);
-            domConstruct.create("br", null, filterContainer);
-          }
+              //Create checkbox with default checked
+              var checkBox = new CheckBox({
+                name: Layer.attributes[index],
+                checked: true,
+                url: Layer.URL,
+                onChange: function(){
+                  current.setConfigOutfields(this.name, current.filterBoxes[this.url]);
+                }
+              },domConstruct.create("div", null, checkboxDiv));
+
+              // Push into global variable array for checking
+              current.filterBoxes[Layer.URL]["boxes"].push(checkBox);
+              domConstruct.create("label", {  innerHTML: Layer.attributes[index], class:"checkBoxLabel" }, checkboxInput);
+              domConstruct.create("br", null, sourceFilters);
+            }
+          })
         })
       },
 
       // Set the search parameters to filter by these attributes only
-      setConfigOutfields: function(attribute){
+      setConfigOutfields: function(attribute, layerSource){
         var sources = this.searchDijit.get("sources");
-        sources[this.sourceIndex].searchFields = this.getFilterCheckboxArr();
-        this.searchDijit.set("sources", sources);
-        // this.searchDijit.set("activeSourceIndex",this.sourceIndex);
+        sources[layerSource["Index"]].searchFields = this.getFilterCheckboxArr(layerSource["boxes"]);
+        this.searchDijit.sources = sources;
+        // Uncomment the bottom and comment the top if u want source index to reset to all after each toggle
+        // this.searchDijit.set("sources", sources); 
       },
 
       // Get the array of all filter checkboxes that are checked
-      getFilterCheckboxArr: function(){
+      getFilterCheckboxArr: function(boxArray){
         var attrArr = [];
-        arrayUtils.forEach(this.filterBoxes, function(box) { 
+        arrayUtils.forEach(boxArray, function(box) { 
           if(box.checked){
             attrArr.push(box.name);
           }
@@ -291,21 +303,26 @@ define([
       // Add the config in filterConfig.js as a new source
       addConfigSearchSource: function(){
         var sources = this.searchDijit.get("sources");
-        sources.push({
-          featureLayer: new FeatureLayer(getLayerURL()),
-          searchFields: getQueryAttributes(),
-          suggestionTemplate: getQuerySuggestionTemplate(),
-          exactMatch: false,
-          outFields: ["*"],
-          name: getQueryName(),
-          placeholder: getQueryName(),
-          maxResults: 6,
-          maxSuggestions: 6,
-          enableSuggestions: true,
-          minCharacters: 0,
-          localSearchOptions: {distance: 5000},
-        });
-        this.sourceIndex = sources.length - 1;
+        var self = this;
+        arrayUtils.forEach(getQueryLayers(), function(Layer) { 
+          sources.push({
+            featureLayer: new FeatureLayer(Layer.URL),
+            searchFields: Layer.attributes,
+            suggestionTemplate: Layer.suggestionTemplate,
+            exactMatch: false,
+            outFields: ["*"],
+            name: Layer.name,
+            placeholder: Layer.placeholder,
+            maxResults: Layer.maxResults,
+            maxSuggestions: Layer.maxSuggestions,
+            enableSuggestions: true,
+            minCharacters: 0,
+            localSearchOptions: {distance: 5000},
+          });
+          self.filterBoxes[Layer.URL] = new Object();
+          self.filterBoxes[Layer.URL]["Index"] = sources.length - 1;       
+        })
+        // this.sourceIndex = sources.length - 1;
         this.searchDijit.set("sources", sources);
       },
 
@@ -787,8 +804,42 @@ define([
       },
 
       _onSourceIndexChange: function() {
+        var source = null;
+        console.log(this.searchDijit.activeSourceIndex);
+        if(!isNaN(this.searchDijit.activeSourceIndex) && this.searchDijit.activeSourceIndex != null){
+          source = this.searchDijit.get("sources")[this.searchDijit.activeSourceIndex].featureLayer;
+          if(source){
+            this._toggleFilterContainers(source.url);
+          }
+          else{
+            this._toggleFilterContainers("none");
+          }
+        }
+        else if(this.searchDijit.activeSourceIndex){
+          if(this.checkBtn){
+            this._toggleFilterContainers("none");
+          }
+        }
         if (this.searchDijit.value) {
           this.searchDijit.search(this.searchDijit.value);
+        }
+      },
+
+      _toggleFilterContainers: function(url){
+        if(url == "none"){
+          domStyle.set(this.checkBtn, "display", "none");
+          domStyle.set(this.filterContainer, "display", "none");
+        }
+        else{
+          domStyle.set(this.checkBtn, "display", "table-cell");
+        }
+        for (var containerName in this.filterBoxes){
+          if(containerName != url){
+            this.filterBoxes[containerName]["container"].style.display = "none";
+          }
+          else{
+            this.filterBoxes[containerName]["container"].style.display = "block";
+          }
         }
       },
 
@@ -802,7 +853,6 @@ define([
         var value = this.searchDijit.get('value');
         var htmlContent = "";
         var results = evt.results;
-        var _activeSourceNumber = null;
 
         var outputTextforCustomInput = this._getOutputTextForCustomInput(evt.value); //*******
 
