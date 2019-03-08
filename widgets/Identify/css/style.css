@@ -845,11 +845,11 @@
   /* padding-right: 5%; */
   margin-bottom: 8%;
   margin-right: 5%;
-  border: 1px solid #1D8BD1;
+  /* border: 1px solid #1D8BD1; */
   display: none;
-  /* border-top: 1px solid #1D8BD1;
-  border-left: 1px solid #1D8BD1;
-  border-right: 1px solid #1D8BD1; */
+  /* border-top: 1px solid #1D8BD1;*/
+  /* border-left: 1px solid #1D8BD1;
+  border-right: 1px solid #1D8BD1;  */
 }
 
 /* Uncomment to change tab color to blue */
@@ -866,6 +866,7 @@
 .mdc-tab-scroller__scroll-content.scroll-tab{
   width: 100%;
   overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 .mdc-tab.mdc-tab--active.paddle {
@@ -889,5 +890,13 @@
   right: 0;
   /* z-index: 2; 
   padding-right: 10%; */
+}
+
+.tab-divider{
+  border-right: 2px solid #1D8BD1;
+  position: absolute;
+  top: 50%;
+  bottom: 0;
+  /* background: #1D8BD1; */
 }
 

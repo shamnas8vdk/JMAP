@@ -116,15 +116,17 @@ define(['dojo/_base/declare',
           this.listContainers[valueArr[index]] = tempContainer;
 
           // Create button element and classes
-          var button = domConstruct.create('button', { role:"tab", name: valueArr[index], class:"mdc-tab mdc-tab--active", id: valueArr[index].replace(/\s/g, "")+"_btn"},scrollContent);
+          var button = domConstruct.create('button', { role:"tab", name: valueArr[index], class:"mdc-tab mdc-tab--active tabBtn", id: valueArr[index].replace(/\s/g, "")+"_btn"},scrollContent);
+          domStyle.set(button, "border", "1px solid #1D8BD1");
           var spanContent = domConstruct.create('span', { class:"mdc-tab__content"},button);
           var spanText = domConstruct.create('span', { innerHTML:valueArr[index] ,class:"mdc-tab__text-label identify-tab"},spanContent);
 
           // Set first tab to active
-          if(index == 0){
-            var spanContentActive = domConstruct.create('span', { class:"mdc-tab-indicator mdc-tab-indicator--active"},button);
-            var spanTextActive = domConstruct.create('span', { class:"mdc-tab-indicator__content mdc-tab-indicator__content--underline identify-tab"},spanContentActive);
-          }
+          // if(index == 0){
+            // domStyle.set(button, "border-right", "1px solid #1D8BD1");
+            // var spanContentActive = domConstruct.create('span', { class:"mdc-tab-indicator mdc-tab-indicator--active"},button);
+            // var spanTextActive = domConstruct.create('span', { class:"mdc-tab-indicator__content mdc-tab-indicator__content--underline identify-tab"},spanContentActive);
+          // }
           var spanRipple = domConstruct.create('span', { class:"mdc-tab__ripple"},button);
           button.style.display = "none";
           buttons.push(button);
@@ -133,16 +135,18 @@ define(['dojo/_base/declare',
             current.tabContainer.style.display = "block";
             this.style.display = "block";
             current.paddlesArrowDisplayCheck();
-            array.forEach(buttons, function(btn){
-              var active = btn.getElementsByClassName("mdc-tab-indicator mdc-tab-indicator--active")[0];
-              if(active){
-                btn.removeChild(active);
-              }
-            });
-            var spanContentActive = domConstruct.create('span', { class:"mdc-tab-indicator mdc-tab-indicator--active"}, this);
-            var spanTextActive = domConstruct.create('span', { class:"mdc-tab-indicator__content mdc-tab-indicator__content--underline identify-tab"},spanContentActive);
+            // array.forEach(buttons, function(btn){
+            //   var active = btn.getElementsByClassName("mdc-tab-indicator mdc-tab-indicator--active")[0];
+            //   if(active){
+            //     btn.removeChild(active);
+            //   }
+            // });
+            // var spanContentActive = domConstruct.create('span', { class:"mdc-tab-indicator mdc-tab-indicator--active"}, this);
+            // var spanTextActive = domConstruct.create('span', { class:"mdc-tab-indicator__content mdc-tab-indicator__content--underline identify-tab"},spanContentActive);
             current.toggleTab(this.name);
           });
+
+          // var divider = domConstruct.create('div',{ class:"tab-divider"},scrollContent);
         }
         var paddles = this.setPaddles(scrollContent);
         // Make the tabs scrollable
@@ -156,6 +160,12 @@ define(['dojo/_base/declare',
         leftPaddle.innerText = "<";
         var rightPaddle = domConstruct.create('button', { role:"tab", class:"mdc-tab mdc-tab--active paddle right-paddle", id: "rightPaddle"},scrollContent,"last");
         rightPaddle.innerText = ">";
+        domStyle.set(leftPaddle, "border-top", "1px solid #1D8BD1");
+        domStyle.set(leftPaddle, "border-bottom", "1px solid #1D8BD1");
+        domStyle.set(leftPaddle, "border-left", "1px solid #1D8BD1");
+        domStyle.set(rightPaddle, "border-top", "1px solid #1D8BD1");
+        domStyle.set(rightPaddle, "border-bottom", "1px solid #1D8BD1");
+        domStyle.set(rightPaddle, "border-right", "1px solid #1D8BD1");
 
         on(leftPaddle, 'click', (e) => {
           scrollContent.scrollLeft-=50;

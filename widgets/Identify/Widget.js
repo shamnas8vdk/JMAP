@@ -599,7 +599,8 @@ define(['dojo/_base/declare',
         this.iResultLen = 0;
         this.resultFound = false;
         //this.list.clear(); //Commented out to keep an ongoing List of items for Multi-select feature
-        // this.pManager.maximizePanel(this.pManager.panels[0]); //Maximizes the right panel on clicking a feature
+        this.pManager.maximizePanel(this.pManager.panels[0]); //Maximizes the right panel on clicking a feature
+        // console.log(this.map._layers);
         this.tabContainer.selectTab(this.nls.resultslabel);
         html.setStyle(this.progressBar.domNode, 'display', 'block');
         html.setStyle(this.divResult, 'display', 'none');
@@ -815,6 +816,7 @@ define(['dojo/_base/declare',
 //              Old way just used the map services default layer visibility
           if(queryIndex){
             identifyParams.layerIds = [queryIndex];
+            identifyParams.layerOption = IdentifyParameters.LAYER_OPTION_TOP;
           }
           else if(this.identifylayeroption !== 'all'){
             var vsl = [];
@@ -2351,6 +2353,7 @@ define(['dojo/_base/declare',
           if(tPanel){
             aspect.after(tPanel, "onClose", lang.hitch(this, this.onClose));
             aspect.after(tPanel, "onOpen", lang.hitch(this, this.onOpen));
+            // aspect.after(tPanel, "onOpen", lang.hitch(this, this.enableWebMapPopup));
           }
         }
         /*end work around for LaunchPad*/
