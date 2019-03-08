@@ -847,9 +847,9 @@
   margin-right: 5%;
   /* border: 1px solid #1D8BD1; */
   display: none;
-  /* border-top: 1px solid #1D8BD1;*/
-  /* border-left: 1px solid #1D8BD1;
-  border-right: 1px solid #1D8BD1;  */
+  border-top: 1px solid #1D8BD1;
+  border-left: 0.5px solid #1D8BD1;
+  border-right: 0.5px solid #1D8BD1; 
 }
 
 /* Uncomment to change tab color to blue */
@@ -877,16 +877,18 @@
   padding: 0;
   z-index: 2; 
   display: none;
+  /* background:white; */
+  color: #1D8BD1;
 }
 
 .mdc-tab.mdc-tab--active.paddle.left-paddle {
-  color: #1D8BD1;
+  /* color: #1D8BD1; */
   left: 0;
   /* display: none; */
 }
 
 .mdc-tab.mdc-tab--active.paddle.right-paddle {
-  color: #1D8BD1;
+  /* color: #1D8BD1; */
   right: 0;
   /* z-index: 2; 
   padding-right: 10%; */

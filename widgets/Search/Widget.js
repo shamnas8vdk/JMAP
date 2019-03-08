@@ -831,6 +831,7 @@ define([
           domStyle.set(this.filterContainer, "display", "none");
         }
         else{
+          domStyle.set(this.filterContainer, "display", "block");
           domStyle.set(this.checkBtn, "display", "table-cell");
         }
         for (var containerName in this.filterBoxes){
