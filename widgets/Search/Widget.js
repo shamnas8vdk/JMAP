@@ -127,10 +127,11 @@ define([
                 enableInfoWindow: true,
                 showInfoWindowOnSelect: true,
                 map: this.map,
-                sources: searchSouces,
+                sources: this.getSources(),//searchSouces,
                 theme: 'arcgisSearch'
               });
               html.place(this.searchDijit.domNode, this.searchNode);
+              // this.generateFilterDropdown();
               this.searchDijit.startup();
 
               this._resetSearchDijitStyle();
@@ -224,14 +225,13 @@ define([
           }));
       },
 
-      generateFilterDropdown(){
-        // Add feature layer as new source 
-        this.addConfigSearchSource();
+      generateFilterDropdown: function(){
+        // Add feature layers as new source 
+        // this.addConfigSearchSource();
 
         // Create reference to this widget
         var current = this;
         query(".searchGroup", this.searchNode).forEach(function(node){
-
           // Create button to toggle filter
           current.checkBtn = domConstruct.create("div", { innerHTML: "🔧", role:"button", class:"searchBtn searchSubmit searchBoxContainerButton" }, node);
           current.filterContainer = domConstruct.create("div", { id: "searchBoxContainer", class:"filterBoxContainer" }, node);
@@ -303,8 +303,31 @@ define([
       // Add the config in filterConfig.js as a new source
       addConfigSearchSource: function(){
         var sources = this.searchDijit.get("sources");
+        sources = [];
         var self = this;
-        arrayUtils.forEach(getQueryLayers(), function(Layer) { 
+        // Get array of layers from filterConfig.js
+        // arrayUtils.forEach(getQueryLayers(), function(Layer) { 
+        //   sources.push({
+        //     featureLayer: new FeatureLayer(Layer.URL),
+        //     searchFields: Layer.attributes,
+        //     suggestionTemplate: Layer.suggestionTemplate,
+        //     exactMatch: false,
+        //     outFields: ["*"],
+        //     name: Layer.name,
+        //     placeholder: Layer.placeholder,
+        //     maxResults: Layer.maxResults,
+        //     maxSuggestions: Layer.maxSuggestions,
+        //     enableSuggestions: true,
+        //     minCharacters: 0,
+        //     localSearchOptions: {distance: 5000},
+        //   });
+          // self.filterBoxes[Layer.URL] = new Object();
+          // self.filterBoxes[Layer.URL]["Index"] = sources.length - 1;       
+        // })
+
+
+        // this.sourceIndex = sources.length - 1;
+        getQueryLayers().forEach(function(Layer, index){
           sources.push({
             featureLayer: new FeatureLayer(Layer.URL),
             searchFields: Layer.attributes,
@@ -320,10 +343,36 @@ define([
             localSearchOptions: {distance: 5000},
           });
           self.filterBoxes[Layer.URL] = new Object();
-          self.filterBoxes[Layer.URL]["Index"] = sources.length - 1;       
-        })
-        // this.sourceIndex = sources.length - 1;
-        this.searchDijit.set("sources", sources);
+          self.filterBoxes[Layer.URL]["Index"] = sources.length - 1;
+          if(index == getQueryLayers().length-1){
+            self.searchDijit.set("sources", sources);
+          }
+        });
+        // this.searchDijit.set("sources", sources);
+      },
+
+      getSources: function(){
+        var sources = [];
+        var self = this;
+        getQueryLayers().forEach(function(Layer, index){
+          sources.push({
+            featureLayer: new FeatureLayer(Layer.URL),
+            searchFields: Layer.attributes,
+            suggestionTemplate: Layer.suggestionTemplate,
+            exactMatch: false,
+            outFields: ["*"],
+            name: Layer.name,
+            placeholder: Layer.placeholder,
+            maxResults: Layer.maxResults,
+            maxSuggestions: Layer.maxSuggestions,
+            enableSuggestions: true,
+            minCharacters: 0,
+            localSearchOptions: {distance: 5000},
+          });
+          self.filterBoxes[Layer.URL] = new Object();
+          self.filterBoxes[Layer.URL]["Index"] = index;//sources.length - 1;
+        });
+      return sources;
       },
 
       onReceiveData: function(name, widgetId, data) {
@@ -805,7 +854,6 @@ define([
 
       _onSourceIndexChange: function() {
         var source = null;
-        console.log(this.searchDijit.activeSourceIndex);
         if(!isNaN(this.searchDijit.activeSourceIndex) && this.searchDijit.activeSourceIndex != null){
           source = this.searchDijit.get("sources")[this.searchDijit.activeSourceIndex].featureLayer;
           if(source){
