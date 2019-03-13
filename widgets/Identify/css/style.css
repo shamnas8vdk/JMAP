@@ -877,8 +877,9 @@
   padding: 0;
   z-index: 2; 
   display: none;
-  /* background:white; */
-  color: #1D8BD1;
+  background: #B3CFDD;
+  color: white;
+  font-weight: bold;
 }
 
 .mdc-tab.mdc-tab--active.paddle.left-paddle {
@@ -892,13 +893,5 @@
   right: 0;
   /* z-index: 2; 
   padding-right: 10%; */
-}
-
-.tab-divider{
-  border-right: 2px solid #1D8BD1;
-  position: absolute;
-  top: 50%;
-  bottom: 0;
-  /* background: #1D8BD1; */
 }
 

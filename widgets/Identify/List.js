@@ -118,7 +118,7 @@ define(['dojo/_base/declare',
           // Create button element and classes
           var button = domConstruct.create('button', { role:"tab", name: valueArr[index], class:"mdc-tab mdc-tab--active tabBtn", id: valueArr[index].replace(/\s/g, "")+"_btn"},scrollContent);
           domStyle.set(button, "border-bottom", "1px solid #1D8BD1");
-          domStyle.set(button, "border-left", "0.25px solid #1D8BD1");
+          // domStyle.set(button, "border-left", "0.25px solid #1D8BD1");
           domStyle.set(button, "border-right", "0.25px solid #1D8BD1");
           // domStyle.set(button, "border-width", "1px 0.5px 0.5px 0.5px");
           var spanContent = domConstruct.create('span', { class:"mdc-tab__content"},button);
@@ -148,8 +148,6 @@ define(['dojo/_base/declare',
             var spanTextActive = domConstruct.create('span', { class:"mdc-tab-indicator__content mdc-tab-indicator__content--underline identify-tab"},spanContentActive);
             current.toggleTab(this.name);
           });
-
-          // var divider = domConstruct.create('div',{ class:"tab-divider"},scrollContent);
         }
         var paddles = this.setPaddles(scrollContent);
         // Make the tabs scrollable
@@ -166,10 +164,10 @@ define(['dojo/_base/declare',
         // domStyle.set(leftPaddle, "border-top", "1px solid #1D8BD1");
         domStyle.set(leftPaddle, "border-bottom", "1px solid #1D8BD1");
         domStyle.set(leftPaddle, "border-right", "1px solid #1D8BD1");
-        domStyle.set(leftPaddle, "border-left", "1px solid #1D8BD1");
+        // domStyle.set(leftPaddle, "border-left", "1px solid #1D8BD1");
         // domStyle.set(rightPaddle, "border-top", "1px solid #1D8BD1");
         domStyle.set(rightPaddle, "border-bottom", "1px solid #1D8BD1");
-        // domStyle.set(rightPaddle, "border-right", "1px solid #1D8BD1");
+        domStyle.set(rightPaddle, "border-right", "1px solid #1D8BD1");
         domStyle.set(rightPaddle, "border-left", "1px solid #1D8BD1");
         // domStyle.set(leftPaddle, "border", "1px solid #1D8BD1");
         // domStyle.set(rightPaddle, "border", "1px solid #1D8BD1");
