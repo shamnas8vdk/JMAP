@@ -110,6 +110,7 @@ define(['dojo/_base/declare',
       pManager: null,
       resultFormatString: "",
       graphicArr : [],
+      currentListSize : 0,
 
       postCreate: function () {
         this.inherited(arguments);
@@ -407,6 +408,7 @@ define(['dojo/_base/declare',
         html.setStyle(this.btnClear, 'display', 'none');
         this._hideInfoWindow();
         this.graphicsLayer.clear();
+        this.currentListSize = 0;
         this.tabContainer.selectTab(this.nls.identifylabel);
         this.list.clear();
         // this.list.tabContainer.style.display = "none";
@@ -453,7 +455,7 @@ define(['dojo/_base/declare',
         }
         graphic.setSymbol(new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
           new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
-          new Color([0, 255, 0]), 3), new Color([29,139,209])));
+          new Color([0, 255, 0]), 3), new Color([68,140,203,0.6])));
         this.graphicArr.push(graphic);
       },
 
@@ -599,7 +601,7 @@ define(['dojo/_base/declare',
         this.iResultLen = 0;
         this.resultFound = false;
         //this.list.clear(); //Commented out to keep an ongoing List of items for Multi-select feature
-        this.pManager.maximizePanel(this.pManager.panels[0]); //Maximizes the right panel on clicking a feature
+        // this.pManager.maximizePanel(this.pManager.panels[0]); //Maximizes the right panel on clicking a feature
         // console.log(this.map._layers);
         this.tabContainer.selectTab(this.nls.resultslabel);
         html.setStyle(this.progressBar.domNode, 'display', 'block');
@@ -757,6 +759,10 @@ define(['dojo/_base/declare',
           }
           // this.showIdentifyResults(r, tasks, LyrIds);
           this.showIdentifyResults(r, fTasks, fLyrIds);
+          if(this.list.items.length > this.currentListSize){
+            this.currentListSize = this.list.items.length;
+            this.pManager.maximizePanel(this.pManager.panels[0]);
+          }
         }), lang.hitch(this, function (err){
           console.info(err);
         }));
@@ -766,10 +772,14 @@ define(['dojo/_base/declare',
             //this.graphicsLayer.clear();
           }
           this.showQueryResults(r, tasks2, FeatLyrNames, FeatLyrIds);
+          if(this.list.items.length > this.currentListSize){
+            this.currentListSize = this.list.items.length;
+            this.pManager.maximizePanel(this.pManager.panels[0]);
+          }
         }), lang.hitch(this, function (err){
           console.info(err);
         }));
-
+        
         var tPromises = [iPromises, qPromises];
 
         var allPromises = new all(tPromises);
