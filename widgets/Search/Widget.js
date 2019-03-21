@@ -45,12 +45,16 @@ define([
     'esri/dijit/PopupTemplate',
     'esri/lang',
     'esri/geometry/Point',
+    "esri/geometry/Multipoint",
+    "esri/SpatialReference",
     'esri/geometry/Extent',
     'esri/geometry/coordinateFormatter',
     'esri/graphic',
     'esri/SpatialReference',
     'esri/symbols/SimpleLineSymbol',
     'esri/symbols/SimpleFillSymbol',
+    'esri/symbols/SimpleMarkerSymbol',
+    'esri/layers/GraphicsLayer',
     'esri/Color',
     "esri/geometry/screenUtils",
     'esri/tasks/query',
@@ -60,8 +64,8 @@ define([
   function(declare, lang, array, html, when, on, aspect, query, keys, Deferred, all, domConstruct, domStyle, 
     CheckBox, filterConfig, ArcGISDynamicMapServiceLayer, arrayUtils,
     BaseWidget, WidgetManager, PanelManager, LayerInfos, jimuUtils, wkidUtils, esriConfig, Search, Locator,
-    FeatureLayer, PopupTemplate, esriLang, Point, Extent, coordinateFormatter, Graphic, SpatialReference, 
-    SimpleLineSymbol, SimpleFillSymbol, Color, screenUtils, FeatureQuery, utils) {
+    FeatureLayer, PopupTemplate, esriLang, Point, Multipoint, SpatialReference, Extent, coordinateFormatter, Graphic, SpatialReference, 
+    SimpleLineSymbol, SimpleFillSymbol, SimpleMarkerSymbol, GraphicsLayer, Color, screenUtils, FeatureQuery, utils) {
     //To create a widget, you need to derive from BaseWidget.
     return declare([BaseWidget], {
       name: 'Search',
@@ -76,6 +80,9 @@ define([
       filterBoxes : new Object(),
       filterContainer: null,
       checkBtn: null,
+      duplicateLocations : new Object(),
+      markerGraphicLayer : null,
+      markerSVGPath : "M32 2a20 20 0 0 0-20 20c0 18 20 40 20 40s20-22 20-40A20 20 0 0 0 32 2zm0 28a8 8 0 1 1 8-8 8 8 0 0 1-8 8z",
 
       postCreate: function() {
         if (this.closeable || !this.isOnScreen) {
@@ -127,7 +134,8 @@ define([
                 enableInfoWindow: true,
                 showInfoWindowOnSelect: true,
                 map: this.map,
-                sources: this.getSources(),//searchSouces,
+                sources: searchSouces,//searchSouces, this.getSources()
+                // suggestionTemplate: "${facname}",
                 theme: 'arcgisSearch'
               });
               html.place(this.searchDijit.domNode, this.searchNode);
@@ -220,7 +228,7 @@ define([
               */
 
               this.fetchData('framework');
-              this.generateFilterDropdown();
+              // this.generateFilterDropdown();
             }));
           }));
       },
@@ -908,7 +916,7 @@ define([
         if (results && evt.numResults > 0) {
           html.removeClass(this.searchDijit.containerNode, 'showSuggestions');
 
-          this.searchResults = results;
+          this.searchResults = this._parseDuplicate(results);
           htmlContent += '<div class="show-all-results jimu-ellipsis" title="' +
             this.nls.showAll + '">' +
             this.nls.showAllResults + '<strong >' + value + '</strong></div>';
@@ -964,6 +972,79 @@ define([
         });
       },
 
+      _parseDuplicate: function(results) {
+        var nameArr = [];
+        var nameObj = new Object();
+        var duplicateArr = [];
+        var self = this;
+        this.duplicateLocations = new Object();
+
+        // Filter out all results with same names
+        for (var i in results) {
+          if (results[i] && results[i].length) {
+            results[i].forEach(function(location, index){
+              if(!nameArr.includes(location.name)){
+                nameArr.push(location.name);
+                nameObj[location.name] = []
+                nameObj[location.name].push(location);
+              }
+              else{
+                nameObj[location.name].push(location);
+                duplicateArr.push(location.name);
+                results[i].splice(index,1);
+              }
+            })
+          }
+        }
+        // Store these results and remove duplicates from search results
+        duplicateArr.forEach(function(duplicateName){
+          self.duplicateLocations[duplicateName] = nameObj[duplicateName];
+        })
+        return results;
+      },
+
+      _renderMarkerZoom: function(result){
+        var resultGeom = result.feature.geometry;
+        var self = this;
+        var multiResult = this.duplicateLocations[result.name];
+
+        //Check if this result has multiple locations
+        if(multiResult && multiResult.length > 1){
+          var multiPoint = new Multipoint(new SpatialReference(resultGeom.spatialReference));
+          //Remove current marker graphic layer if exists and render a new one
+          this._removeMarkerLayer();
+          self.markerGraphicLayer = new GraphicsLayer();
+          this.duplicateLocations[result.name].forEach(function(location){
+            var geomType = location.feature.geometry.declaredClass;
+            var geom = location.feature.geometry;
+            
+            // Check if all the results are Point
+            if(geomType== "esri.geometry.Point"){
+              multiPoint.addPoint(geom);
+              // var marker = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 100,
+              //   new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+              //   new Color([0,255,0]), 1),
+              //   new Color([0,255,0]));
+
+              // Create new marker with svg path declared above
+              var marker = new esri.symbol.SimpleMarkerSymbol();
+              marker.setPath(self.markerSVGPath);
+              marker.setColor(new Color([242, 97, 97]));
+              marker.setOutline(new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+                new Color([0, 0, 50]), 2));
+              marker.setSize("50");
+
+              // Create new graphic with the marker and add onto new graphic layer
+              var markerGraphic = new Graphic(geom, marker);
+              self.markerGraphicLayer.add(markerGraphic);
+              self.map.addLayer(self.markerGraphicLayer);
+            }
+          })
+          jimuUtils.zoomToExtent(this.map, multiPoint.getExtent());
+          // this.map.setExtent(multiPoint.getExtent())
+        }
+      },
+
       _onSuggestResults: function(evt) {
         this._resetSelectorPosition('.searchMenu');
 
@@ -990,7 +1071,7 @@ define([
         if (this.searchResults && this.searchResults[dataSourceIndex] &&
           this.searchResults[dataSourceIndex][dataIndex]) {
           result = this.searchResults[dataSourceIndex][dataIndex];
-          this._zoomToPoint(result.feature.geometry)
+          // this._zoomToPoint(result.feature.geometry)
           this.searchDijit.select(result);
         }
       },
@@ -1198,6 +1279,7 @@ define([
 
       _onSelectResult: function(e) {
         var result = e.result;
+        this._renderMarkerZoom(result);
         var dataSourceIndex = e.sourceIndex;
         var sourceResults = this.searchResults[dataSourceIndex];
         var dataIndex = 0;
@@ -1236,7 +1318,6 @@ define([
 
         //var layer = this.map.getLayer(sourceLayerId);
         var layerInfo = this.layerInfosObj.getLayerInfoById(sourceLayerId);
-
         if (layerInfo) {
           layerInfo.getLayerObject().then(lang.hitch(this, function(layer) {
             var gs = getGraphics(layer, resultFeature.attributes[layer.objectIdField]);
@@ -1300,7 +1381,15 @@ define([
         html.setStyle(this.searchResultsNode, 'display', 'none');
         this.searchResultsNode.innerHTML = "";
         this.searchResults = null;
+        this._removeMarkerLayer();
         //this.map.infoWindow.hideHighlight();
+      },
+
+      _removeMarkerLayer: function(){
+        if(this.markerGraphicLayer != null){
+          this.map.removeLayer(this.markerGraphicLayer);
+          this.markerGraphicLayer = null;
+        }
       },
 
       _hideResultMenu: function() {
