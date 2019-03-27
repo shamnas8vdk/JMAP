@@ -57,10 +57,12 @@ define(['dojo/_base/declare',
       _itemAltCSS: 'identify-list-item alt',
       _wrapResults: null,
       _listItems: [],
+      _companyItems: [],
       tabContainer : null,
       displayContainer: null,
       layerListConfig : null,
       listContainers : new Object(),
+      listElements: [], 
 
       startup: function() {
         this.customConfig = new customConfig();
@@ -271,13 +273,41 @@ define(['dojo/_base/declare',
       },
 
       // Check if the geometry is already selected
-      duplicateCheck: function(geom){
-        for(itemNo=0; itemNo <this._listItems.length; itemNo++){
-          if(JSON.stringify(this._listItems[itemNo].rings) == JSON.stringify(geom.rings)){
+      duplicateCheck: function(item){
+        if(item.graphic){
+          var geom = item.graphic.geometry;
+          for(itemNo=0; itemNo <this._listItems.length; itemNo++){
+            if(JSON.stringify(this._listItems[itemNo].rings) == JSON.stringify(geom.rings)){
+              return true;
+            }
+          }
+          this._listItems.push(geom);
+        }
+        return false;
+      },
+
+      // Check if the geometry is already selected
+      getItemByGeom: function(geom){
+        for(itemNo=0; itemNo <this.items.length; itemNo++){
+          if(JSON.stringify(this.items[itemNo].geometry.rings) == JSON.stringify(geom.rings)){
+            return this.items[itemNo];
+          }
+        }
+        return null;
+      },
+
+      // Check if the geometry is already selected
+      companyDuplicateCheck: function(locations){
+        console.log(this._companyItems);
+        var tempLocations = [];
+        for(itemNo=0; itemNo < locations.length; itemNo++){
+          tempLocations.push(JSON.stringify(locations[itemNo]));
+          if(this._companyItems.includes(JSON.stringify(locations[itemNo]))){
+            console.log("entered true");
             return true;
           }
         }
-        this._listItems.push(geom);
+        this._companyItems = this._companyItems.concat(tempLocations);
         return false;
       },
 
@@ -307,6 +337,8 @@ define(['dojo/_base/declare',
       // Clear all the containers from each tab and hide tabs
       clearContainers: function(){
         this._listItems = [];
+        this._companyItems = [];
+        this.listElements = [];
         $("rightPaddle").hide();
         $("leftPaddle").hide();
         for (var containerName in this.listContainers) {
@@ -331,83 +363,146 @@ define(['dojo/_base/declare',
         }
       },
 
+      addCompany: function(URL){
+        $.getJSON(URL, function(data){
+          if(!self.companyDuplicateCheck(data.resource)){
+            self.listElements.push(div);
+            domConstruct.place(div, self.displayContainer, "first");
+            //Create for loop to loop through each category
+            for (CategoryNo = 0; CategoryNo < layerConfig[layerTitle].type.length; CategoryNo++) {
+              if(CategoryNo == 0){
+                setGeneralContainer(CategoryNo, data.resource[0])
+              }
+              else{
+                setTableContainer(CategoryNo, data.resource)
+              }
+            }
+          }
+        });
+      },
+
+      // ----------- Junwei authored the below section ------ //
       add: function(item) {
-        if (arguments.length === 0 || this.duplicateCheck(item.graphic.geometry)) {
+        if (arguments.length === 0 || this.duplicateCheck(item)) {
           return;
         }
-        this.items.push(item);
         var div = domConstruct.create('div');
-        domAttr.set(div, 'id', this.id.toLowerCase()+item.id);
-        domAttr.set(div, 'title', item.zoom2msg);
-
         var removeDiv = domConstruct.create('div');
-        domConstruct.place(removeDiv, div);
-        domClass.add(removeDiv, 'removediv');
-        domAttr.set(removeDiv, 'id', this.id.toLowerCase()+item.id);
-
         var removeDivImg = domConstruct.create('div');
-        domClass.add(removeDivImg, 'removedivImg');
-        domConstruct.place(removeDivImg, removeDiv);
-        domAttr.set(removeDivImg, 'id', this.id.toLowerCase()+item.id);
-        domAttr.set(removeDivImg, 'title', item.removeResultMsg);
-        this.own(on(removeDivImg, 'click', lang.hitch(this, this._onRemove)));
-
         var rTitle = domConstruct.create('p', { class:"title" },div);
-        domAttr.set(rTitle, 'id', this.id.toLowerCase()+item.id);
-        rTitle.textContent = rTitle.innerText = item.title;
-        // domConstruct.place(rTitle, div);
-        if(item.alt){
-          domClass.add(div, this._itemCSS);
-        }else{
-          domClass.add(div, this._itemAltCSS);
-        }
-        if(this._wrapResults){
-          domClass.add(div, "result-wrap");
-        }
 
-        var attArr = item.rsltcontent.split('<br>');
         var attValArr, tHasColor, bIndex, eIndex, tColor, vHasColor, vColor;
         var label, attTitle, attVal, breakline;
-        var arrayLength = attArr.length;
+        var attArr, arrayLength;
         var levelCheck = true;
+        var self = this;
 
-        // ----------- Junwei authored the below section ------ //
-        // Store the current object ID and Item id for reference in the loops later
         var ID = this.id;
         var itemID = item.id;
         var layerTitle = item.title;
+        var layerConfig = this.layerListConfig;
 
         // Disable tabs accordingly
         this.toggleTab(layerTitle);
-        domConstruct.place(div, this.displayContainer, "first");
 
-        //Create for loop to loop through each category
-        for (CategoryNo = 0; CategoryNo < this.layerListConfig[layerTitle].type.length; CategoryNo++) {
+        if(!layerConfig[layerTitle].isCompany){
+          attArr = item.rsltcontent.split('<br>');
+          arrayLength = attArr.length;
 
+          domAttr.set(div, 'id', this.id.toLowerCase()+item.id);
+          domAttr.set(div, 'title', item.zoom2msg);
+          item["HTMLElement"] = div;
+          this.items.push(item);
+
+          domConstruct.place(removeDiv, div);
+          domClass.add(removeDiv, 'removediv');
+          domAttr.set(removeDiv, 'id', this.id.toLowerCase()+item.id);
+
+          domClass.add(removeDivImg, 'removedivImg');
+          domConstruct.place(removeDivImg, removeDiv);
+          domAttr.set(removeDivImg, 'id', this.id.toLowerCase()+item.id);
+          domAttr.set(removeDivImg, 'title', item.removeResultMsg);
+          this.own(on(removeDivImg, 'click', lang.hitch(this, this._onRemove)));
+
+          // domAttr.set(rTitle, 'id', this.id.toLowerCase()+item.id);
+          rTitle.textContent = rTitle.innerText = item.title;
+          if(item.alt){
+            domClass.add(div, this._itemCSS);
+          }else{
+            domClass.add(div, this._itemAltCSS);
+          }
+          if(this._wrapResults){
+            domClass.add(div, "result-wrap");
+          }
+
+          this.listElements.push(div);
+          domConstruct.place(div, this.displayContainer, "first");
+          // //Create for loop to loop through each category
+          for (CategoryNo = 0; CategoryNo < layerConfig[layerTitle].type.length; CategoryNo++) {
+            setOrdinaryContainer(CategoryNo);
+          }
+        }
+        else{
+          domAttr.set(div, 'id', this.id.toLowerCase()+item.id);
+          item["HTMLElement"] = div;
+          this.items.push(item);
+
+          domConstruct.place(removeDiv, div);
+          domClass.add(removeDiv, 'removediv');
+          domAttr.set(removeDiv, 'id', this.id.toLowerCase()+item.id);
+
+          domClass.add(removeDivImg, 'removedivImg');
+          domConstruct.place(removeDivImg, removeDiv);
+          domAttr.set(removeDivImg, 'id', this.id.toLowerCase()+item.id);
+          domAttr.set(removeDivImg, 'title', item.removeResultMsg);
+          this.own(on(removeDivImg, 'click', lang.hitch(this, this._onRemove)));
+
+          domClass.add(div, this._itemAltCSS);
+
+          if(!self.companyDuplicateCheck(item.resource)){
+            self.listElements.push(div);
+            this.emit('refresh');
+            domConstruct.place(div, self.displayContainer, "first");
+            //Create for loop to loop through each category
+            for (CategoryNo = 0; CategoryNo < layerConfig[layerTitle].type.length; CategoryNo++) {
+              if(CategoryNo == 0){
+                setGeneralContainer(CategoryNo, item.resource[0])
+              }
+              else{
+                setTableContainer(CategoryNo, item.resource)
+              }
+            }
+          }
+        }
+        // Line break between each category
+        domConstruct.place("<br/>", div);
+
+        //set ordinary container
+        function setOrdinaryContainer(CategoryNo){
           //Create a button for each category with the corresponding style
           var category = setCategoryButton();
 
           //Create a container for each category to encapsulate related data
-          var container = setContainer(CategoryNo, category, this.layerListConfig, layerTitle);
+          var container = setContainer(category, layerConfig, layerTitle);
 
           //Create a for loop for all attributes gotten from the object
           for (var AttributeIndex = 0; AttributeIndex < arrayLength; AttributeIndex++) {
 
             //Split the attributes and assign their corresponding font and styles
             attValArr = attArr[AttributeIndex].split(': ');
-            attTitle = setAttributeTitle(ID, itemID);
-            formatAttributeTitle(attTitle, ID, itemID)
+            attTitle = setAttributeTitle(attValArr[0]);
+            formatAttributeTitle(attTitle, attValArr[0], attValArr[1])
   
             if (attValArr[1] === 'null') {
-              attVal.textContent = attVal.innerText = " ";
+              attVal.textContent = attVal.innerText = "Not Available";
             } else {
               attVal.textContent = attVal.innerText = " " + attValArr[1].replace(/<[\/]{0,1}(em|EM|strong|STRONG|font|FONT|u|U)[^><]*>/g, "");
             }
 
             // Check which Category this information belongs to, and adds them to the correct containers.
-            if(categoryAttributesCheck(this.layerListConfig, CategoryNo, attTitle.textContent, layerTitle)) {
-              if(attTitle.innerText.trim() == this.layerListConfig[layerTitle].display_key){
-                setSelectedTitle(this.layerListConfig[layerTitle].layer_name+": "+attVal.innerText);
+            if(categoryAttributesCheck(layerConfig, CategoryNo, attTitle.textContent, layerTitle)) {
+              if(attTitle.innerText.trim() == layerConfig[layerTitle].display_key){
+                setSelectedTitle(layerConfig[layerTitle].layer_name+": "+attVal.innerText);
               }
               container.innerHTML += "<strong>"+ attTitle.innerText +" : </strong>"+ attVal.innerText+ "<br />";
               // domConstruct.place(attTitle, label);
@@ -416,7 +511,103 @@ define(['dojo/_base/declare',
             }
           }
         }
-        domConstruct.place("<br/>", div);
+
+        function setGeneralContainer(CategoryNo, firstResult){
+          //Create a button for each category with the corresponding style
+          var category = setCategoryButton();
+
+          //Create a container for each category to encapsulate related data
+          var container = setContainer(category, layerConfig, layerTitle);
+          var attrArr = layerConfig[layerTitle].type[CategoryNo].Attributes;
+
+          //Create a for loop for all attributes gotten from the object
+          for (var property in attrArr) {
+            var attrTitle = setAttributeTitle(property);
+
+            if (firstResult[attrArr[property]] === 'null' || firstResult[attrArr[property]] === null) {
+              attVal.textContent = attVal.innerText = "Not Available";
+            } 
+            else {
+              if(attrArr[property] == layerConfig[layerTitle].display_key){
+                setSelectedTitle(layerConfig[layerTitle].layer_name+": "+firstResult[attrArr[property]]);
+              }
+              if(!Array.isArray(attrArr[property])){
+                formatAttributeTitle(attrTitle, property, firstResult[attrArr[property]])
+                attVal.textContent = attVal.innerText = " " + firstResult[attrArr[property]].replace(/<[\/]{0,1}(em|EM|strong|STRONG|font|FONT|u|U)[^><]*>/g, "");
+              }
+              else{
+                var contentString = "";
+                attrArr[property].forEach(attrName => {
+                  contentString = contentString + firstResult[attrName]+" ";
+                });
+                formatAttributeTitle(attrTitle, property, contentString)
+                attVal.textContent = attVal.innerText = " " + contentString.replace(/<[\/]{0,1}(em|EM|strong|STRONG|font|FONT|u|U)[^><]*>/g, "");
+              }
+            }
+
+            // Check which Category this information belongs to, and adds them to the correct containers.
+            container.innerHTML += "<strong>"+ attTitle.innerText +" : </strong>"+ attVal.innerText+ "<br />";
+          }
+        }
+
+        function setTableContainer(CategoryNo, results){
+          //Create a button for each category with the corresponding style
+          var category = setCategoryButton();
+          var container = setContainer(category, layerConfig, layerTitle);
+          var tableDiv =  domConstruct.create('div',{ class:"attrTableContainer" }, container);
+          var table =  domConstruct.create('div',{ class:"attrTable" },tableDiv);
+          var attrArr = layerConfig[layerTitle].type[CategoryNo].Attributes;
+          var titleRow =  domConstruct.create('tr',{class:"attrTableRow" }, table);
+          var widthPercentage = 100 / Object.keys(attrArr).length;
+          var contentRowArr = [];
+          var self = this;
+
+          
+          domStyle.set(container, "word-wrap", "normal");
+          contentRowArr.push(titleRow);
+
+          //Create a for loop for all attributes gotten from the config json object
+          for (var property in attrArr) {
+
+            // Row for the column titles
+            var column = domConstruct.create('th',{innerHTML:property, class:"attrTableColumn" }, titleRow);
+            domStyle.set(column, "width", widthPercentage+"%");
+
+            // Loop through each location from query
+            results.forEach(function(location, index){
+              var contentRow;
+              var contentColumn; 
+
+              // If attribute is the display key
+              if(attrArr[property] == layerConfig[layerTitle].display_key){
+                setSelectedTitle(layerConfig[layerTitle].layer_name+": "+ location[attrArr[property]]);
+              }
+
+              // Create rows for the number of results
+              if(contentRowArr.length < results.length){
+                contentRow = domConstruct.create('tr',{class:"attrTableRow" }, table);
+                contentRowArr.push(contentRow);
+              }
+              else{
+                contentRow = contentRowArr[index+1];
+              }
+
+              // Check if displayed value is a concat of various variables
+              if(!Array.isArray(attrArr[property])){
+                contentColumn = domConstruct.create('td',{innerHTML:location[attrArr[property]], class:"attrTableColumn" }, contentRow);
+              }
+              else{
+                var contentString = "";
+                attrArr[property].forEach(attrName => {
+                  contentString = contentString + location[attrName]+" ";
+                });
+                contentColumn = domConstruct.create('td',{ class:"attrTableColumn" }, contentRow);
+                contentColumn.innerText = contentString;
+              }
+              domStyle.set(contentColumn, "width", widthPercentage+"%");
+            })
+          }
+        }
 
         //Set title of the area
         function setSelectedTitle(title){
@@ -437,7 +628,7 @@ define(['dojo/_base/declare',
         }
 
         //Create a container for each category to encapsulate related data
-        function setContainer(CategoryNo, category, data, tabType){
+        function setContainer(category, data, tabType){
           var container = domConstruct.create('div',{ class:"attrCategory" });
           domStyle.set(container, "display", "none");
           category.classList.toggle("active");
@@ -461,52 +652,50 @@ define(['dojo/_base/declare',
         }
 
         //Set attribute titles and styles for selected area
-        function setAttributeTitle(ID, itemID){
+        function setAttributeTitle(title){
           attTitle = domConstruct.create('font');
-          domAttr.set(attTitle, 'id', ID.toLowerCase()+itemID);
-          if(attValArr[0].toLowerCase().indexOf('<em>') > -1){
+          if(title.toLowerCase().indexOf('<em>') > -1){
             domStyle.set(attTitle, 'font-style', 'italic');
           }
-          if(attValArr[0].toLowerCase().indexOf('<strong>') > -1){
+          if(title.toLowerCase().indexOf('<strong>') > -1){
             domStyle.set(attTitle, 'font-weight', 'bold');
           }
-          if(attValArr[0].toLowerCase().indexOf('<u>') > -1){
+          if(title.toLowerCase().indexOf('<u>') > -1){
             domStyle.set(attTitle, 'text-decoration', 'underline');
           }
-          tHasColor = (attValArr[0].toLowerCase().indexOf("<font color='") > -1)?true:false;
+          tHasColor = (title.toLowerCase().indexOf("<font color='") > -1)?true:false;
           if(tHasColor){
-            bIndex = attValArr[0].toLowerCase().indexOf("<font color='") + 13;
-            eIndex = attValArr[0].toLowerCase().indexOf("'>", bIndex);
-            tColor = attValArr[0].substr(bIndex, eIndex - bIndex);
+            bIndex = title.toLowerCase().indexOf("<font color='") + 13;
+            eIndex = title.toLowerCase().indexOf("'>", bIndex);
+            tColor = title.substr(bIndex, eIndex - bIndex);
             domStyle.set(attTitle, 'color', tColor);
           }
           return attTitle;
         }
 
         //Format Attribute text content and styles
-        function formatAttributeTitle(attTitle, ID, itemID){
-          attTitle.textContent = attTitle.innerText = attValArr[0].replace(/<[\/]{0,1}(em|EM|strong|STRONG|font|FONT|u|U)[^><]*>/g, "");
+        function formatAttributeTitle(attTitle , actualTitle, content){
+          attTitle.textContent = attTitle.innerText = actualTitle.replace(/<[\/]{0,1}(em|EM|strong|STRONG|font|FONT|u|U)[^><]*>/g, "");
           label = domConstruct.create('p');
           breakline = domConstruct.create('br');
-          domAttr.set(label, 'id', ID.toLowerCase()+itemID);
           domClass.add(label, 'label');
 
           attVal = domConstruct.create('a');
 
-          if(attValArr[1].toLowerCase().indexOf('<em>') > -1){
+          if(content.toLowerCase().indexOf('<em>') > -1){
             domStyle.set(attVal, 'font-style', 'italic');
           }
-          if(attValArr[1].toLowerCase().indexOf('<strong>') > -1){
+          if(content.toLowerCase().indexOf('<strong>') > -1){
             domStyle.set(attVal, 'font-weight', 'bold');
           }
-          if(attValArr[1].toLowerCase().indexOf('<u>') > -1){
+          if(content.toLowerCase().indexOf('<u>') > -1){
             domStyle.set(attVal, 'text-decoration', 'underline');
           }
-          vHasColor = (attValArr[1].toLowerCase().indexOf("<font color='") > -1)?true:false;
+          vHasColor = (content.toLowerCase().indexOf("<font color='") > -1)?true:false;
           if(vHasColor){
-            bIndex = attValArr[1].toLowerCase().indexOf("<font color='") + 13;
-            eIndex = attValArr[1].toLowerCase().indexOf("'>", bIndex);
-            vColor = attValArr[1].substr(bIndex, eIndex - bIndex);
+            bIndex = content.toLowerCase().indexOf("<font color='") + 13;
+            eIndex = content.toLowerCase().indexOf("'>", bIndex);
+            vColor = content.substr(bIndex, eIndex - bIndex);
             domStyle.set(attVal, 'color', vColor);
           }
         }
@@ -822,6 +1011,7 @@ define(['dojo/_base/declare',
         if (!item) {
           return;
         }
+        // this.listElements remove html element and refresh
         this.removeGeom(item.geometry);
         this.onRemoveDisplayCheck(item.title);
         this._selectedNode = id;

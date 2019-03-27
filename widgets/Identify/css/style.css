@@ -813,7 +813,40 @@
   /* display: inline-block; */
   width: 100%;
   word-wrap: break-word;
+  /* overflow-y: auto; */
 }
+
+.attrTableContainer {
+  width: 100%;
+  word-wrap: normal;
+  white-space:normal;
+}
+
+.attrTable{
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.attrTableColumn {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+.attrTableRow:nth-child(even) {
+  background-color: #dddddd;
+}
+
+/* .attrTableRow {
+  display: block;
+  width: 100%;
+  top: 0;
+} */
+
+/* .attrTableColumn{
+  display: inline-block;
+} */
 
 .title {
   /* margin-left: 2%; */
@@ -837,7 +870,7 @@
   /* content: '\2212▼';  */
 }
 
-.active:after, .toggle {
+.toggle.active:after {
   content: '▼';
 }
 

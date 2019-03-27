@@ -3,11 +3,100 @@
     "Layer_About",
     "Layer_Legend",
     "Layer_Add_Data",
-    "processed_Farm_land"
+    "processed_Farm_land",
+    "Census",
+    "Emergency Facilities"
   ],
+  "Emergency Facilities":{
+    "layer_name": "Company",
+    "display_key": "cust_cust_custid",
+    "API" : "",
+    "isCompany": true,
+    "type": [
+      {
+        "Heading":"General",
+        "Attributes": 
+          {
+            "Company Name" : "cust_cust_custnm",
+            "UEN" : "cust_cust_accountid",
+            "Company ID" : "cust_cust_uen",
+            "CEOfficer Department" : "cust_cust_dept",
+            "CEOfficer" : ["cust_cust_officer","cust_contactreport_allocationno"]
+          }
+      },
+      {
+        "Heading":"Allocation Information",
+        "Attributes": 
+          {
+            "Allocation No" : "cust_contactreport_allocationno",
+            "Product ID" : "cust_cust_custid",
+            "Address" : [
+              "cust_cust_registeredblockhouseno",
+              "cust_cust_registeredstreetnm",
+              "cust_cust_registeredunitno",
+              "cust_cust_registeredpostalcode"
+            ]
+          }
+      },
+      {
+        "Heading":"Business Performance",
+        "Attributes": 
+          {
+            "Year" : "cust_cust_yearofsurvey",
+            "Revenue" : "cust_cust_salesrevenue",
+            "Remuneration" : "cust_cust_salesremuneration",
+            "No of Workers" : "cust_cust_workers"
+          }
+      },
+      {
+        "Heading":"Recent Contact Reports",
+        "Attributes": 
+          {
+            "Contact Date" : "cust_contactreport_dateofcontact",
+            "Title" : "cust_cust_title",
+            "Summary" : "cust_contactreport_meetingbackgroundandsummary"
+          }
+      }
+    ]
+  },
+  "Census":{
+    "layer_name": "Layer Name",
+    "display_key": "OBJECTID",
+    "isCompany": false,
+    "type": [
+      {
+        "Heading":"Category1",
+        "Attributes": [
+          "OBJECTID",
+          "STATE_NAME",
+          "STATE_FIPS",
+          "AREA"
+        ]
+      },
+      {
+        "Heading":"Category2",
+        "Attributes": [
+          "Status",
+          "New_Prop_Address",
+          "Street_Name",
+          "Supervisor"
+        ]
+      },
+      {
+        "Heading":"Category3",
+        "Attributes": [
+          "Remarks",
+          "GlobalID",
+          "Shape__Area",
+          "Shape__Length"
+        ]
+      }
+    ]
+  },
   "Layer_About": {
     "layer_name": "Layer Name",
     "display_key": "OBJECTID",
+    "isCompany": false,
     "type": [
       {
         "Heading":"Category1",
@@ -41,6 +130,7 @@
   "Layer_Legend": {
     "layer_name": "Layer Name",
     "display_key": "OBJECTID",
+    "isCompany": false,
     "type": [
       {
         "Heading":"Category1",
@@ -74,6 +164,7 @@
   "processed_Farm_land": {
     "layer_name": "Layer Name",
     "display_key": "OBJECTID",
+    "isCompany": false,
     "type": [
       {
         "Heading":"Category1",

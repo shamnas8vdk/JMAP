@@ -400,6 +400,7 @@ define(['dojo/_base/declare',
         this.own(on(this.btnClear, 'click', lang.hitch(this, this._clear)));
         html.setStyle(this.btnClear, 'display', 'none');
         this.own(on(this.list,'remove', lang.hitch(this, this._removeResultItem)));
+        this.own(on(this.list,'refresh', lang.hitch(this, this.refreshResultCount)));
       },
 
       _clear: function () {
@@ -429,6 +430,7 @@ define(['dojo/_base/declare',
           return;
         }
         this.list.remove(index);
+        this.currentListSize --;
         this.divResultMessage.textContent = this.nls.resultsfoundlabel + ' ' + this.list.items.length;
         this._hideInfoWindow();
       },
@@ -446,7 +448,6 @@ define(['dojo/_base/declare',
       },
 
       _graphicHighlight: function(graphic){
-        console.log(this.graphicsLayer);
         if(this.graphicArr.length != 0){
           array.forEach(this.graphicArr,function(graphic){
             graphic.setSymbol(new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
@@ -461,17 +462,23 @@ define(['dojo/_base/declare',
 
       _graphicCheck: function(geom){
         var check = false;
+        var self = this;
         if(this.graphicsLayer.graphics.length != 0){
-          array.forEach(this.graphicsLayer.graphics,function(graphic){
+          array.forEach(this.graphicsLayer.graphics,function(graphic, index){
             if(JSON.stringify(graphic.geometry.rings) == JSON.stringify(geom.rings)){
-              check = true;
+              var item = self.list.getItemByGeom(geom);
+              if(item){
+                var removeBtn = item.HTMLElement.getElementsByClassName("removedivImg")[0];
+                removeBtn.click();
+                check = true;
+              }
             }
           })
         }
         return check;
       },
 
-      _selectResultItem: function (index, item) {
+      _selectResultItem: function (index) {
         var idResult = this.list.items[index];
         this._graphicHighlight(idResult.graphic);
         if(idResult.geometry.type === 'point'){
@@ -761,6 +768,7 @@ define(['dojo/_base/declare',
           this.showIdentifyResults(r, fTasks, fLyrIds);
           if(this.list.items.length > this.currentListSize){
             this.currentListSize = this.list.items.length;
+            console.log(this.pManager.panels[0]);
             this.pManager.maximizePanel(this.pManager.panels[0]);
           }
         }), lang.hitch(this, function (err){
@@ -788,12 +796,20 @@ define(['dojo/_base/declare',
           if (this.list.items.length === 0) {
             this.divResultMessage.textContent = this.nls.noresultsfoundlabel;
           } else {
-            this.divResultMessage.textContent = this.nls.resultsfoundlabel + ' ' + this.list.items.length;
+            this.divResultMessage.textContent = this.nls.resultsfoundlabel + ' ' + this.list.listElements.length;
           }
           this.tabContainer.selectTab(this.nls.resultslabel);
           html.setStyle(this.progressBar.domNode, 'display', 'none');
           html.setStyle(this.divResult, 'display', 'block');
         }));
+      },
+
+      refreshResultCount: function(){
+        if (this.list.listElements.length === 0) {
+          this.divResultMessage.textContent = this.nls.noresultsfoundlabel;
+        } else {
+          this.divResultMessage.textContent = this.nls.resultsfoundlabel + ' ' + this.list.listElements.length;
+        }
       },
 
       createIdentifyParams: function (layers, geom) { //Fix identify params here
@@ -1322,11 +1338,12 @@ define(['dojo/_base/declare',
               iGra.attributes = Atts;
               if(this.returngeometryforzoom && !this._graphicCheck(iGra.geometry)){
                 this.graphicsLayer.add(iGra);
+                this.list.add(idResult);
               }
               if(this.enableGraphicClickInfo){
                 iGra.setInfoTemplate(this._configurePopupTemplate(idResult));
               }
-              this.list.add(idResult);
+              // this.list.add(idResult);
             }
             idResult.id = 'id_' + this.gid;
             this.gid ++;
@@ -1421,11 +1438,12 @@ define(['dojo/_base/declare',
                 iGra2.attributes = Atts2;
                 if(this.returngeometryforzoom && !this._graphicCheck(iGra2.geometry)){
                   this.graphicsLayer.add(iGra2);
+                  this.list.add(idResult);
                 }
                 if(this.enableGraphicClickInfo){
                   iGra2.setInfoTemplate(this._configurePopupTemplate(idResult));
                 }
-                this.list.add(idResult);
+                // this.list.add(idResult);
               }
               idResult.id = 'id_' + this.gid;
               this.gid ++;
@@ -1443,7 +1461,7 @@ define(['dojo/_base/declare',
           this.divResultMessage.textContent = this.nls.noresultsfoundlabel;
           this.timedClose2();
         }else if(this.identifyResultsArray.length > 0 && this.numServicesIdent <= 0){
-          this.divResultMessage.textContent = this.nls.resultsfoundlabel + ' ' + this.identifyResultsArray.length;
+          this.divResultMessage.textContent = this.nls.resultsfoundlabel + ' ' + this.listElements.length;
           this.timedClose2();
         }else{
           this.disableTimer2();
@@ -2101,8 +2119,9 @@ define(['dojo/_base/declare',
                 }
                 if(this.returngeometryforzoom && !this._graphicCheck(iGra.geometry)){
                   this.graphicsLayer.add(iGra);
+                  this.list.add(idResult);
                 }
-                this.list.add(idResult);
+                // this.list.add(idResult);
               }
               idResult.id = 'id_' + this.gid;
               this.gid ++;
@@ -2196,11 +2215,12 @@ define(['dojo/_base/declare',
                   iGra2.attributes = Atts2;
                   if(this.returngeometryforzoom && !this._graphicCheck(iGra2.geometry)){
                     this.graphicsLayer.add(iGra2);
+                    this.list.add(idResult);
                   }
                   if(this.enableGraphicClickInfo){
                     iGra2.setInfoTemplate(this._configurePopupTemplate(idResult));
                   }
-                  this.list.add(idResult);
+                  // this.list.add(idResult);
                 }
                 idResult.id = 'id_' + this.gid;
                 this.gid ++;
@@ -2216,7 +2236,7 @@ define(['dojo/_base/declare',
           this.divResultMessage.textContent = this.nls.noresultsfoundlabel;
           this.timedClose2();
         }else if(this.identifyResultsArray.length > 0 && this.numServicesIdent <= 0){
-          this.divResultMessage.textContent = this.nls.resultsfoundlabel + ' ' + this.identifyResultsArray.length;
+          this.divResultMessage.textContent = this.nls.resultsfoundlabel + ' ' + this.listElements.length; //listElements identifyResultsArray
           this.timedClose2();
         }else{
           this.disableTimer2();

@@ -1007,6 +1007,7 @@ define([
         var resultGeom = result.feature.geometry;
         var self = this;
         var multiResult = this.duplicateLocations[result.name];
+        var queryAttribute = "";
 
         //Check if this result has multiple locations
         if(multiResult && multiResult.length > 1){
@@ -1019,8 +1020,9 @@ define([
             var geom = location.feature.geometry;
             
             // Check if all the results are Point
-            if(geomType== "esri.geometry.Point"){
+            if(geomType == "esri.geometry.Point"){
               multiPoint.addPoint(geom);
+              queryAttribute = location.feature.attributes.Place_addr;
               // var marker = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 100,
               //   new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
               //   new Color([0,255,0]), 1),
@@ -1040,9 +1042,28 @@ define([
               self.map.addLayer(self.markerGraphicLayer);
             }
           })
+          if(queryAttribute != ""){
+            sessionStorage.setItem('Company_Query_ID', queryAttribute);
+          }
           jimuUtils.zoomToExtent(this.map, multiPoint.getExtent());
-          // this.map.setExtent(multiPoint.getExtent())
+          this.createCompanyObject(result);
         }
+      },
+
+      createCompanyObject: function(result){
+        var self = this;
+        $.getJSON("widgets/Search/sampledata.json", function(data){
+          var company = new Object();
+          company["id"] = data.resource[0].cust_cust_custid;
+          company["title"] = "Emergency Facilities";
+          company["removeResultMsg"] = "Remove Result";
+          company["resource"] = data.resource;
+
+          // Maximize panel and add company
+          var identifyWidget = self.wManager.getWidgetById(self.pManager.panels[0].config.widgets[0].id);
+          identifyWidget.list.add(company);
+          self.pManager.maximizePanel(self.pManager.panels[0]);
+        })
       },
 
       _onSuggestResults: function(evt) {
@@ -1389,6 +1410,7 @@ define([
         if(this.markerGraphicLayer != null){
           this.map.removeLayer(this.markerGraphicLayer);
           this.markerGraphicLayer = null;
+          sessionStorage.removeItem('Company_Query_ID');
         }
       },
 
