@@ -423,8 +423,13 @@ define(['dojo/_base/declare',
 
       _removeResultItem: function (index, item) {
         var idResult = this.list.items[this.list.selectedIndex];
-        this.identifyResultsArray.splice(this.identifyResultsArray.indexOf(idResult), 1);
-        this.graphicsLayer.remove(idResult.graphic);
+        if(idResult.markerLayer){
+          this.map.removeLayer(idResult.markerLayer);
+        }
+        if(this.identifyResultsArray){
+          this.identifyResultsArray.splice(this.identifyResultsArray.indexOf(idResult), 1);
+          this.graphicsLayer.remove(idResult.graphic);
+        }
         if(this.list.items.length === 0){
           this._clear();
           return;
@@ -465,12 +470,14 @@ define(['dojo/_base/declare',
         var self = this;
         if(this.graphicsLayer.graphics.length != 0){
           array.forEach(this.graphicsLayer.graphics,function(graphic, index){
-            if(JSON.stringify(graphic.geometry.rings) == JSON.stringify(geom.rings)){
-              var item = self.list.getItemByGeom(geom);
-              if(item){
-                var removeBtn = item.HTMLElement.getElementsByClassName("removedivImg")[0];
-                removeBtn.click();
-                check = true;
+            if(graphic && graphic.geometry){
+              if(JSON.stringify(graphic.geometry.rings) == JSON.stringify(geom.rings)){
+                var item = self.list.getItemByGeom(geom);
+                if(item){
+                  var removeBtn = item.HTMLElement.getElementsByClassName("removedivImg")[0];
+                  removeBtn.click();
+                  check = true;
+                }
               }
             }
           })
@@ -480,7 +487,9 @@ define(['dojo/_base/declare',
 
       _selectResultItem: function (index) {
         var idResult = this.list.items[index];
-        this._graphicHighlight(idResult.graphic);
+        if(idResult.graphic){
+          this._graphicHighlight(idResult.graphic);
+        }
         if(idResult.geometry.type === 'point'){
           if(idResult.forceScale === true){
             this.map.setScale(idResult.zoomScale).then(this.map.centerAt(idResult.point).then(lang.hitch(this, function () {
@@ -768,7 +777,6 @@ define(['dojo/_base/declare',
           this.showIdentifyResults(r, fTasks, fLyrIds);
           if(this.list.items.length > this.currentListSize){
             this.currentListSize = this.list.items.length;
-            console.log(this.pManager.panels[0]);
             this.pManager.maximizePanel(this.pManager.panels[0]);
           }
         }), lang.hitch(this, function (err){

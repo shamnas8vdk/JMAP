@@ -1046,11 +1046,11 @@ define([
             sessionStorage.setItem('Company_Query_ID', queryAttribute);
           }
           jimuUtils.zoomToExtent(this.map, multiPoint.getExtent());
-          this.createCompanyObject(result);
+          this.createCompanyObject(result,multiPoint);
         }
       },
 
-      createCompanyObject: function(result){
+      createCompanyObject: function(result, multipoint){
         var self = this;
         $.getJSON("widgets/Search/sampledata.json", function(data){
           var company = new Object();
@@ -1058,6 +1058,8 @@ define([
           company["title"] = "Emergency Facilities";
           company["removeResultMsg"] = "Remove Result";
           company["resource"] = data.resource;
+          company["markerLayer"] = self.markerGraphicLayer;
+          company["geometry"] = multipoint;
 
           // Maximize panel and add company
           var identifyWidget = self.wManager.getWidgetById(self.pManager.panels[0].config.widgets[0].id);

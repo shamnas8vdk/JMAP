@@ -289,8 +289,10 @@ define(['dojo/_base/declare',
       // Check if the geometry is already selected
       getItemByGeom: function(geom){
         for(itemNo=0; itemNo <this.items.length; itemNo++){
-          if(JSON.stringify(this.items[itemNo].geometry.rings) == JSON.stringify(geom.rings)){
-            return this.items[itemNo];
+          if(this.items[itemNo].geometry){
+            if(JSON.stringify(this.items[itemNo].geometry.rings) == JSON.stringify(geom.rings)){
+              return this.items[itemNo];
+            }
           }
         }
         return null;
@@ -298,7 +300,6 @@ define(['dojo/_base/declare',
 
       // Check if the geometry is already selected
       companyDuplicateCheck: function(locations){
-        console.log(this._companyItems);
         var tempLocations = [];
         for(itemNo=0; itemNo < locations.length; itemNo++){
           tempLocations.push(JSON.stringify(locations[itemNo]));
@@ -314,8 +315,10 @@ define(['dojo/_base/declare',
       // Remove the geom from the geometry checking array
       removeGeom: function(geom){
         for(itemNo=0; itemNo <this._listItems.length; itemNo++){
-          if(JSON.stringify(this._listItems[itemNo].rings) == JSON.stringify(geom.rings)){
-            this._listItems.splice(itemNo,1);
+          if(geom && this._listItems[itemNo]){
+            if(JSON.stringify(this._listItems[itemNo].rings) == JSON.stringify(geom.rings)){
+              this._listItems.splice(itemNo,1);
+            }
           }
         }
       },
@@ -339,6 +342,7 @@ define(['dojo/_base/declare',
         this._listItems = [];
         this._companyItems = [];
         this.listElements = [];
+        this.emit('refresh');
         $("rightPaddle").hide();
         $("leftPaddle").hide();
         for (var containerName in this.listContainers) {
@@ -1012,9 +1016,13 @@ define(['dojo/_base/declare',
           return;
         }
         // this.listElements remove html element and refresh
+        this.listElements = array.filter(this.listElements, function(element) {
+          return element !== item.HTMLElement;
+        });
         this.removeGeom(item.geometry);
         this.onRemoveDisplayCheck(item.title);
         this._selectedNode = id;
+        this.emit('refresh');
         this.emit('remove', this.selectedIndex, item);
       },
 

@@ -10,7 +10,6 @@
   "Emergency Facilities":{
     "layer_name": "Company",
     "display_key": "cust_cust_custid",
-    "API" : "",
     "isCompany": true,
     "type": [
       {
