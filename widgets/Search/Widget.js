@@ -1008,6 +1008,7 @@ define([
         var self = this;
         var multiResult = this.duplicateLocations[result.name];
         var queryAttribute = "";
+        var resource = [];
 
         //Check if this result has multiple locations
         if(multiResult && multiResult.length > 1){
@@ -1015,15 +1016,16 @@ define([
           //Remove current marker graphic layer if exists and render a new one
           this._removeMarkerLayer();
           self.markerGraphicLayer = new GraphicsLayer();
-          this.duplicateLocations[result.name].forEach(function(location){
+          multiResult.forEach(function(location){
             var geomType = location.feature.geometry.declaredClass;
             var geom = location.feature.geometry;
+            resource.push(location.feature.attributes);
             
             // Check if all the results are Point
             if(geomType == "esri.geometry.Point"){
               multiPoint.addPoint(geom);
               queryAttribute = location.feature.attributes.Place_addr;
-              // var marker = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 100,
+              //   var marker = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 100,
               //   new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
               //   new Color([0,255,0]), 1),
               //   new Color([0,255,0]));
@@ -1046,18 +1048,18 @@ define([
             sessionStorage.setItem('Company_Query_ID', queryAttribute);
           }
           jimuUtils.zoomToExtent(this.map, multiPoint.getExtent());
-          this.createCompanyObject(result,multiPoint);
+          this.createCompanyObject(multiPoint, resource);
         }
       },
 
-      createCompanyObject: function(result, multipoint){
+      createCompanyObject: function(multipoint, resource){
         var self = this;
-        $.getJSON("widgets/Search/sampledata.json", function(data){
+        // $.getJSON("widgets/Search/sampledata.json", function(data){
           var company = new Object();
-          company["id"] = data.resource[0].cust_cust_custid;
+          company["id"] = resource[0].cust_cust_custid;
           company["title"] = "Emergency Facilities";
           company["removeResultMsg"] = "Remove Result";
-          company["resource"] = data.resource;
+          company["resource"] = resource;
           company["markerLayer"] = self.markerGraphicLayer;
           company["geometry"] = multipoint;
 
@@ -1065,7 +1067,7 @@ define([
           var identifyWidget = self.wManager.getWidgetById(self.pManager.panels[0].config.widgets[0].id);
           identifyWidget.list.add(company);
           self.pManager.maximizePanel(self.pManager.panels[0]);
-        })
+        // })
       },
 
       _onSuggestResults: function(evt) {
