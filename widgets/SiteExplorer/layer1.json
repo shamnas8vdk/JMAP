@@ -41,15 +41,12 @@
 					"Name": "HEIGHT_M_SHD",
 					"Display_Name": "Height (m)"
 				},
-
-				//Need to check
 				{
 					"Name": "GUIDELINES",
 					"Display_Name": "Guidelines"
 				}
 			]
 		},
-
 		{
 		"layerName": "CAAS Height Constraint (m)",
 		"url": "",
@@ -60,8 +57,6 @@
 					"Name": "HEIGHT_M_SHD",
 					"Display_Name": "Height (m)"
 				},
-
-				//Need to check what else to include?
 				{
 					"Name": "GUIDELINES",
 					"Display_Name": "Guidelines"
@@ -124,6 +119,7 @@
 			]
 		},
 
+		
 		// TYPICAL CONSTRAINTS
 		{
 		"layerName": "NEA Safety Buffer",
@@ -223,18 +219,11 @@
 					"Name": "TP_EXPIRY_DATE",
 					"Display_Name": "Temp Permit Expiry Date"
 				},
-				//Dorm GFA useful?
-				// {
-				// 	"Name": "GFA_OF_DORM",
-				// 	"Display_Name": "Dorm GFA"
-				// },
 				{
 					"Name": "NO_OF_WORKERS_HOUSED",
 					"Display_Name": "No. of Workers"
 				}
 			]
-		},
-
-
+		}
 	]
 }
