@@ -1,0 +1,49 @@
+{
+		"primaryLayer":
+		[
+			{
+				"url": "https://services1.arcgis.com/6txKVziKkZ2VHz7Z/arcgis/rest/services/processed_Farm_land/FeatureServer/0?token=ED7w7mAf0nM2KnZJNMcO_SWPB6DhnUbX6lOelBfmCdIg-tZ1bTF5icAH5P46CrhYWpcqRMuKCTaQUVyrR5bheqPrJkgmocAhQsfpG18IyemBMqcc_1EzQfyN3ePhbUcCrS-RRx0MHRq5n1FXQVFdjdXhfpLYIlM_-f577yOOdoM3t6tuLhAJB9Vsi-J1zAW11EF0CjlX1QXriQSQjBt_wWHBdWpDFBW1QDFK493en6nZ1sDK3mNi6n7wAU2TSjde"
+			}
+		],
+		
+		"layers":
+		[
+			{
+			"name": "blue",
+			"order_field":"Shape_Leng",
+			"order_type":"ASC",
+			"attributes": 
+			[
+				{
+					"Name": "GlobalID"
+				},
+				{
+					"Name": "Creator"
+				},
+				{
+					"Name": "Shape_Leng"
+				}
+			],
+			"url": "https://services1.arcgis.com/6txKVziKkZ2VHz7Z/ArcGIS/rest/services/MyProject3_(3)/FeatureServer/0?token=N1c4RAHDIKF-yYSIWU1Hl5pf5WbTXgJ8oNhakmWBsaROElR2WPnRDM-X2HqegNjbSI9i9EUTJaOc1-8FqgkLEMrbory1tNPv8Jk1Ue48tTHgL06YLxU2oxWqRYEcsSxRatS3j-U2dcL8vHlwGqsVq-fBYeorOCdz_FRYx7J5jrYd2qNe1ylp4e3dg8NYsZQbW-o39PVNVxF4yfeXPtxjxuNwYqHiujgCAefgUBe5z9vYu0apf5a3ma5QjyWpiBsB"
+			},
+			{
+				"name": "yellow",
+				"order_field":"Shape_Leng",
+				"order_type":"ASC",
+				"attributes": 
+			[
+				{
+					"Name": "GlobalID"
+				},
+				{
+					"Name": "Creator"
+				},
+				{
+					"Name": "Shape_Leng"
+				}
+			],
+				"url": "https://services1.arcgis.com/6txKVziKkZ2VHz7Z/ArcGIS/rest/services/MyProject3_(3)/FeatureServer/1?token=N1c4RAHDIKF-yYSIWU1Hl5pf5WbTXgJ8oNhakmWBsaROElR2WPnRDM-X2HqegNjbSI9i9EUTJaOc1-8FqgkLEMrbory1tNPv8Jk1Ue48tTHgL06YLxU2oxWqRYEcsSxRatS3j-U2dcL8vHlwGqsVq-fBYeorOCdz_FRYx7J5jrYd2qNe1ylp4e3dg8NYsZQbW-o39PVNVxF4yfeXPtxjxuNwYqHiujgCAefgUBe5z9vYu0apf5a3ma5QjyWpiBsB"
+			}
+		]
+
+}

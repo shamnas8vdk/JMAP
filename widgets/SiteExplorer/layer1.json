@@ -1,0 +1,240 @@
+{
+	"layers":
+	[
+		//DEVELOPMENT HEIGHT CONSTRAINTS
+		{
+		"layerName" :"Chimney buffer",
+		"url": "",
+		"order_field":"ChimneyHeightMeterSHD",
+		"Attributes": 
+			[
+				{
+					"Name": "CompanyName",
+					"Display_Name": "Company Name"
+				},
+				{
+					"Name": "BufferMeter",
+					"Display_Name": "Buffer radius (m)"
+				},
+				{
+					"Name": "ChimneyHeightMeterSHD",
+					"Display_Name": "Height (m)"
+				},
+				{
+					"Name": "ConstraintType",
+					"Display_Name": "Constraint Type"
+				},
+				{
+					"Name": "Remarks",
+					"Display_Name": "Remarks"
+				}
+			]
+		},
+
+		{
+		"layerName": "DSTA Height Constraint (m)",
+		"url": "",
+		"order_field":"HEIGHT_M_SHD",
+		"Attributes": 
+			[
+				{
+					"Name": "HEIGHT_M_SHD",
+					"Display_Name": "Height (m)"
+				},
+
+				//Need to check
+				{
+					"Name": "GUIDELINES",
+					"Display_Name": "Guidelines"
+				}
+			]
+		},
+
+		{
+		"layerName": "CAAS Height Constraint (m)",
+		"url": "",
+		"order_field":"HEIGHT_M_SHD",
+		"Attributes": 
+			[
+				{
+					"Name": "HEIGHT_M_SHD",
+					"Display_Name": "Height (m)"
+				},
+
+				//Need to check what else to include?
+				{
+					"Name": "GUIDELINES",
+					"Display_Name": "Guidelines"
+				}
+			]
+		},
+
+		{
+		"layerName": "NEA Health Buffer",
+		"url": "",
+		"order_field":"BUILDING_HT_CONST_M_SHD",
+		"Attributes": 
+			[
+				{
+					"Name": "Remarks",
+					"Display_Name": "Remarks"
+				},
+				{
+					"Name": "BUILDING_HT_CONST_M_SHD",
+					"Display_Name": "Height (m)"
+				},
+				{
+					"Name": "RADIUS_M",
+					"Display_Name": "Radius (m)"
+				}
+			]
+		},
+
+		{
+		"layerName": "URA Height Constraint",
+		"url": "",
+		"order_field":"HEIGHT_M_SHD",
+		"Attributes": 
+			[
+				{
+					"Name": "HEIGHT_M_SHD",
+					"Display_Name": "Height (m)"
+				},
+				{
+					"Name": "GUIDELINES",
+					"Display_Name": "Guidelines"
+				}
+			]
+		},
+
+		{
+		"layerName": "IDA Height Constraint",
+		"url": "",
+		"order_field":"HEIGHT_M_SHD",
+		"Attributes": 
+			[
+				{
+					"Name": "HEIGHT_M_SHD",
+					"Display_Name": "Height (m)"
+				},
+				{
+					"Name": "GUIDELINES",
+					"Display_Name": "Guidelines"
+				}
+			]
+		},
+
+		// TYPICAL CONSTRAINTS
+		{
+		"layerName": "NEA Safety Buffer",
+		"url": "",
+		"order_field":"RADIUS_M",
+		"Attributes": 
+			[
+				{
+					"Name": "LANDUSE_RESTRICTION",
+					"Display_Name": "Restriction"
+				},
+				{
+					"Name": "COMPANY_NAME",
+					"Display_Name": "Company"
+				},
+				{
+					"Name": "CHEMICALS_TYPE",
+					"Display_Name": "Chemicals Type"
+				},
+				{
+					"Name": "RADIUS_M",
+					"Display_Name": "Radius (m)"
+				}
+			]
+		},
+
+		{
+		"layerName": "Special Constraints",
+		"url": "",
+		"Attributes": 
+			[
+				{
+					"Name": "CONSTRAINT_TYPE",
+					"Display_Name": "Constraint"
+				},
+				{
+					"Name": "CONSTRAINT_DESCRIPTION",
+					"Display_Name": "Description"
+				}
+			]
+		},
+
+		{
+		"layerName": "Primary/Secondary Control Zone",
+		"url": "",
+		"Attributes": 
+			[
+				{
+					"Name": "CONTROL_ZONE_TYPE",
+					"Display_Name": "Control Zone Type"
+				},
+				{
+					"Name": "GUIDELINES",
+					"Display_Name": "Guidelines"
+				}
+			]
+		},
+
+		{
+		"layerName": "Water Catchment",
+		"url": "",
+		"Attributes": 
+			[
+				{
+					"Name": "NAME_OF_CATCHMENTS",
+					"Display_Name": "Water Catchment Area"
+				},
+				{
+					"Name": "STATUS",
+					"Display_Name": "Catchment Status"
+				},
+				{
+					"Name": "SHAPE.STArea()",
+					"Display_Name": "Area"
+				},
+				{
+					"Name": "SHAPE.STLength()",
+					"Display_Name": "Perimeter"
+				}
+			]
+		},
+
+		{
+		"layerName": "Dormitory",
+		"url": "",
+		"Attributes": 
+			[
+				{
+					"Name": "TYPE_OF_TP",
+					"Display_Name": "Existing Dormitory"
+				},
+				{
+					"Name": "TP_ISSUED_DATE",
+					"Display_Name": "Temp Permit Issued Date"
+				},
+				{
+					"Name": "TP_EXPIRY_DATE",
+					"Display_Name": "Temp Permit Expiry Date"
+				},
+				//Dorm GFA useful?
+				// {
+				// 	"Name": "GFA_OF_DORM",
+				// 	"Display_Name": "Dorm GFA"
+				// },
+				{
+					"Name": "NO_OF_WORKERS_HOUSED",
+					"Display_Name": "No. of Workers"
+				}
+			]
+		},
+
+
+	]
+}
