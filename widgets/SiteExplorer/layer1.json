@@ -13,12 +13,12 @@
 					"Display_Name": "Company Name"
 				},
 				{
-					"Name": "BufferMeter",
-					"Display_Name": "Buffer radius (m)"
-				},
-				{
 					"Name": "ChimneyHeightMeterSHD",
 					"Display_Name": "Height (m)"
+				},
+				{
+					"Name": "BufferMeter",
+					"Display_Name": "Buffer radius (m)"
 				},
 				{
 					"Name": "ConstraintType",
@@ -71,16 +71,16 @@
 		"Attributes": 
 			[
 				{
-					"Name": "Remarks",
-					"Display_Name": "Remarks"
-				},
-				{
 					"Name": "BUILDING_HT_CONST_M_SHD",
 					"Display_Name": "Height (m)"
 				},
 				{
 					"Name": "RADIUS_M",
 					"Display_Name": "Radius (m)"
+				},
+				{
+					"Name": "Remarks",
+					"Display_Name": "Remarks"
 				}
 			]
 		},
